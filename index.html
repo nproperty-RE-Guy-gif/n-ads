@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E40AF">
+<meta name="color-scheme" content="light dark">
+<title>N Ads Alert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== N Ads Alert · ธีมฟ้า-น้ำเงิน (สว่าง/มืดอัตโนมัติ) ===== */
+  :root{
+    --pri:#2563EB;--pri-d:#1E40AF;--navy:#0B2559;--pri-l:#EAF1FF;--pri-l2:#D6E4FF;
+    --ink:#0F172A;--mute:#64748B;--line:#E5EAF2;--bg:#F3F6FB;--card:#FFFFFF;--card2:#F6F8FC;
+    --green:#16A34A;--green-l:#E7F7EE;--amber:#D97706;--amber-l:#FFF5E1;--red:#DC2626;--red-l:#FDECEC;--grey:#94A3B8;
+    --solid:#2563EB;--hdr:linear-gradient(135deg,#0B2559 0%,#1E40AF 55%,#2563EB 100%);--shadow:0 1px 2px rgba(15,23,42,.04),0 6px 20px rgba(15,23,42,.06);--glow:0 6px 16px rgba(37,99,235,.25);
+    --r:20px;color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --pri:#6B95FF;--pri-d:#4F7BFF;--navy:#0A1A3D;--pri-l:rgba(107,149,255,.15);--pri-l2:rgba(107,149,255,.28);
+      --ink:#E6ECF5;--mute:#93A3BB;--line:#25314A;--bg:#0B1220;--card:#131B2D;--card2:#1A2439;
+      --green:#34D399;--green-l:rgba(52,211,153,.14);--amber:#FBBF24;--amber-l:rgba(251,191,36,.13);--red:#F87171;--red-l:rgba(248,113,113,.14);--grey:#64748B;
+      --solid:#2F5FE0;--hdr:linear-gradient(135deg,#0E1C44 0%,#1A3480 60%,#2448B8 100%);--shadow:0 1px 2px rgba(0,0,0,.35);--glow:0 6px 16px rgba(0,0,0,.35);color-scheme:dark;
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Prompt,system-ui,sans-serif;font-size:16px;line-height:1.5}
+  button,input,select{font:inherit;color:inherit}
+  svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .hide{display:none!important}
+
+  /* หัว */
+  header{position:sticky;top:0;z-index:5;background:var(--hdr);color:#fff;padding:16px 18px 18px;display:flex;align-items:center;gap:10px;border-radius:0 0 24px 24px;box-shadow:var(--glow)}
+  header .t{flex:1;min-width:0}
+  header h1{margin:0;font-size:20px;font-weight:600;letter-spacing:.2px}
+  header .sub{font-size:13px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .icon-btn{border:0;background:rgba(255,255,255,.16);color:#fff;width:42px;height:42px;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  main{padding:16px 14px 128px;max-width:560px;margin:0 auto}
+
+  /* การ์ดพื้นฐาน */
+  .card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .seg{display:flex;background:var(--card);border-radius:16px;padding:4px;margin-bottom:14px;gap:4px;box-shadow:var(--shadow)}
+  .seg button{flex:1;border:0;background:none;padding:10px 4px;border-radius:12px;color:var(--mute);font-weight:500;cursor:pointer}
+  .seg button.on{background:var(--pri-l);color:var(--pri);font-weight:600}
+
+  /* ยอดเงิน */
+  .card.bal{background:linear-gradient(160deg,var(--pri-l) 0%,var(--card) 65%);border:1px solid var(--pri-l2)}
+  .bal .lbl{font-size:14px;color:var(--mute)}
+  .bal .big{font-size:44px;font-weight:700;line-height:1.15;margin:2px 0 6px;letter-spacing:-.5px}
+  .chip{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:var(--card2);color:var(--mute)}
+  .chip.red{background:var(--red-l);color:var(--red)} .chip.green{background:var(--green-l);color:var(--green)}
+  .days{margin-top:10px;font-size:15px}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+  .bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+
+  /* ปุ่ม */
+  .row2{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;border:0;border-radius:14px;padding:13px;font-weight:600;cursor:pointer;background:var(--solid);color:#fff;box-shadow:var(--glow)}
+  .btn.ghost{background:var(--pri-l);color:var(--pri);box-shadow:none}
+  .btn.grey{background:var(--card2);color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+  .btn:disabled{opacity:.45;box-shadow:none}
+  .bigbtn{display:flex;align-items:center;gap:14px;width:100%;border:0;border-radius:var(--r);padding:16px 18px;margin-bottom:14px;background:var(--hdr);color:#fff;font-size:19px;font-weight:600;text-align:left;cursor:pointer;box-shadow:var(--glow)}
+  .bigbtn .pl{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+  .bigbtn small{display:block;font-size:13px;font-weight:400;opacity:.85}
+
+  /* ตัวเลขสรุป */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .stat{background:var(--card);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+  .stat .k{font-size:13px;color:var(--mute)} .stat .v{font-size:25px;font-weight:700;margin-top:2px;letter-spacing:-.3px}
+  .stat .s{font-size:12px;color:var(--mute)}
+  h2{font-size:16px;margin:20px 4px 8px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .mini{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .mini:first-child{border-top:0}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+  .g-good{background:var(--green)} .g-ok{background:var(--amber)} .g-bad{background:var(--red)} .g-wait,.g-idle{background:var(--grey)}
+  .mini .n{flex:1;min-width:0;font-size:14px} .mini .n b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mini .n span{font-size:12px;color:var(--mute)} .mini .x{font-weight:600;font-size:14px;text-align:right}
+
+  /* การ์ดแอด */
+  .ad .top{display:flex;gap:10px;align-items:flex-start}
+  .ad .name{flex:1;min-width:0;font-weight:600;line-height:1.4}
+  .ad .camp{font-size:12px;color:var(--mute);margin-top:2px;font-weight:400}
+  .pill{font-size:12px;padding:3px 10px;border-radius:99px;white-space:nowrap}
+  .p-on{background:var(--green-l);color:var(--green)} .p-off{background:var(--card2);color:var(--mute)} .p-bad{background:var(--red-l);color:var(--red)}
+  .ad .st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0;text-align:center}
+  .ad .st div{background:var(--card2);border-radius:12px;padding:8px 2px}
+  .ad .st b{display:block;font-size:15px} .ad .st span{font-size:11px;color:var(--mute)}
+  .grade{font-size:13px;font-weight:600}
+
+  /* ฟอร์ม */
+  label.f{display:block;margin:14px 0 6px;font-size:14px;color:var(--mute)}
+  .inp{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-size:17px}
+  .inp:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 4px var(--pri-l)}
+  .help{font-size:12px;color:var(--mute);margin-top:4px}
+  .tog{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);gap:12px}
+  .tog:first-of-type{border-top:0} .tog span{font-size:15px}
+  .sw{position:relative;width:52px;height:30px;flex:none}
+  .sw input{opacity:0;width:0;height:0}
+  .sw i{position:absolute;inset:0;background:var(--line);border-radius:99px;transition:.2s}
+  .sw i:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .sw input:checked+i{background:var(--solid)} .sw input:checked+i:before{transform:translateX(22px)}
+
+  /* แถบล่างแบบลอย */
+  nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:536px;display:flex;gap:4px;padding:6px;border-radius:22px;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:var(--shadow);z-index:6}
+  nav button{flex:1;border:0;background:none;border-radius:16px;padding:7px 0 5px;color:var(--mute);font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+  nav button.on{background:var(--pri-l);color:var(--pri);font-weight:600}
+
+  /* หน้าเข้าใช้ */
+  .login{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:24px;max-width:440px;margin:0 auto}
+  .logo{width:64px;height:64px;border-radius:20px;background:var(--hdr);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:30px;margin-bottom:16px;box-shadow:var(--glow)}
+  .login h1{margin:0 0 4px;font-size:26px;font-weight:600} .login p{margin:0 0 10px;color:var(--mute)}
+  .link{background:none;border:0;color:var(--pri);text-decoration:underline;margin-top:16px;cursor:pointer}
+
+  /* หน้าต่างยืนยัน / แจ้งเตือนสั้น */
+  .modal{position:fixed;inset:0;background:rgba(2,8,23,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+  .sheet{background:var(--card);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom))}
+  .sheet h3{margin:0 0 6px;font-size:19px;font-weight:600} .sheet p{margin:0 0 6px;color:var(--mute);font-size:14px}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-size:14px;z-index:30;max-width:90%;text-align:center}
+  .empty{color:var(--mute);text-align:center;padding:16px 0;font-size:14px}
+  .demo{background:var(--amber-l);color:var(--amber);font-size:13px;padding:8px 14px;text-align:center}
+  .loading{opacity:.55;pointer-events:none}
+  .foot{font-size:12px;color:var(--mute);text-align:center;margin-top:8px}
+
+  /* ---- ยิงแอดใหม่ ---- */
+  .wz-top{margin-bottom:12px}
+  .wz-steps{display:flex;gap:6px;margin-bottom:8px}
+  .wz-steps i{flex:1;height:6px;border-radius:99px;background:var(--line)}
+  .wz-steps i.on{background:var(--pri)}
+  .wz-lbl{font-size:13px;color:var(--mute)}
+  .wz-q{font-size:22px;font-weight:600;margin:4px 0 2px}
+  .wz-hint{font-size:14px;color:var(--mute);margin-bottom:12px}
+  .post{display:flex;gap:12px;background:var(--card);border-radius:16px;padding:10px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;align-items:center;box-shadow:var(--shadow)}
+  .post.sel{border-color:var(--pri);background:var(--pri-l)}
+  .post.off{opacity:.45;cursor:not-allowed}
+  .post img,.post .noimg{width:84px;height:84px;border-radius:12px;object-fit:cover;flex:none;background:var(--card2)}
+  .post .noimg{display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:12px}
+  .post .tx{flex:1;min-width:0;font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .post .dt{font-size:12px;color:var(--mute);margin-top:4px}
+  .opt{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:2px solid transparent;border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow)}
+  .opt.sel{border-color:var(--pri);background:var(--pri-l)}
+  .opt:disabled{opacity:.45;cursor:not-allowed}
+  .opt .ic{width:48px;height:48px;border-radius:14px;background:var(--pri-l);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+  .opt.sel .ic{background:var(--card)}
+  .opt b{display:block;font-size:17px;font-weight:600;margin:0 0 2px}
+  .opt span{font-size:14px;color:var(--mute)}
+  .opt em{font-style:normal;font-size:12px;font-weight:500;background:var(--solid);color:#fff;border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+  .chip2{border:2px solid transparent;background:var(--card);border-radius:14px;padding:11px 14px;font-size:17px;font-weight:600;cursor:pointer;min-width:72px;box-shadow:var(--shadow)}
+  .chip2.sel{border-color:var(--pri);background:var(--pri-l);color:var(--pri)}
+  .total{background:var(--card);border-radius:var(--r);padding:16px;margin-top:12px;text-align:center;box-shadow:var(--shadow)}
+  .total .k{font-size:14px;color:var(--mute)} .total .v{font-size:34px;font-weight:700;color:var(--pri);letter-spacing:-.5px}
+  .note{border-radius:14px;padding:10px 12px;font-size:14px;margin-top:10px}
+  .note.ok{background:var(--green-l);color:var(--green)} .note.warn{background:var(--amber-l);color:var(--amber)} .note.bad{background:var(--red-l);color:var(--red)} .note.info{background:var(--card2);color:var(--mute)}
+  .sum{background:var(--card);border-radius:var(--r);padding:6px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .sum div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+  .sum div:first-child{border-top:0} .sum span{color:var(--mute);flex:none} .sum b{text-align:right;font-weight:600}
+  .wz-bar{position:fixed;left:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom));padding:10px 14px 6px;background:linear-gradient(transparent,var(--bg) 35%);z-index:5}
+  .wz-bar .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
+  .wz-bar .btn{padding:15px;font-size:17px}
+  .done{text-align:center;padding:30px 10px}
+  .done .ok{width:84px;height:84px;border-radius:50%;background:var(--pri-l);color:var(--pri);display:flex;align-items:center;justify-content:center;margin:0 auto}
+  .done h3{font-size:24px;font-weight:600;margin:14px 0 6px} .done p{color:var(--mute);margin:0 0 18px}
+  /* ---- ทีม ---- */
+  .avatar{width:44px;height:44px;border-radius:14px;background:var(--pri-l);color:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:18px;flex:none}
+  .mem{display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px}
+  .mem.off{opacity:.5}
+  .mem .sub{font-size:13px;color:var(--mute)}
+  .mem .arrow{color:var(--mute);font-size:22px}
+  .chip.blue{background:var(--pri-l);color:var(--pri)}
+  .sheet{max-height:88vh;overflow:auto}
+  .code{font-size:40px;font-weight:700;letter-spacing:8px;text-align:center;color:var(--pri);background:var(--pri-l);border-radius:16px;padding:14px;margin:10px 0}
+  .steps{margin:8px 0 0;padding-left:20px;color:var(--ink);font-size:15px} .steps li{margin:4px 0}
+</style>
+</head>
+<body>
+<!-- ใส่ที่อยู่ระบบตรงนี้ จะได้ไม่ต้องกรอกตอนเข้า เช่น "https://abcd1234.supabase.co/functions/v1/n-ads" -->
+<script>window.NADS_API = "https://kelkxctrwgeksbdrydyl.supabase.co/functions/v1/n-ads";</script>
+
+<!-- หน้าเข้าใช้งาน -->
+<section id="login" class="login hide">
+  <div class="logo">N</div>
+  <h1>N Ads Alert</h1>
+  <p>เฝ้าแอด Facebook + แจ้งเตือน LINE</p>
+  <div id="apiBox">
+    <label class="f" for="apiInp">ที่อยู่ระบบ</label>
+    <input id="apiInp" class="inp" placeholder="https://xxxx.supabase.co/functions/v1/n-ads" inputmode="url" autocomplete="off">
+  </div>
+  <label class="f" for="nameInp">ชื่อของคุณ</label>
+  <input id="nameInp" class="inp" placeholder="เช่น นุ๊ก" autocomplete="username">
+  <label class="f" for="pinInp">รหัส PIN</label>
+  <input id="pinInp" class="inp" type="password" inputmode="numeric" placeholder="••••••" autocomplete="current-password">
+  <div class="row2"><button class="btn" id="loginBtn">เข้าใช้งาน</button></div>
+  <button class="link" id="demoBtn">ดูตัวอย่างหน้าจอ (ข้อมูลสมมติ)</button>
+</section>
+
+<!-- ตัวแอป -->
+<section id="app" class="hide">
+  <div id="demoBar" class="demo hide">โหมดตัวอย่าง — ตัวเลขทั้งหมดเป็นข้อมูลสมมติ</div>
+  <header>
+    <div class="t"><h1 id="hTitle">ภาพรวม</h1><div class="sub" id="hSub">-</div></div>
+    <button class="icon-btn" id="refreshBtn" aria-label="รีเฟรช"><svg class="i" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button>
+  </header>
+  <main id="main">
+    <div class="seg" id="rangeSeg">
+      <button data-r="today" class="on">วันนี้</button><button data-r="yesterday">เมื่อวาน</button><button data-r="last_7d">7 วัน</button>
+    </div>
+
+    <!-- หน้าหลัก -->
+    <div id="tab-home">
+      <button class="bigbtn" id="newAdBtn"><span class="pl"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px;stroke-width:2.2"><path d="M12 5v14M5 12h14"/></svg></span><span>ยิงแอดใหม่<small>เลือกโพสต์ → ตั้งงบ → ยิง ใน 5 ขั้น</small></span></button>
+      <div class="card bal">
+        <div class="lbl">เงินคงเหลือในบัญชีโฆษณา</div>
+        <div class="big" id="balBig">-</div>
+        <span class="chip" id="balSrc">-</span>
+        <div class="days" id="balDays">-</div>
+        <div class="bar"><i id="balBar" style="width:0"></i></div>
+        <div class="row2">
+          <button class="btn" id="topupBtn">บันทึกการเติมเงิน</button>
+          <button class="btn ghost" id="setBalBtn">แก้ยอดให้ตรง</button>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="stat"><div class="k">ใช้เงินไป</div><div class="v" id="sSpend">-</div><div class="s" id="sRange">-</div></div>
+        <div class="stat"><div class="k" id="sResK">ผลลัพธ์</div><div class="v" id="sRes">-</div><div class="s" id="sRes2">&nbsp;</div></div>
+        <div class="stat"><div class="k" id="sCprK">ต้นทุนต่อผล</div><div class="v" id="sCpr">-</div><div class="s">ยิ่งต่ำยิ่งดี</div></div>
+        <div class="stat"><div class="k">คนเห็นแอด (ครั้ง)</div><div class="v" id="sImp">-</div><div class="s" id="sClk">-</div></div>
+      </div>
+      <h2><i class="dot g-bad"></i>ควรดู</h2><div class="card" id="watchList"></div>
+      <h2><i class="dot g-good"></i>แอดเด่น</h2><div class="card" id="bestList"></div>
+      <div class="foot" id="quota">-</div>
+    </div>
+
+    <!-- ยิงแอดใหม่ (ทีละขั้น) -->
+    <div id="tab-new" class="hide"><div id="wz"></div><div style="height:90px"></div></div>
+
+    <!-- รายการแอด -->
+    <div id="tab-ads" class="hide"><div id="adList"></div></div>
+
+    <!-- ตั้งค่า -->
+    <div id="tab-set" class="hide">
+      <div class="seg" id="setSeg"><button data-s="me" class="on">ของฉัน</button><button data-s="sys">ระบบ</button><button data-s="team">ทีม</button></div>
+      <div id="set-me"></div>
+      <div id="set-team" class="hide"></div>
+      <div id="set-sys" class="hide">
+      <div class="card" id="fbCard"></div>
+      <div class="card">
+        <b>เตือนเงินเหลือน้อย</b>
+        <label class="f" for="f_low">เตือนเมื่อเงินต่ำกว่า (บาท)</label>
+        <input class="inp" id="f_low" type="number" inputmode="decimal" min="0">
+        <label class="f" for="f_days">หรือเงินพอใช้น้อยกว่า (วัน)</label>
+        <input class="inp" id="f_days" type="number" inputmode="decimal" min="0" step="0.5">
+        <div class="help">ระบบคิดจากค่าใช้จ่ายเฉลี่ย 7 วันที่ผ่านมา</div>
+      </div>
+      <div class="card">
+        <b>เตือนแอดไม่คุ้ม</b>
+        <label class="f" for="f_cpr">ต้นทุนต่อผลลัพธ์สูงสุดที่รับได้ (บาท)</label>
+        <input class="inp" id="f_cpr" type="number" inputmode="decimal" min="0">
+        <div class="help">เช่น ค่าทักแชตไม่ควรเกิน 80 บาท · ใส่ 0 = ไม่เตือน</div>
+        <label class="f" for="f_nores">ใช้เงินเกินเท่านี้แล้วยังไม่มีผล = เตือน (บาท/วัน)</label>
+        <input class="inp" id="f_nores" type="number" inputmode="decimal" min="0">
+      </div>
+      <div class="card">
+        <b>เวลา</b>
+        <label class="f" for="f_hour">ส่งสรุปประจำวันตอน</label>
+        <select class="inp" id="f_hour"></select>
+        <label class="f">ช่วงห้ามรบกวน (ยกเว้นเรื่องด่วน)</label>
+        <div class="row2" style="margin-top:0"><select class="inp" id="f_qs"></select><select class="inp" id="f_qe"></select></div>
+      </div>
+      <div class="card" id="togs">
+        <b>เปิด/ปิด การแจ้งเตือนทั้งระบบ</b>
+        <div class="tog"><span>เงินเหลือน้อย</span><label class="sw"><input type="checkbox" id="t_low"><i></i></label></div>
+        <div class="tog"><span>แอดแพงเกินกำหนด</span><label class="sw"><input type="checkbox" id="t_exp"><i></i></label></div>
+        <div class="tog"><span>ใช้เงินแต่ไม่มีผล</span><label class="sw"><input type="checkbox" id="t_nores"><i></i></label></div>
+        <div class="tog"><span>แอด/บัญชีมีปัญหา</span><label class="sw"><input type="checkbox" id="t_prob"><i></i></label></div>
+        <div class="tog"><span>สรุปประจำวัน</span><label class="sw"><input type="checkbox" id="t_daily"><i></i></label></div>
+      </div>
+      <div class="row2"><button class="btn" id="saveBtn">บันทึกการตั้งค่า</button></div>
+      <div class="help" style="text-align:center;margin-top:8px">ค่าส่วนนี้ใช้กับทั้งระบบ (เฉพาะเจ้าของแก้ได้) · แต่ละคนเลือกเรื่องที่อยากรับเองในแท็บ "ของฉัน"</div>
+      </div>
+    </div>
+  </main>
+  <nav id="nav">
+    <button data-t="home" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
+    <button data-t="new"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>ยิงแอด</button>
+    <button data-t="ads"><svg class="i" viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>แอด</button>
+    <button data-t="set"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>ตั้งค่า</button>
+  </nav>
+</section>
+
+<div id="wzBar" class="wz-bar hide"><div class="in" id="wzBarIn"></div></div>
+<div id="modal" class="modal hide"><div class="sheet" id="sheet"></div></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+  const st = { api: window.NADS_API || store.get("nads_api") || "", tok: store.get("nads_tok") || "", range: "today", tab: "home", sub: "me", data: null, team: null, demo: false };
+  const can = (p) => (st.data?.perms || []).includes(p);
+  const ROLE_DESC = { owner: "ทำได้ทุกอย่าง รวมถึงตั้งค่าระบบและจัดการทีม", shooter: "ดูผล ยิงแอดใหม่ หยุด/เปิดแอด และบันทึกเติมเงินได้", viewer: "ดูผลและรับแจ้งเตือนได้อย่างเดียว" };
+  const ROLE_NAME = { owner: "เจ้าของ", shooter: "ทีมยิงแอด", viewer: "ดูอย่างเดียว" };
+  const baht = (n, d) => (n === null || n === undefined || !isFinite(n)) ? "-" : n === 0 ? "฿0" : "฿" + Number(n).toLocaleString("en-US", { minimumFractionDigits: d ?? (Math.abs(n) < 100 ? 2 : 0), maximumFractionDigits: d ?? (Math.abs(n) < 100 ? 2 : 0) });
+  const int = (n) => Math.round(n || 0).toLocaleString("en-US");
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  function toast(msg, ms = 2600) {
+    const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+    document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+  }
+  function sheet(html) { $("sheet").innerHTML = html; $("modal").classList.remove("hide"); }
+  function closeSheet() { $("modal").classList.add("hide"); }
+  $("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeSheet(); });
+
+  async function api(path, opts = {}) {
+    if (st.demo) return demoApi(path, opts);
+    const r = await fetch(st.api.replace(/\/$/, "") + path, {
+      method: opts.body ? "POST" : "GET",
+      headers: { ...(st.tok ? { authorization: "Bearer " + st.tok } : {}), ...(opts.body ? { "content-type": "application/json" } : {}) },
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    const d = await r.json().catch(() => ({ error: "ระบบตอบกลับผิดรูปแบบ" }));
+    if (r.status === 401 && path !== "/api/login") { st.tok = ""; store.del("nads_tok"); showLogin(); throw new Error(d.error || "กรุณาเข้าสู่ระบบใหม่"); }
+    if (!r.ok) throw new Error(d.error || ("ผิดพลาด " + r.status));
+    return d;
+  }
+
+  // ---------- เข้าใช้งาน ----------
+  function showLogin() {
+    $("app").classList.add("hide"); $("login").classList.remove("hide");
+    if (window.NADS_API) $("apiBox").classList.add("hide");
+    $("apiInp").value = st.api; $("nameInp").value = store.get("nads_name") || "";
+  }
+  $("loginBtn").onclick = async () => {
+    st.api = window.NADS_API || $("apiInp").value.trim(); st.demo = false;
+    const name = $("nameInp").value.trim(), pin = $("pinInp").value.trim();
+    if (!/^https:\/\//.test(st.api)) return toast("ใส่ที่อยู่ระบบที่ขึ้นต้นด้วย https://");
+    if (!name) return toast("ใส่ชื่อของคุณ");
+    if (!pin) return toast("ใส่รหัส PIN");
+    $("loginBtn").disabled = true;
+    try {
+      const r = await api("/api/login", { body: { name, pin } });
+      st.tok = r.token; store.set("nads_tok", r.token); store.set("nads_api", st.api); store.set("nads_name", name); $("pinInp").value = "";
+      await load(); openApp();
+      if (r.me?.must_change_pin) pinSheet(true);
+    } catch (e) { toast(e.message); }
+    finally { $("loginBtn").disabled = false; }
+  };
+  $("demoBtn").onclick = async () => { st.demo = true; await load(); openApp(); };
+  async function logout() {
+    if (!st.demo) await api("/api/logout", { body: {} }).catch(() => {});
+    $("wzBar").classList.add("hide"); store.del("nads_tok"); st.tok = ""; st.data = null; st.team = null; st.demo = false; st.tab = "home"; st.sub = "me";
+    [...$("nav").children].forEach((x) => x.classList.toggle("on", x.dataset.t === "home"));
+    showLogin();
+  }
+  function openApp() {
+    $("login").classList.add("hide"); $("app").classList.remove("hide");
+    $("demoBar").classList.toggle("hide", !st.demo);
+    const h = location.hash;
+    if (h.startsWith("#set")) { // กลับมาจากหน้า Facebook หรือกดลิงก์จากไลน์
+      const q = new URLSearchParams(h.split("?")[1] || "");
+      st.tab = "set"; if (can("settings")) st.sub = "sys";
+      [...$("nav").children].forEach((x) => x.classList.toggle("on", x.dataset.t === "set"));
+      if (q.get("fb")) toast(q.get("m") || (q.get("fb") === "ok" ? "เชื่อม Facebook สำเร็จ" : "เชื่อม Facebook ไม่สำเร็จ"), 6000);
+      history.replaceState(null, "", location.pathname + location.search);
+      render();
+    } else if (h === "#new") goTab("new"); else render();
+  }
+
+  // ---------- โหลดข้อมูล ----------
+  async function load() {
+    document.body.classList.add("loading");
+    try { st.data = await api("/api/overview?range=" + st.range); }
+    finally { document.body.classList.remove("loading"); }
+  }
+  async function reload() { try { await load(); render(); } catch (e) { toast(e.message); } }
+  $("refreshBtn").onclick = reload;
+  $("rangeSeg").onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    st.range = b.dataset.r;
+    [...$("rangeSeg").children].forEach((x) => x.classList.toggle("on", x === b));
+    reload();
+  };
+  function goTab(t) {
+    st.tab = t;
+    [...$("nav").children].forEach((x) => x.classList.toggle("on", x.dataset.t === t));
+    if (t === "new" && wz.step === "done") wzReset();
+    render(); window.scrollTo(0, 0);
+  }
+  $("nav").onclick = (e) => { const b = e.target.closest("button"); if (b) goTab(b.dataset.t); };
+  $("newAdBtn").onclick = () => goTab("new");
+
+  // ---------- แสดงผล ----------
+  function render() {
+    const d = st.data; if (!d) return;
+    const { snap, settings, quota } = d;
+    if (!snap) { renderNoData(); return; }
+    ["home", "new", "ads", "set"].forEach((t) => $("tab-" + t).classList.toggle("hide", st.tab !== t));
+    $("rangeSeg").classList.toggle("hide", st.tab === "set" || st.tab === "new");
+    $("hTitle").textContent = { home: "ภาพรวม", new: "ยิงแอดใหม่", ads: "แอดทั้งหมด", set: "ตั้งค่า" }[st.tab];
+    const canAds = can("ads"), canMoney = can("money"), owner = can("team");
+    document.querySelector('nav button[data-t="new"]').classList.toggle("hide", !canAds);
+    $("newAdBtn").classList.toggle("hide", !canAds);
+    $("topupBtn").parentElement.classList.toggle("hide", !canMoney);
+    if (st.tab === "new" && !canAds) { goTab("home"); return; }
+    if (st.tab === "new") renderWizard(); else $("wzBar").classList.add("hide");
+    if (st.tab === "set") renderSet();
+    $("hSub").textContent = snap.account.name + (snap.account.ok ? "" : " · ⚠️ " + snap.account.status_label);
+
+    // ยอดเงิน
+    const b = snap.balance, low = b.value !== null && (b.value <= settings.low_balance_thb || (snap.days_left !== null && snap.days_left <= settings.low_days));
+    $("balBig").textContent = b.value === null ? "ไม่ทราบยอด" : baht(b.value, 0);
+    $("balBig").style.color = low ? "var(--red)" : "var(--ink)";
+    $("balSrc").textContent = b.source === "facebook" ? "✓ อ่านจาก Facebook" : b.source === "estimate" ? "≈ ประมาณการ" : "ยังไม่ได้ตั้งยอด";
+    $("balSrc").className = "chip " + (b.source === "facebook" ? "green" : low ? "red" : "");
+    const dl = snap.days_left;
+    $("balDays").innerHTML = dl === null ? (b.value === null ? 'กด "แก้ยอดให้ตรง" แล้วใส่ยอดจาก Ads Manager' : "ยังไม่มีข้อมูลค่าใช้จ่ายย้อนหลัง")
+      : `พอใช้อีกประมาณ <b style="color:${low ? "var(--red)" : "var(--green)"}">${dl < 1 ? "ไม่ถึง 1 วัน" : dl.toFixed(1) + " วัน"}</b> <span style="color:var(--mute);font-size:13px">(เฉลี่ย ${baht(snap.avg_daily, 0)}/วัน)</span>`;
+    const pct = dl === null ? 0 : Math.min(100, (dl / 7) * 100);
+    $("balBar").style.width = pct + "%"; $("balBar").style.background = low ? "var(--red)" : pct < 45 ? "var(--amber)" : "var(--pri)";
+
+    // ตัวเลขสรุป
+    const t = snap.totals, main = t.by_type[0];
+    $("sSpend").textContent = baht(t.spend, 0); $("sRange").textContent = snap.range_label;
+    $("sResK").textContent = main ? main.label : "ผลลัพธ์"; $("sRes").textContent = main ? int(main.count) : "0";
+    $("sRes2").textContent = t.by_type.slice(1, 3).map((x) => `${x.label} ${int(x.count)}`).join(" · ") || " ";
+    $("sCprK").textContent = main ? "ต้นทุน/" + main.label : "ต้นทุนต่อผล"; $("sCpr").textContent = main ? baht(main.cpr) : "-";
+    $("sImp").textContent = int(t.impressions); $("sClk").textContent = "คลิก " + int(t.clicks);
+
+    const spenders = snap.ads.filter((a) => a.spend > 0);
+    const watch = snap.ads.filter((a) => a.grade === "bad" || ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status));
+    const best = spenders.filter((a) => a.grade === "good");
+    const mini = (a, right) => `<div class="mini"><i class="dot g-${a.grade}"></i><div class="n"><b>${esc(a.ad_name)}</b><span>${esc(a.grade_label || a.status_label)}</span></div><div class="x">${right}</div></div>`;
+    $("watchList").innerHTML = watch.length ? watch.map((a) => mini(a, a.cpr ? baht(a.cpr) + "/" + esc(a.result_label) : baht(a.spend))).join("") : '<div class="empty">ไม่มีแอดที่ต้องห่วง 👍</div>';
+    $("bestList").innerHTML = best.length ? best.map((a) => mini(a, baht(a.cpr) + "/" + esc(a.result_label))).join("") : '<div class="empty">ยังไม่มีแอดเด่นในช่วงนี้</div>';
+    $("quota").textContent = `LINE ใช้แจ้งเตือนเดือนนี้ ${quota.used}/${quota.limit} ข้อความ · อัปเดต ${new Date(snap.generated_at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}`;
+
+    // รายการแอด
+    $("adList").innerHTML = snap.ads.length ? snap.ads.map((a) => {
+      const on = a.effective_status === "ACTIVE", bad = ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status);
+      const btn = !canAds ? "" : on ? `<button class="btn ghost" data-act="pause" data-id="${esc(a.ad_id)}">⏸ หยุดแอดนี้</button>`
+        : a.status === "PAUSED" ? `<button class="btn" data-act="resume" data-id="${esc(a.ad_id)}">▶ เปิดแอดนี้</button>` : "";
+      return `<div class="card ad"><div class="top"><div class="name">${esc(a.ad_name)}<div class="camp">${esc(a.campaign_name)}</div></div>
+        <span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span></div>
+        <div class="st"><div><b>${baht(a.spend)}</b><span>ใช้ไป</span></div><div><b>${int(a.results)}</b><span>${esc(a.result_label)}</span></div>
+        <div><b>${a.cpr === null ? "-" : baht(a.cpr)}</b><span>ต่อผล</span></div><div><b>${int(a.impressions)}</b><span>เห็น</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px"><span class="grade"><i class="dot g-${a.grade}"></i> ${esc(a.grade_label)}</span><span style="flex:1"></span>${btn ? `<div style="width:150px;display:flex">${btn}</div>` : ""}</div></div>`;
+    }).join("") : '<div class="card empty">ไม่มีแอดที่วิ่งอยู่หรือหยุดไว้ล่าสุด</div>';
+
+    fillSys(settings);
+  }
+  // ยังอ่านแอดไม่ได้ (ยังไม่เชื่อม Facebook / รหัสหมดอายุ) → พาไปหน้าตั้งค่า
+  function renderNoData() {
+    ["home", "new", "ads"].forEach((t) => $("tab-" + t).classList.add("hide"));
+    $("tab-set").classList.remove("hide"); $("rangeSeg").classList.add("hide"); $("wzBar").classList.add("hide");
+    if (st.tab !== "set") { st.tab = "set"; if (can("settings")) st.sub = "sys"; }
+    [...$("nav").children].forEach((x) => x.classList.toggle("on", x.dataset.t === "set"));
+    $("hTitle").textContent = "ตั้งค่า"; $("hSub").textContent = "⚠️ ยังอ่านข้อมูลแอดไม่ได้";
+    fillSys(st.data.settings); renderSet();
+  }
+  function fillSys(settings) {
+    const hours = [...Array(24).keys()].map((h) => `<option value="${h}">${String(h).padStart(2, "0")}:00 น.</option>`).join("");
+    for (const id of ["f_hour", "f_qs", "f_qe"]) if (!$(id).options.length) $(id).innerHTML = hours;
+    $("f_low").value = settings.low_balance_thb; $("f_days").value = settings.low_days; $("f_cpr").value = settings.max_cost_per_result;
+    $("f_nores").value = settings.no_result_spend_thb; $("f_hour").value = settings.daily_summary_hour;
+    $("f_qs").value = settings.quiet_start; $("f_qe").value = settings.quiet_end;
+    $("t_low").checked = settings.alert_low_balance; $("t_exp").checked = settings.alert_expensive; $("t_nores").checked = settings.alert_no_result;
+    $("t_prob").checked = settings.alert_ad_problem; $("t_daily").checked = settings.alert_daily_summary;
+  }
+
+  // ---------- ปุ่มเปิด/หยุดแอด ----------
+  $("adList").onclick = (e) => {
+    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const ad = st.data.snap.ads.find((a) => a.ad_id === b.dataset.id), pause = b.dataset.act === "pause";
+    sheet(`<h3>${pause ? "หยุด" : "เปิด"}แอดนี้?</h3><p>${esc(ad.ad_name)}</p>
+      <p>${pause ? "แอดจะหยุดใช้เงินทันที เปิดใหม่ได้ภายหลัง" : "แอดจะกลับมาใช้เงินตามงบที่ตั้งไว้"}</p>
+      <div class="row2"><button class="btn grey" id="cancelB">ยกเลิก</button><button class="btn" id="okB">${pause ? "หยุดเลย" : "เปิดเลย"}</button></div>`);
+    $("cancelB").onclick = closeSheet;
+    $("okB").onclick = async () => {
+      $("okB").disabled = true;
+      try { await api("/api/ad", { body: { ad_id: ad.ad_id, action: pause ? "pause" : "resume" } }); closeSheet(); toast(pause ? "หยุดแอดแล้ว" : "เปิดแอดแล้ว"); await reload(); }
+      catch (err) { toast(err.message); $("okB").disabled = false; }
+    };
+  };
+
+  // ---------- ยอดเงิน ----------
+  function balanceSheet(mode) {
+    sheet(`<h3>${mode === "topup" ? "บันทึกการเติมเงิน" : "แก้ยอดคงเหลือให้ตรง"}</h3>
+      <p>${mode === "topup" ? "ใส่จำนวนเงินที่เพิ่งเติมเข้าบัญชีโฆษณา" : "ใส่ยอดคงเหลือที่เห็นใน Ads Manager > การเรียกเก็บเงิน"}</p>
+      <input class="inp" id="amtInp" type="number" inputmode="decimal" min="1" placeholder="เช่น 1000">
+      <div class="row2"><button class="btn grey" id="cancelB">ยกเลิก</button><button class="btn" id="okB">บันทึก</button></div>`);
+    $("amtInp").focus(); $("cancelB").onclick = closeSheet;
+    $("okB").onclick = async () => {
+      const amount = Number($("amtInp").value); if (!(amount > 0)) return toast("ใส่จำนวนเงิน");
+      $("okB").disabled = true;
+      try { const r = await api("/api/balance", { body: { mode, amount } }); closeSheet(); toast(r.message || "บันทึกแล้ว", 4000); await reload(); }
+      catch (err) { toast(err.message); $("okB").disabled = false; }
+    };
+  }
+  $("topupBtn").onclick = () => balanceSheet("topup");
+  $("setBalBtn").onclick = () => balanceSheet("set");
+
+  // ---------- บันทึกการตั้งค่า ----------
+  $("saveBtn").onclick = async () => {
+    const body = {
+      low_balance_thb: Number($("f_low").value), low_days: Number($("f_days").value), max_cost_per_result: Number($("f_cpr").value),
+      no_result_spend_thb: Number($("f_nores").value), daily_summary_hour: Number($("f_hour").value),
+      quiet_start: Number($("f_qs").value), quiet_end: Number($("f_qe").value),
+      alert_low_balance: $("t_low").checked, alert_expensive: $("t_exp").checked, alert_no_result: $("t_nores").checked,
+      alert_ad_problem: $("t_prob").checked, alert_daily_summary: $("t_daily").checked,
+    };
+    $("saveBtn").disabled = true;
+    try { await api("/api/settings", { body }); Object.assign(st.data.settings, body); toast("บันทึกแล้ว ✓"); }
+    catch (e) { toast(e.message); } finally { $("saveBtn").disabled = false; }
+  };
+
+  // ---------- ตั้งค่า: ของฉัน / ระบบ / ทีม ----------
+  $("setSeg").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; st.sub = b.dataset.s; if (st.sub === "team") st.team = null; renderSet(); };
+  function renderFb() {
+    const f = st.data.fb || { connected: false, source: "none" }, err = st.data.fb_error, dl = f.days_left;
+    let status;
+    if (f.source === "web") status = `<div class="note ${dl !== null && dl <= 7 ? (dl < 0 ? "bad" : "warn") : "ok"}">✓ เชื่อมแล้ว${f.name ? " ด้วยโปรไฟล์ <b>" + esc(f.name) + "</b>" : ""}${dl === null ? "" : dl < 0 ? " · <b>หมดอายุแล้ว</b>" : ` · ใช้ได้อีก <b>${dl} วัน</b>`}</div>`;
+    else if (f.source === "secret") status = '<div class="note ok">✓ ใช้รหัสที่ตั้งไว้ใน Supabase (NADS_META_TOKEN)</div>';
+    else status = '<div class="note warn">ยังไม่ได้เชื่อม — ระบบยังอ่านแอดไม่ได้</div>';
+    $("fbCard").innerHTML = `<b>เชื่อมต่อ Facebook</b>${status}${err ? `<div class="note bad">${esc(err)}</div>` : ""}
+      <div class="help">กดแล้วจะเปิดหน้า Facebook ให้กดยืนยัน ใช้โปรไฟล์ที่เป็นแอดมินบัญชีโฆษณาและเพจ · ใช้ได้ประมาณ 60 วัน ระบบจะเตือนในไลน์ก่อนหมด 7 วัน</div>
+      <div class="row2"><button class="btn" id="fbBtn">${f.source === "web" ? "เชื่อมใหม่ / ต่ออายุ" : "เชื่อม Facebook"}</button></div>
+      <details style="margin-top:10px"><summary class="help" style="cursor:pointer">ทางสำรอง: วางรหัสเอง</summary>
+        <textarea class="inp" id="fbTok" rows="3" placeholder="วางรหัส (Access Token) ที่นี่" style="margin-top:8px"></textarea>
+        <div class="row2"><button class="btn grey" id="fbTokBtn">บันทึกรหัส</button></div></details>`;
+    $("fbBtn").onclick = async () => {
+      if (!f.can_login) return toast("ต้องใส่ NADS_APP_ID และ NADS_APP_SECRET ใน Supabase ก่อน");
+      try { const r = await api("/api/fb/start", { body: {} }); if (r.url) location.href = r.url; else toast("โหมดตัวอย่าง"); } catch (e) { toast(e.message); }
+    };
+    $("fbTokBtn").onclick = async () => {
+      try { const r = await api("/api/fb/token", { body: { token: $("fbTok").value } }); toast(`เชื่อมสำเร็จ${r.name ? " (" + r.name + ")" : ""} ใช้ได้อีก ${r.days_left ?? "-"} วัน`, 4000); await reload(); }
+      catch (e) { toast(e.message, 5000); }
+    };
+  }
+  function renderSet() {
+    if (!can("team")) st.sub = "me";
+    $("setSeg").classList.toggle("hide", !can("team"));
+    ["me", "sys", "team"].forEach((k) => $("set-" + k).classList.toggle("hide", st.sub !== k));
+    [...$("setSeg").children].forEach((b) => b.classList.toggle("on", b.dataset.s === st.sub));
+    if (st.sub === "me") renderMe();
+    if (st.sub === "team") renderTeam();
+    if (st.sub === "sys") renderFb();
+  }
+  const initial = (n) => (String(n).match(/[ก-ฮA-Za-z0-9]/) || [String(n).slice(0, 1)])[0];
+  const sw = (attr, on) => `<label class="sw"><input type="checkbox" ${attr} ${on ? "checked" : ""}><i></i></label>`;
+  function renderMe() {
+    const me = st.data.me;
+    $("set-me").innerHTML = `
+      <div class="card"><div style="display:flex;align-items:center;gap:12px"><div class="avatar">${esc(initial(me.name))}</div>
+        <div style="flex:1;min-width:0"><b style="font-size:18px">${esc(me.name)}</b><div><span class="chip blue">${esc(me.role_label)}</span></div></div></div>
+        <div class="help" style="margin-top:10px">${ROLE_DESC[me.role] || ""}</div></div>
+      <div class="card"><b>LINE ของฉัน</b>
+        <div class="days" style="margin-top:4px">${me.line_linked ? '<span style="color:var(--green)">✓ เชื่อมแล้ว</span> รับแจ้งเตือนในไลน์ได้' : "ยังไม่ได้เชื่อม จะยังไม่ได้รับแจ้งเตือน"}</div>
+        <div class="row2">${me.line_linked ? '<button class="btn ghost" id="testBtn">ทดสอบส่ง</button><button class="btn grey" id="unlinkBtn">ยกเลิกเชื่อม</button>' : '<button class="btn" id="linkBtn">เชื่อม LINE</button>'}</div></div>
+      <div class="card"><b>อยากรับเตือนเรื่องไหน</b>
+        <div class="tog"><span>สรุปประจำวัน</span>${sw('data-pref="notify_daily"', me.notify_daily)}</div>
+        <div class="tog"><span>เงินเหลือน้อย</span>${sw('data-pref="notify_money"', me.notify_money)}</div>
+        <div class="tog"><span>แอดมีปัญหา / ไม่คุ้ม</span>${sw('data-pref="notify_ads"', me.notify_ads)}</div>
+        ${me.role === "owner" ? '<div class="help">เจ้าของได้รับเรื่องด่วนเสมอ เช่น เงินใกล้หมดมาก บัญชีมีปัญหา</div>' : ""}</div>
+      <div class="row2"><button class="btn grey" id="pinBtn">เปลี่ยน PIN</button><button class="btn grey" id="logoutBtn">ออกจากระบบ</button></div>`;
+    $("set-me").querySelectorAll("[data-pref]").forEach((el) => el.onchange = async () => {
+      try { await api("/api/me/prefs", { body: { [el.dataset.pref]: el.checked } }); me[el.dataset.pref] = el.checked; toast("บันทึกแล้ว ✓"); }
+      catch (e) { el.checked = !el.checked; toast(e.message); }
+    });
+    if ($("testBtn")) $("testBtn").onclick = async () => { try { await api("/api/test-line", { body: {} }); toast("ส่งแล้ว ดูในไลน์ได้เลย"); } catch (e) { toast(e.message); } };
+    if ($("unlinkBtn")) $("unlinkBtn").onclick = async () => { try { await api("/api/me/unlink-line", { body: {} }); me.line_linked = false; renderMe(); } catch (e) { toast(e.message); } };
+    if ($("linkBtn")) $("linkBtn").onclick = linkSheet;
+    $("pinBtn").onclick = () => pinSheet(false);
+    $("logoutBtn").onclick = logout;
+  }
+  async function linkSheet() {
+    let d; try { d = await api("/api/me/link-code", { body: {} }); } catch (e) { return toast(e.message); }
+    const msg = "ลงทะเบียน " + d.code;
+    sheet(`<h3>เชื่อม LINE</h3><p>ทำตาม 2 ขั้นในแอป LINE</p>
+      <ol class="steps"><li>แอดเพื่อน LINE OA ของระบบ (บอทแจ้งเตือนแอด)</li><li>พิมพ์ในแชตบอทว่า</li></ol>
+      <div class="code"><div style="font-size:18px;letter-spacing:0;font-weight:500;color:var(--ink)">ลงทะเบียน</div>${esc(d.code)}</div><p style="text-align:center">รหัสใช้ได้ ${d.minutes || 30} นาที</p>
+      <div class="row2"><button class="btn ghost" id="copyB">คัดลอกข้อความ</button><button class="btn" id="okB">เสร็จแล้ว</button></div>`);
+    $("copyB").onclick = () => { try { navigator.clipboard.writeText(msg); toast("คัดลอกแล้ว ไปวางในไลน์ได้เลย"); } catch { toast("คัดลอกไม่ได้ ให้พิมพ์เอง"); } };
+    $("okB").onclick = async () => { closeSheet(); await reload(); if (!st.data.me.line_linked) toast("ยังไม่เห็นการเชื่อม ลองพิมพ์ในไลน์อีกครั้ง"); };
+  }
+  function pinSheet(first) {
+    sheet(`<h3>${first ? "ตั้ง PIN ส่วนตัว" : "เปลี่ยน PIN"}</h3>
+      <p>${first ? "ตอนนี้ใช้ PIN ตั้งต้นอยู่ ตั้ง PIN ใหม่ของคุณเองเพื่อความปลอดภัย" : "PIN เป็นตัวเลข 6–12 หลัก ห้ามเลขเรียงหรือเลขซ้ำ"}</p>
+      <label class="f">PIN เดิม</label><input class="inp" id="pOld" type="password" inputmode="numeric">
+      <label class="f">PIN ใหม่</label><input class="inp" id="pNew" type="password" inputmode="numeric">
+      <label class="f">พิมพ์ PIN ใหม่อีกครั้ง</label><input class="inp" id="pNew2" type="password" inputmode="numeric">
+      <div class="row2"><button class="btn grey" id="cancelB">${first ? "ไว้ทีหลัง" : "ยกเลิก"}</button><button class="btn" id="okB">บันทึก</button></div>`);
+    $("cancelB").onclick = closeSheet;
+    $("okB").onclick = async () => {
+      if ($("pNew").value !== $("pNew2").value) return toast("PIN ใหม่ 2 ช่องไม่ตรงกัน");
+      try { await api("/api/me/pin", { body: { old: $("pOld").value, new: $("pNew").value } }); closeSheet(); toast("เปลี่ยน PIN แล้ว ✓"); }
+      catch (e) { toast(e.message); }
+    };
+  }
+  const fmtAt = (iso) => { try { return new Date(iso).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return ""; } };
+  function renderTeam() {
+    const box = $("set-team");
+    if (!st.team) {
+      box.innerHTML = '<div class="card empty">กำลังโหลด…</div>';
+      api("/api/team").then((d) => { st.team = d; if (st.sub === "team") renderTeam(); }).catch((e) => { box.innerHTML = `<div class="note bad">${esc(e.message)}</div>`; });
+      return;
+    }
+    const q = st.data.quota, me = st.data.me, users = st.team.users, acts = st.team.activity;
+    const pct = Math.min(100, (q.used / q.limit) * 100);
+    box.innerHTML = `
+      <div class="card"><b>โควตา LINE เดือนนี้</b>
+        <div class="days">ใช้ไป <b>${q.used}</b> จาก ${q.limit} ข้อความ · คนรับไลน์ ${q.receivers} คน</div>
+        <div class="bar"><i style="width:${pct}%;background:${pct > 85 ? "var(--red)" : pct > 60 ? "var(--amber)" : "var(--pri)"}"></i></div>
+        <div class="help">LINE นับตามจำนวนคนรับ ยิ่งรับหลายคนยิ่งใช้เร็ว ให้แต่ละคนเลือกรับเฉพาะเรื่องที่ต้องใช้</div></div>
+      <button class="bigbtn" id="addMemBtn" style="font-size:17px"><span class="pl"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span><span>เพิ่มสมาชิก<small>ตั้งชื่อ สิทธิ์ และ PIN ให้ทีม</small></span></button>
+      <h2>สมาชิก ${users.length} คน</h2>
+      ${users.map((u) => `<div class="card mem ${u.active ? "" : "off"}" data-id="${u.id}"><div class="avatar">${esc(initial(u.name))}</div>
+        <div style="flex:1;min-width:0"><b>${esc(u.name)}</b> ${u.id === me.id ? '<span class="chip">คุณ</span>' : ""}
+        <div class="sub">${esc(u.role_label)} · ${u.line_linked ? "เชื่อม LINE แล้ว" : "ยังไม่เชื่อม LINE"}${u.active ? "" : " · ปิดใช้งาน"}</div></div><span class="arrow">›</span></div>`).join("")}
+      <h2>ประวัติการใช้งาน</h2>
+      <div class="card">${acts.length ? acts.map((a) => `<div class="mini"><div class="n"><b>${esc(a.user_name)} · ${esc(a.action)}</b><span>${esc(a.detail || "")}</span></div>
+        <div class="x" style="font-weight:400;color:var(--mute);font-size:12px">${fmtAt(a.at)}<br>${a.via === "line" ? "LINE" : "เว็บ"}</div></div>`).join("") : '<div class="empty">ยังไม่มีประวัติ</div>'}</div>`;
+    $("addMemBtn").onclick = addMemberSheet;
+    box.querySelectorAll(".mem").forEach((el) => el.onclick = () => {
+      const u = users.find((x) => x.id === Number(el.dataset.id));
+      if (u.id === me.id) { st.sub = "me"; renderSet(); return toast("แก้ของตัวเองที่แท็บ ของฉัน"); }
+      manageSheet(u);
+    });
+  }
+  const roleOpts = (sel) => ["shooter", "viewer", "owner"].map((r) => `<button class="opt ${sel === r ? "sel" : ""}" data-role="${r}" style="padding:12px 14px"><div><b>${ROLE_NAME[r]}</b><span>${ROLE_DESC[r]}</span></div></button>`).join("");
+  const bindRoles = (holder) => { holder.querySelectorAll("[data-role]").forEach((el) => el.onclick = () => { holder.querySelectorAll("[data-role]").forEach((x) => x.classList.toggle("sel", x === el)); holder.dataset.role = el.dataset.role; }); };
+  const randPin = () => { for (;;) { const p = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1e6).padStart(6, "0"); if (!/^(\d)\1+$/.test(p) && !"0123456789".includes(p) && !"9876543210".includes(p)) return p; } };
+  function addMemberSheet() {
+    sheet(`<h3>เพิ่มสมาชิก</h3>
+      <label class="f">ชื่อ (ใช้ตอนเข้าระบบ)</label><input class="inp" id="mName" maxlength="30" placeholder="เช่น แอดมินเอ">
+      <label class="f">สิทธิ์</label><div id="mRoles" data-role="shooter">${roleOpts("shooter")}</div>
+      <label class="f">PIN เริ่มต้น (บอกสมาชิกให้เปลี่ยนเองภายหลัง)</label>
+      <div class="row2" style="margin-top:0"><input class="inp" id="mPin" inputmode="numeric" value="${randPin()}" style="flex:1"><button class="btn ghost" id="rndB" style="flex:0 0 96px">สุ่มใหม่</button></div>
+      <div class="row2"><button class="btn grey" id="cancelB">ยกเลิก</button><button class="btn" id="okB">เพิ่ม</button></div>`);
+    bindRoles($("mRoles"));
+    $("rndB").onclick = () => { $("mPin").value = randPin(); };
+    $("cancelB").onclick = closeSheet;
+    $("okB").onclick = async () => {
+      const body = { name: $("mName").value.trim(), role: $("mRoles").dataset.role, pin: $("mPin").value.trim() };
+      try {
+        await api("/api/team/add", { body }); st.team = null; renderTeam();
+        const site = location.origin + location.pathname;
+        const msg = `เข้าใช้ N Ads Alert\nเว็บ: ${site}\nชื่อ: ${body.name}\nPIN: ${body.pin}\n(เข้าแล้วเปลี่ยน PIN ได้ที่ ตั้งค่า > ของฉัน)`;
+        sheet(`<h3>เพิ่ม ${esc(body.name)} แล้ว ✓</h3><p>ส่งข้อความนี้ให้สมาชิกทางแชตส่วนตัว</p>
+          <div class="note info" style="white-space:pre-wrap;color:var(--ink)">${esc(msg)}</div>
+          <div class="row2"><button class="btn ghost" id="copyB">คัดลอก</button><button class="btn" id="okB">เสร็จ</button></div>`);
+        $("copyB").onclick = () => { try { navigator.clipboard.writeText(msg); toast("คัดลอกแล้ว"); } catch { toast("คัดลอกไม่ได้"); } };
+        $("okB").onclick = closeSheet;
+      } catch (e) { toast(e.message); }
+    };
+  }
+  function manageSheet(u) {
+    sheet(`<h3>${esc(u.name)}</h3><p>${u.line_linked ? "เชื่อม LINE แล้ว" : "ยังไม่เชื่อม LINE"} · เข้าล่าสุด ${u.last_login ? fmtAt(u.last_login) : "-"}</p>
+      <label class="f">สิทธิ์</label><div id="mRoles" data-role="${u.role}">${roleOpts(u.role)}</div>
+      <div class="tog"><span>เปิดใช้งาน</span>${sw('id="mActive"', u.active)}</div>
+      <label class="f">รีเซ็ต PIN (เว้นว่างถ้าไม่เปลี่ยน)</label><input class="inp" id="mPin" inputmode="numeric" placeholder="PIN ใหม่ 6 หลัก">
+      <div class="row2"><button class="btn grey" id="cancelB">ยกเลิก</button><button class="btn" id="okB">บันทึก</button></div>`);
+    bindRoles($("mRoles"));
+    $("cancelB").onclick = closeSheet;
+    $("okB").onclick = async () => {
+      const body = { id: u.id, role: $("mRoles").dataset.role, active: $("mActive").checked };
+      if ($("mPin").value.trim()) body.pin = $("mPin").value.trim();
+      try { await api("/api/team/update", { body }); closeSheet(); toast("บันทึกแล้ว ✓"); st.team = null; renderTeam(); }
+      catch (e) { toast(e.message); }
+    };
+  }
+
+  // ---------- ยิงแอดใหม่: ทำทีละขั้น ----------
+  const WELCOME = "สวัสดีครับ สนใจทรัพย์นี้ ขอรายละเอียดเพิ่มเติมครับ";
+  const STEP_NAMES = ["เลือกโพสต์", "เป้าหมาย", "งบ", "พื้นที่", "ตรวจแล้วยิง"];
+  const wz = { step: 0, posts: null, loading: false, err: "", center: "ตัวเมือง", presets: [10, 25, 50, 80],
+    post: null, goal: "chat", name: "", welcome: WELCOME, daily: 200, days: 7, radius: 25, sending: false, result: null };
+  function wzReset() { Object.assign(wz, { step: 0, post: null, goal: "chat", name: "", welcome: WELCOME, daily: 200, days: 7, radius: 25, sending: false, result: null, err: "" }); }
+  const firstLine = (t) => (String(t || "").split("\n").map((x) => x.trim()).find(Boolean) || "แอดใหม่").slice(0, 40);
+  const thDate = (iso) => { try { return new Date(iso).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" }); } catch { return ""; } };
+
+  async function wzLoadPosts() {
+    wz.loading = true; wz.err = ""; renderWizard();
+    try { const d = await api("/api/posts"); wz.posts = d.posts; wz.center = d.center_name || wz.center; wz.presets = d.presets || wz.presets; }
+    catch (e) { wz.err = e.message; }
+    finally { wz.loading = false; renderWizard(); }
+  }
+  function bar(html) { $("wzBarIn").innerHTML = html; $("wzBar").classList.toggle("hide", !html); }
+  function canNext() {
+    if (wz.step === 0) return !!wz.post;
+    if (wz.step === 1) return !!wz.goal && wz.name.trim().length >= 2 && !(wz.goal === "chat" && !wz.post?.picture);
+    if (wz.step === 2) return wz.daily >= 50 && wz.daily <= 5000 && wz.days >= 1 && wz.days <= 30;
+    return true;
+  }
+  function renderWizard() {
+    const box = $("wz");
+    if (wz.step === "done") {
+      box.innerHTML = `<div class="done"><div class="ok"><svg class="i" viewBox="0 0 24 24" style="width:44px;height:44px;stroke-width:2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>ส่งแอดให้ Facebook แล้ว</h3>
+        <p>Facebook จะตรวจแอดก่อนเริ่มวิ่ง ปกติไม่นาน<br>ถ้าไม่ผ่าน ระบบจะแจ้งในไลน์</p>
+        <div class="row2" style="flex-direction:column"><button class="btn" id="wzSee">ดูแอดของฉัน</button><button class="btn ghost" id="wzAgain">ยิงอีกตัว</button></div></div>`;
+      bar("");
+      $("wzSee").onclick = () => { reload(); goTab("ads"); };
+      $("wzAgain").onclick = () => { wzReset(); renderWizard(); window.scrollTo(0, 0); };
+      return;
+    }
+    const n = wz.step;
+    const head = `<div class="wz-top"><div class="wz-steps">${STEP_NAMES.map((_, i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>
+      <div class="wz-lbl">ขั้นที่ ${n + 1} จาก 5 · ${STEP_NAMES[n]}</div></div>`;
+    let body = "";
+    if (n === 0) {
+      body = `<div class="wz-q">จะยิงแอดโพสต์ไหน?</div><div class="wz-hint">แตะเลือกโพสต์ทรัพย์จากเพจ 1 โพสต์</div>`;
+      if (wz.loading) body += '<div class="card empty">กำลังโหลดโพสต์จากเพจ…</div>';
+      else if (wz.err) body += `<div class="note bad">${esc(wz.err)}</div><div class="row2"><button class="btn ghost" id="wzRetry">ลองใหม่</button></div>`;
+      else if (!wz.posts) { body += '<div class="card empty">กำลังโหลด…</div>'; setTimeout(wzLoadPosts); }
+      else if (!wz.posts.length) body += '<div class="card empty">ยังไม่มีโพสต์บนเพจ ลองโพสต์ทรัพย์ก่อนแล้วกลับมาใหม่</div>';
+      else body += wz.posts.map((p, i) => `<div class="post ${wz.post?.id === p.id ? "sel" : ""} ${p.eligible ? "" : "off"}" data-i="${i}">
+        ${p.picture ? `<img src="${esc(p.picture)}" alt="" loading="lazy">` : '<div class="noimg">ไม่มีรูป</div>'}
+        <div style="flex:1;min-width:0"><div class="tx">${esc(p.message || "(ไม่มีข้อความ)")}</div>
+        <div class="dt">${thDate(p.created_time)}${p.eligible ? "" : " · โพสต์นี้ยิงแอดไม่ได้"}</div></div></div>`).join("");
+    } else if (n === 1) {
+      const noPic = !wz.post?.picture;
+      body = `<div class="wz-q">อยากได้อะไรจากแอดนี้?</div><div class="wz-hint">เลือก 1 อย่าง</div>
+        <button class="opt ${wz.goal === "chat" ? "sel" : ""}" data-goal="chat" ${noPic ? "disabled" : ""}><div class="ic">💬</div>
+          <div><b>ให้คนทักแชตมาถาม<em>แนะนำ</em></b><span>${noPic ? "โพสต์นี้ไม่มีรูป ใช้แบบนี้ไม่ได้" : "เหมาะกับขายบ้าน/ที่ดิน ได้คนที่สนใจจริง แอดจะใช้รูปแรกกับข้อความของโพสต์ และมีปุ่ม \"ส่งข้อความ\""}</span></div></button>
+        <button class="opt ${wz.goal === "reach" ? "sel" : ""}" data-goal="reach"><div class="ic">👀</div>
+          <div><b>ให้คนในพื้นที่เห็นเยอะ</b><span>ดันโพสต์เดิมให้คนเห็นมากที่สุด ยอดไลก์/คอมเมนต์รวมอยู่ที่โพสต์เดิม</span></div></button>
+        <label class="f" for="wzName">ตั้งชื่อแอด (ชื่อนี้จะขึ้นในไลน์ตอนแจ้งเตือน)</label>
+        <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">
+        ${wz.goal === "chat" ? `<label class="f" for="wzWel">ข้อความที่ลูกค้าจะส่งมาตอนกดทัก (แก้ได้)</label>
+        <input class="inp" id="wzWel" maxlength="300" value="${esc(wz.welcome)}">` : ""}`;
+    } else if (n === 2) {
+      const total = wz.daily * wz.days;
+      const bal = st.data?.snap?.balance?.value;
+      let note = "";
+      if (bal !== null && bal !== undefined) {
+        note = total <= bal ? `<div class="note ok">เงินในบัญชีมี ${baht(bal, 0)} พอสำหรับแอดนี้</div>`
+          : `<div class="note warn">เงินในบัญชีมี ${baht(bal, 0)} พอประมาณ ${Math.max(0, Math.floor(bal / wz.daily))} วัน แอดจะหยุดเองเมื่อเงินหมด และระบบจะเตือนในไลน์ก่อน</div>`;
+      }
+      body = `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">Facebook จะใช้ไม่เกินงบต่อวันที่ตั้ง และหยุดเองเมื่อครบวัน</div>
+        <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
+        <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
+        <label class="f">ยิงกี่วัน</label><div class="chips">${[3, 5, 7, 14].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v} วัน</button>`).join("")}</div>
+        <div class="total"><div class="k">รวมทั้งหมดไม่เกิน</div><div class="v">${baht(total, 0)}</div><div class="k">${wz.daily.toLocaleString("en-US")} บาท × ${wz.days} วัน</div></div>${note}`;
+    } else if (n === 3) {
+      const desc = { 10: "เฉพาะในตัวเมือง", 25: "ในเมืองและรอบ ๆ", 50: "กว้างขึ้น อำเภอรอบนอก", 80: "กว้างสุด รวมจังหวัดใกล้เคียง" };
+      body = `<div class="wz-q">ให้คนแถวไหนเห็น?</div><div class="wz-hint">นับรัศมีจาก${esc(wz.center)}</div>
+        ${wz.presets.map((km) => `<button class="opt ${wz.radius === km ? "sel" : ""}" data-km="${km}"><div class="ic" style="font-size:15px;font-weight:600;color:var(--pri)">${km}</div><div><b>รัศมี ${km} กม.</b><span>${desc[km] || ""}</span></div></button>`).join("")}
+        <div class="note info">ตั้งอายุ 25 ปีขึ้นไป และให้ Facebook ช่วยหาคนที่น่าจะสนใจในพื้นที่นี้ให้อัตโนมัติ</div>`;
+    } else if (n === 4) {
+      const p = wz.post;
+      body = `<div class="wz-q">ตรวจก่อนยิง</div><div class="wz-hint">ถ้าถูกต้องแล้ว กด "ยิงแอดเลย"</div>
+        <div class="post" style="cursor:default">${p.picture ? `<img src="${esc(p.picture)}" alt="">` : '<div class="noimg">ไม่มีรูป</div>'}<div class="tx">${esc(p.message)}</div></div>
+        <div class="sum">
+          <div><span>ชื่อแอด</span><b>${esc(wz.name)}</b></div>
+          <div><span>เป้าหมาย</span><b>${wz.goal === "chat" ? "💬 ให้คนทักแชต" : "👀 ให้คนเห็นเยอะ"}</b></div>
+          <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน × ${wz.days} วัน</b></div>
+          <div><span>รวมไม่เกิน</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>
+          <div><span>พื้นที่</span><b>รัศมี ${wz.radius} กม. จาก${esc(wz.center)}</b></div>
+          <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – อีก ${wz.days} วัน</b></div>
+        </div>
+        ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
+    }
+    box.innerHTML = head + body;
+
+    // ปุ่มล่าง
+    const back = n > 0 ? '<button class="btn grey" id="wzBack" style="flex:0 0 32%">ย้อนกลับ</button>' : "";
+    const next = n < 4 ? `<button class="btn" id="wzNext" ${canNext() ? "" : "disabled"}>ถัดไป</button>`
+      : `<button class="btn" id="wzGo" ${wz.sending ? "disabled" : ""}>${wz.sending ? "กำลังสร้างแอด…" : "🚀 ยิงแอดเลย"}</button>`;
+    bar(back + next);
+    if ($("wzBack")) $("wzBack").onclick = () => { wz.step--; wz.err = ""; renderWizard(); window.scrollTo(0, 0); };
+    if ($("wzNext")) $("wzNext").onclick = () => { if (!canNext()) return; wz.step++; renderWizard(); window.scrollTo(0, 0); };
+    if ($("wzGo")) $("wzGo").onclick = wzSubmit;
+    if ($("wzRetry")) $("wzRetry").onclick = wzLoadPosts;
+    box.querySelectorAll(".post[data-i]").forEach((el) => el.onclick = () => {
+      const p = wz.posts[Number(el.dataset.i)]; if (!p.eligible) return toast("โพสต์นี้ Facebook ไม่ให้ยิงแอด");
+      wz.post = p; wz.name = firstLine(p.message); if (!p.picture) wz.goal = "reach"; renderWizard();
+    });
+    box.querySelectorAll("[data-goal]").forEach((el) => el.onclick = () => { wz.goal = el.dataset.goal; renderWizard(); });
+    box.querySelectorAll("[data-daily]").forEach((el) => el.onclick = () => { wz.daily = Number(el.dataset.daily); renderWizard(); });
+    box.querySelectorAll("[data-days]").forEach((el) => el.onclick = () => { wz.days = Number(el.dataset.days); renderWizard(); });
+    box.querySelectorAll("[data-km]").forEach((el) => el.onclick = () => { wz.radius = Number(el.dataset.km); renderWizard(); });
+    if ($("wzName")) $("wzName").oninput = (e) => { wz.name = e.target.value; $("wzNext").disabled = !canNext(); };
+    if ($("wzWel")) $("wzWel").oninput = (e) => { wz.welcome = e.target.value; };
+    if ($("wzDaily")) $("wzDaily").onchange = (e) => { wz.daily = Math.round(Number(e.target.value) || 0); renderWizard(); };
+  }
+  async function wzSubmit() {
+    wz.sending = true; wz.err = ""; renderWizard();
+    try {
+      wz.result = await api("/api/create-ad", { body: { post_id: wz.post.id, goal: wz.goal, name: wz.name.trim(), welcome: wz.welcome, daily_thb: wz.daily, days: wz.days, radius_km: wz.radius } });
+      wz.step = "done";
+    } catch (e) { wz.err = e.message; }
+    finally { wz.sending = false; renderWizard(); window.scrollTo(0, wz.step === "done" ? 0 : document.body.scrollHeight); }
+  }
+
+  // ---------- ข้อมูลตัวอย่าง (โหมดดูตัวอย่าง) ----------
+  function demoApi(path, opts) {
+    if (path.startsWith("/api/overview")) {
+      const k = { today: 1, yesterday: 1.1, last_7d: 6.8 }[st.range];
+      const ad = (id, name, camp, eff, spend, res, label, grade, gl, imp) => ({ ad_id: id, ad_name: name, campaign_name: camp, status: eff === "ACTIVE" ? "ACTIVE" : "PAUSED",
+        effective_status: eff, status_label: { ACTIVE: "กำลังวิ่ง", PAUSED: "หยุดอยู่", DISAPPROVED: "ไม่ผ่านอนุมัติ" }[eff], spend: spend * k, impressions: imp * k, reach: imp * k * 0.7,
+        clicks: imp * k * 0.012, results: Math.round(res * k), result_label: label, cpr: res ? spend / res : null, grade, grade_label: gl });
+      const ads = [
+        ad("1", "บ้านเดี่ยว นครชุม 1.89 ล้าน", "ทักแชต-บ้าน", "ACTIVE", 320, 7, "ทักแชต", "good", "คุ้ม", 9400),
+        ad("2", "ที่ดินติดถนน 2 ไร่ คลองขลุง", "ทักแชต-ที่ดิน", "ACTIVE", 210, 0, "ทักแชต", "bad", "ใช้เงินแต่ยังไม่มีผล", 5200),
+        ad("3", "ทาวน์โฮม ใกล้ตลาด 1.2 ล้าน", "ทักแชต-บ้าน", "ACTIVE", 180, 2, "ทักแชต", "bad", "แพง", 4100),
+        ad("4", "รับฝากขายบ้าน กำแพงเพชร", "ลีด", "ACTIVE", 150, 3, "ลีด", "ok", "พอใช้", 3800),
+        ad("5", "อาคารพาณิชย์ 3 ชั้น", "ทักแชต-บ้าน", "PAUSED", 0, 0, "ทักแชต", "idle", "ยังไม่ใช้เงิน", 0),
+      ];
+      const spend = ads.reduce((a, x) => a + x.spend, 0);
+      const chats = ads.filter((a) => a.result_label === "ทักแชต").reduce((a, x) => a + x.results, 0);
+      const chatSpend = ads.filter((a) => a.result_label === "ทักแชต" && a.results > 0).reduce((a, x) => a + x.spend, 0);
+      return Promise.resolve({
+        snap: { range: st.range, range_label: { today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วันที่ผ่านมา" }[st.range], generated_at: new Date().toISOString(),
+          account: { name: "N propertyNetwork (ตัวอย่าง)", currency: "THB", status: 1, status_label: "ปกติ", ok: true },
+          balance: { value: 3480, source: "facebook", note: "อ่านจาก Facebook" }, avg_daily: 860, days_left: 3480 / 860,
+          totals: { spend, impressions: ads.reduce((a, x) => a + x.impressions, 0), clicks: ads.reduce((a, x) => a + x.clicks, 0),
+            by_type: [{ label: "ทักแชต", count: chats, cpr: chatSpend / chats }, { label: "ลีด", count: Math.round(3 * k), cpr: 50 }] },
+          ads },
+        settings: { low_balance_thb: 300, low_days: 1, max_cost_per_result: 80, no_result_spend_thb: 150, daily_summary_hour: 20, quiet_start: 22, quiet_end: 7,
+          alert_low_balance: true, alert_expensive: true, alert_no_result: true, alert_ad_problem: true, alert_daily_summary: true, line_linked: true },
+        quota: { used: 87, limit: 300, receivers: 3 },
+        fb: { connected: true, source: "web", name: "เอ็นพร็อพ เพอร์ตี้", days_left: 52, can_login: true }, fb_error: null,
+        ...(new URLSearchParams(location.search).get("demo") === "viewer"
+          ? { me: { id: 3, name: "เซลส์บี", role: "viewer", role_label: "ดูอย่างเดียว", active: true, line_linked: false, notify_daily: true, notify_money: false, notify_ads: false }, perms: ["view"] }
+          : { me: { id: 1, name: "นุ๊ก", role: "owner", role_label: "เจ้าของ", active: true, line_linked: true, notify_daily: true, notify_money: true, notify_ads: true }, perms: ["view", "ads", "money", "settings", "team"] }),
+      });
+    }
+    if (path === "/api/posts") {
+      const pic = (c1, c2, label) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="300" height="300" fill="url(#g)"/><path d="M70 170 150 100 230 170V240H70Z" fill="#fff" opacity=".92"/><rect x="132" y="190" width="36" height="50" fill="${c2}"/><text x="150" y="282" font-size="22" text-anchor="middle" fill="#fff" font-family="sans-serif">${label}</text></svg>`);
+      return new Promise((r) => setTimeout(() => r({ center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], posts: [
+        { id: "1_101", message: "ขายบ้านเดี่ยว 2 ชั้น นครชุม 1.89 ล้าน\n3 ห้องนอน 2 ห้องน้ำ ที่ดิน 60 ตร.ว. (ตัวอย่าง)", picture: pic("#60A5FA", "#1E40AF", "ตัวอย่าง 1"), created_time: new Date(Date.now() - 86400e3).toISOString(), eligible: true },
+        { id: "1_102", message: "ที่ดินติดถนน 2 ไร่ คลองขลุง ไร่ละ 6 แสน (ตัวอย่าง)", picture: pic("#5EEAD4", "#0F766E", "ตัวอย่าง 2"), created_time: new Date(Date.now() - 3 * 86400e3).toISOString(), eligible: true },
+        { id: "1_103", message: "ทาวน์โฮมใกล้ตลาด 1.2 ล้าน ผ่อนถูกกว่าค่าเช่า (ตัวอย่าง)", picture: pic("#A5B4FC", "#4338CA", "ตัวอย่าง 3"), created_time: new Date(Date.now() - 6 * 86400e3).toISOString(), eligible: true },
+        { id: "1_104", message: "แชร์ข่าว: อัปเดตราคาประเมินที่ดินรอบใหม่ (ตัวอย่าง)", picture: null, created_time: new Date(Date.now() - 9 * 86400e3).toISOString(), eligible: false },
+      ] }), 400));
+    }
+    if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
+    if (path === "/api/team") {
+      const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
+      return Promise.resolve({
+        users: [
+          { id: 1, name: "นุ๊ก", role: "owner", role_label: "เจ้าของ", active: true, line_linked: true, last_login: ago(0.2) },
+          { id: 2, name: "แอดมินเอ", role: "shooter", role_label: "ทีมยิงแอด", active: true, line_linked: true, last_login: ago(3) },
+          { id: 3, name: "เซลส์บี", role: "viewer", role_label: "ดูอย่างเดียว", active: true, line_linked: true, last_login: ago(26) },
+          { id: 4, name: "พนักงานเก่า", role: "viewer", role_label: "ดูอย่างเดียว", active: false, line_linked: false, last_login: ago(400) },
+        ],
+        activity: [
+          { at: ago(0.5), user_name: "แอดมินเอ", via: "web", action: "ยิงแอดใหม่", detail: "บ้านเดี่ยว นครชุม 1.89 ล้าน · 200 บาท/วัน × 7 วัน" },
+          { at: ago(2), user_name: "นุ๊ก", via: "line", action: "หยุดแอด", detail: "ที่ดินติดถนน 2 ไร่ คลองขลุง" },
+          { at: ago(5), user_name: "แอดมินเอ", via: "web", action: "บันทึกเติมเงิน", detail: "฿2,000" },
+          { at: ago(30), user_name: "นุ๊ก", via: "web", action: "เพิ่มสมาชิก", detail: "เซลส์บี (ดูอย่างเดียว)" },
+        ],
+      });
+    }
+    if (path === "/api/me/link-code") return Promise.resolve({ code: "482915", minutes: 30 });
+    return Promise.resolve({ ok: true, message: "โหมดตัวอย่าง: ไม่ได้บันทึกจริง" });
+  }
+
+  // ---------- เริ่ม ----------
+  if (new URLSearchParams(location.search).has("demo")) { st.demo = true; load().then(openApp); }
+  else if (st.api && st.tok) load().then(openApp).catch(showLogin);
+  else showLogin();
+})();
+</script>
+</body>
+</html>
