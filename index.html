@@ -738,7 +738,7 @@
       return !!wz.post && wz.post.eligible && (wz.goal === "reach" || !!wz.post.picture);
     }
     if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0);
-    if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && wz.days >= 1 && wz.days <= 30;
+    if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && (wz.days === 0 || (wz.days >= 1 && wz.days <= 30));
     return true;
   }
 
@@ -763,7 +763,7 @@
     const mime = MIME_BY_EXT[ext] && (!file.type || file.type === "application/octet-stream") ? MIME_BY_EXT[ext] : file.type;
     const kind = /^video\//.test(mime) ? "video" : /^image\//.test(mime) ? "image" : null;
     if (!kind || !Object.values(MIME_BY_EXT).includes(mime)) return toast("รองรับเฉพาะวิดีโอ MP4/MOV หรือรูป JPG/PNG", 4000);
-    const max = kind === "video" ? (wz.info?.max_video_mb || 1024) : (wz.info?.max_upload_mb || 50);
+    const max = kind === "video" ? (wz.info?.max_video_mb || 4096) : (wz.info?.max_upload_mb || 50);
     if (file.size > max * 1048576) return toast(`ไฟล์ ${(file.size / 1048576).toFixed(0)} MB ใหญ่เกิน ${max >= 1024 ? max / 1024 + " GB" : max + " MB"} — ย่อไฟล์ก่อน หรือโพสต์ลงเพจแล้วเลือกจาก "โพสต์ในเพจ"`, 6000);
     const direct = kind === "video" && file.size > (wz.info?.direct_video_mb || 45) * 1048576;
     if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
@@ -863,7 +863,7 @@
       const max = wz.info?.max_upload_mb || 50;
       const u = wz.up;
       if (!u) return b + `<label class="drop"><input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png"><b>＋ เลือกไฟล์</b>
-        <span>วิดีโอ MP4/MOV ไม่เกิน ${(wz.info?.max_video_mb || 1024) / 1024} GB · รูป JPG/PNG ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>`;
+        <span>วิดีโอ MP4/MOV ไม่เกิน ${(wz.info?.max_video_mb || 4096) / 1024} GB · รูป JPG/PNG ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>`;
       b += `<div class="prev">${u.kind === "video" ? `<video src="${esc(u.preview)}" controls playsinline muted></video>` : `<img src="${esc(u.preview)}" alt="">`}
         <div class="pbar ${u.phase === "ready" ? "done" : ""}"><i id="upBar" style="width:${u.phase === "ready" ? 100 : u.pct || 0}%"></i></div>
         <div class="uptx" id="upTx">${esc(upText(u))}</div>
@@ -896,18 +896,23 @@
     return b;
   }
   function stepBudget() {
-    const total = wz.daily * wz.days;
+    const open = wz.days === 0, total = wz.daily * wz.days;
     const bal = st.data?.snap?.balance?.value;
     let note = "";
     if (bal !== null && bal !== undefined) {
-      note = total <= bal ? `<div class="note ok">เงินในบัญชีมี ${baht(bal, 0)} พอสำหรับแอดนี้</div>`
-        : `<div class="note warn">เงินในบัญชีมี ${baht(bal, 0)} พอประมาณ ${Math.max(0, Math.floor(bal / wz.daily))} วัน แอดจะหยุดเองเมื่อเงินหมด และระบบจะเตือนในไลน์ก่อน</div>`;
+      const enough = `พอประมาณ ${Math.max(0, Math.floor(bal / wz.daily))} วัน แอดจะหยุดเองเมื่อเงินหมด และระบบจะเตือนในไลน์ก่อน`;
+      note = open ? `<div class="note info">เงินในบัญชีมี ${baht(bal, 0)} ${enough}</div>`
+        : total <= bal ? `<div class="note ok">เงินในบัญชีมี ${baht(bal, 0)} พอสำหรับแอดนี้</div>`
+        : `<div class="note warn">เงินในบัญชีมี ${baht(bal, 0)} ${enough}</div>`;
     }
-    return `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">Facebook จะใช้ไม่เกินงบต่อวันที่ตั้ง และหยุดเองเมื่อครบวัน</div>
+    const box = open
+      ? `<div class="total"><div class="k">เฉลี่ยวันละ</div><div class="v">${baht(wz.daily, 0)}</div><div class="k">ไม่กำหนดวันจบ · วิ่งจนกว่าจะกดหยุดในแอป หรือเงินในบัญชีหมด</div></div>`
+      : `<div class="total"><div class="k">รวมประมาณ</div><div class="v">${baht(total, 0)}</div><div class="k">${wz.daily.toLocaleString("en-US")} บาท × ${wz.days} วัน</div></div>`;
+    return `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">งบต่อวันเป็นค่าเฉลี่ย บางวัน Facebook อาจใช้เกินได้ถึง 75% แต่รวมทั้งสัปดาห์ไม่เกิน 7 เท่าของงบต่อวัน</div>
       <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
       <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
-      <label class="f">ยิงกี่วัน</label><div class="chips">${[1, 3, 5, 7, 14].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v} วัน</button>`).join("")}</div>
-      <div class="total"><div class="k">รวมทั้งหมดไม่เกิน</div><div class="v">${baht(total, 0)}</div><div class="k">${wz.daily.toLocaleString("en-US")} บาท × ${wz.days} วัน</div></div>${note}`;
+      <label class="f">ยิงกี่วัน</label><div class="chips">${[1, 3, 5, 7, 14, 0].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v ? `${v} วัน` : "ไม่กำหนด"}</button>`).join("")}</div>
+      ${box}${note}`;
   }
   function stepAudience() {
     const presets = [...(wz.info?.presets || [10, 25, 50, 80]), 0];
@@ -934,11 +939,11 @@
         ${wz.goal === "traffic" ? `<div><span>ลิงก์</span><b style="word-break:break-all">${esc(wz.link.trim())}</b></div>` : ""}
         <div><span>สื่อ</span><b>${mediaLbl}</b></div>
         ${wz.headline.trim() && !isBoost() ? `<div><span>หัวข้อ</span><b>${esc(wz.headline.trim())}</b></div>` : ""}
-        <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน × ${wz.days} วัน</b></div>
-        <div><span>รวมไม่เกิน</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>
+        <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน${wz.days ? ` × ${wz.days} วัน` : ""}</b></div>
+        ${wz.days ? `<div><span>รวมประมาณ</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>` : ""}
         <div><span>พื้นที่</span><b>${esc(areaLabel(wz.radius))}</b></div>
         <div><span>อายุ</span><b>${wz.age}–65+ ปี</b></div>
-        <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – อีก ${wz.days} วัน</b></div>
+        <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – ${wz.days ? `อีก ${wz.days} วัน` : "ไม่กำหนด (กดหยุดเองในแอป)"}</b></div>
       </div>
       ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
   }
@@ -1062,7 +1067,7 @@
     }
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
     if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
-      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], ages: [18, 20, 25], max_upload_mb: 50, max_video_mb: 1024, direct_video_mb: 45 });
+      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], ages: [18, 20, 25], max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
     if (path.startsWith("/api/forms")) return Promise.resolve({ forms: [{ id: "55", name: "ฟอร์มฝากขายบ้าน (ตัวอย่าง)" }] });
     if (path === "/api/team") {
       const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
