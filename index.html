@@ -131,14 +131,31 @@
   .wz-lbl{font-size:13px;color:var(--mute);display:flex;justify-content:space-between;align-items:center;gap:8px}
   .gtog{border:0;background:var(--card);color:var(--mute);border-radius:99px;padding:5px 10px;font-size:13px;cursor:pointer;box-shadow:var(--shadow)}
   .gtog.on{background:var(--pri-l);color:var(--pri);font-weight:600}
-  .coach{background:linear-gradient(135deg,#EEF4FF,#F7FAFF);border:1px solid #D6E3FF;border-radius:16px;padding:12px 14px;margin:6px 0 14px;font-size:14px;line-height:1.55}
+  .coach{background:var(--pri-l);border:1px solid var(--pri-l2);border-radius:16px;padding:12px 14px;margin:6px 0 14px;font-size:14px;line-height:1.55;display:flex;gap:10px}
+  .coach .av{flex:none;width:40px;height:40px}.coach .tx{flex:1;min-width:0}
   .coach b.h{display:block;font-size:15px;margin-bottom:4px;color:var(--pri)}
   .coach ul{margin:6px 0 0;padding-left:18px}.coach li{margin:2px 0}
   .ck{display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:6px 0;border-top:1px dashed var(--line)}
   .ck:first-of-type{border-top:0}
   .ck i{font-style:normal;flex:none}
-  .startcard{display:block;width:100%;text-align:left;border:0;cursor:pointer;background:linear-gradient(135deg,#1E3A8A,#2563EB);color:#fff;border-radius:18px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
-  .startcard b{display:block;font-size:17px}.startcard span{font-size:13px;opacity:.9}
+  #wz{padding-bottom:96px}
+  .gtog svg{width:20px;height:20px;vertical-align:-5px;margin-right:4px}
+  .bot{position:fixed;right:max(12px,calc(50% - 268px));bottom:calc(84px + 76px + env(safe-area-inset-bottom));z-index:6;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
+  .bot>*{pointer-events:auto}
+  body.typing .bot{display:none}
+  .bot .face{width:68px;height:68px;border:0;background:none;padding:0;cursor:pointer;filter:drop-shadow(0 4px 10px rgba(15,23,42,.28));animation:bob 2.6s ease-in-out infinite}
+  .bot .say{position:relative;max-width:min(240px,calc(100vw - 110px));background:var(--card);color:var(--ink);border:2px solid var(--pri);border-radius:16px 16px 4px 16px;padding:10px 26px 10px 12px;font-size:14px;line-height:1.45;box-shadow:var(--shadow);margin-bottom:22px;cursor:pointer}
+  .bot .say b{color:var(--pri)}
+  .bot .say .x{position:absolute;top:2px;right:4px;border:0;background:none;color:var(--mute);font-size:18px;line-height:1;cursor:pointer;padding:4px}
+  .bot .eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+  .bot .arm{transform-box:fill-box;transform-origin:10% 90%;animation:wave 1.6s ease-in-out infinite}
+  .bot.on .arm{animation:none}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  @keyframes wave{0%,60%,100%{transform:rotate(0)}20%{transform:rotate(-25deg)}40%{transform:rotate(10deg)}}
+  .hl{animation:hlp 1.3s ease-out infinite !important;outline:2px solid #EF4444;outline-offset:2px}
+  @keyframes hlp{0%{box-shadow:0 0 0 0 rgba(239,68,68,.55)}100%{box-shadow:0 0 0 14px rgba(239,68,68,0)}}
+  @media (prefers-reduced-motion: reduce){.bot .face,.bot .eye,.bot .arm,.hl{animation:none !important}}
   .wz-q{font-size:22px;font-weight:600;margin:4px 0 2px}
   .wz-hint{font-size:14px;color:var(--mute);margin-bottom:12px}
   .post{display:flex;gap:12px;background:var(--card);border-radius:16px;padding:10px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;align-items:center;box-shadow:var(--shadow)}
@@ -745,7 +762,7 @@
       goal: "chat", welcome: WELCOME, faq: FAQ_DEFAULT.map((q) => ({ q, a: "" })), forms: null, formsFor: null, form_id: "", link: "",
       src: "upload", posts: null, postsFor: null, post: null, up: null, lib: null, libUp: null, cover: null, coverFor: null, thumbs: null, thumbsFor: null, coverBusy: false,
       gender: "all", interests: [], excludes: [], iq: "", ires: [], xq: "", xres: [], placeMode: "auto", platforms: ["facebook", "instagram", "messenger"], ig: undefined, igFor: null,
-      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") === "1",
+      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") === "1", botMin: store.get("nads_bot_min") === "1",
       name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, pin: "", ageMin: 25, ageMax: 65, sending: false, result: null });
   }
   wzReset();
@@ -815,7 +832,7 @@
   }
   async function loadIg() {
     const pid = wz.page; wz.igFor = pid;
-    try { wz.ig = (await api("/api/page-info?page_id=" + encodeURIComponent(pid))).instagram; } catch { wz.ig = null; }
+    try { const r = await api("/api/page-info?page_id=" + encodeURIComponent(pid)); wz.ig = r.instagram; wz.igChecked = r.checked !== false; } catch { wz.ig = null; wz.igChecked = false; }
     if (wz.page === pid) renderWizard();
   }
   async function wzPickCover(file) {
@@ -956,9 +973,57 @@
   function coachBox(step) {
     if (!wz.guide) return "";
     const [h, lines] = COACH[step], ck = step === LAST ? [] : checksFor(step);
-    return `<div class="coach"><b class="h">🎓 ผู้ช่วย · ${h}</b><ul>${lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
+    return `<div class="coach"><div class="av">${BOT_SVG(false)}</div><div class="tx"><b class="h">ผู้ช่วย · ${h}</b><ul>${lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
       ${step === 0 ? `<div style="margin-top:6px">${st.demo ? "ตอนนี้อยู่<b>โหมดตัวอย่าง</b> กดยิงได้โดยไม่เสียเงินจริง ฝึกได้เต็มที่" : "อยากฝึกก่อน? ออกจากระบบแล้วกด 'ดูตัวอย่างหน้าจอ' ฝึกได้ไม่เสียเงิน"}</div>` : ""}
-      ${ck.length ? `<div style="margin-top:8px">${ckList(ck)}</div>` : ""}</div>`;
+      ${ck.length ? `<div style="margin-top:8px">${ckList(ck)}</div>` : ""}</div></div>`;
+  }
+  // ตัวบอทผู้ช่วย (วาดเอง)
+  const BOT_SVG = (arm = true) => `<svg viewBox="0 0 64 64" aria-hidden="true">
+    <line x1="32" y1="4" x2="32" y2="13" stroke="#1E3A8A" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="5" r="4.2" fill="#DC2626"/>
+    <rect x="4" y="25" width="6" height="13" rx="3" fill="#DC2626"/><rect x="54" y="25" width="6" height="13" rx="3" fill="#DC2626"/>
+    <rect x="8" y="12" width="48" height="38" rx="14" fill="#FFFFFF" stroke="#1E3A8A" stroke-width="3"/>
+    <rect x="14.5" y="19" width="35" height="22" rx="9" fill="#1E3A8A"/>
+    <ellipse class="eye" cx="25" cy="29" rx="3.6" ry="4.6" fill="#7DD3FC"/><ellipse class="eye" cx="39" cy="29" rx="3.6" ry="4.6" fill="#7DD3FC"/>
+    <path d="M26.5 35 q5.5 4.5 11 0" stroke="#7DD3FC" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <rect x="20" y="51" width="24" height="11" rx="5" fill="#1E3A8A"/><text x="32" y="60" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF" font-family="sans-serif">N</text>
+    ${arm ? '<g class="arm"><rect x="54" y="40" width="6" height="14" rx="3" fill="#1E3A8A" transform="rotate(-35 57 47)"/><circle cx="61" cy="40" r="3.6" fill="#DC2626"/></g>' : ""}</svg>`;
+  // ขั้นต่อไปที่ควรกด (ใช้ชี้จุด + ข้อความในบอท)
+  function nextAction() {
+    const s = wz.step, u = curUp();
+    if (s === 0) return wz.page ? ["#wzNext", "เลือกเพจแล้ว กด <b>ถัดไป</b> ได้เลย"] : ["[data-page]", "แตะเลือก<b>เพจ</b>ที่จะยิงแอดก่อนนะ"];
+    if (s === 1) {
+      if (wz.goal === "lead" && !wz.form_id) return ["#wzForm", "เลือก<b>ฟอร์มเก็บเบอร์</b>ที่จะใช้"];
+      if (wz.goal === "traffic" && !linkOk(wz.link.trim())) return ["#wzLink", "วาง<b>ลิงก์ปลายทาง</b> (ขึ้นต้น https://)"];
+      return ["#wzNext", "ขายทรัพย์แนะนำ <b>ให้คนทักแชต</b> เลือกแล้วกด <b>ถัดไป</b>"];
+    }
+    if (s === 2) {
+      if (wz.src === "post") return wz.post ? ["#wzNext", "เลือกโพสต์แล้ว กด <b>ถัดไป</b>"] : [".post[data-i]:not(.off)", "แตะเลือก<b>โพสต์</b>ที่จะใช้"];
+      if (wz.src === "library" && !wz.libUp) return ["[data-lib]", "แตะเลือก<b>วิดีโอ</b>ที่เคยอัปไว้"];
+      if (wz.src === "upload" && !u) return [".drop", "แตะตรงนี้เพื่อ<b>เลือกรูปหรือวิดีโอ</b>จากมือถือ"];
+      if (u && u.phase !== "ready") return [null, "กำลังอัปโหลด รอสักครู่นะ <b>อย่าปิดหน้านี้</b>"];
+      return ["#wzNext", "เรียบร้อย! เลือก<b>ภาพปก</b>ได้ แล้วกด <b>ถัดไป</b>"];
+    }
+    if (s === 3) {
+      if (wz.name.trim().length < 2) return ["#wzName", "ตั้ง<b>ชื่อแอด</b>ไว้ดูเอง เช่น ชื่อทรัพย์ + ราคา"];
+      if (!isBoost() && wz.src !== "post" && wz.goal !== "reach" && !wz.message.trim()) return ["#wzMsg", "เขียน<b>ข้อความ</b>: ประเภททรัพย์ ทำเล ราคา จุดเด่น"];
+      return ["#wzNext", "อ่านทวน<b>คำผิด</b>อีกที แล้วกด <b>ถัดไป</b>"];
+    }
+    if (s === 4) return ["#wzNext", "เลือก<b>งบต่อวัน</b>กับจำนวนวัน ไม่แน่ใจเลือก <b>ไม่กำหนด</b> ได้"];
+    if (s === 5) return placeOk() ? ["#wzNext", "แนะนำรัศมี <b>10–25 กม.</b> ปักหมุดทรัพย์ถ้ามี แล้วกด <b>ถัดไป</b>"] : ["[data-plat]", "เลือก <b>Facebook หรือ Instagram</b> อย่างน้อย 1 อย่าง"];
+    return wz.previews?.length ? ["#wzGo", "ดูโอเคแล้ว อ่าน <b>เช็กก่อนยิง</b> แล้วกด <b>ยิงแอดเลย</b>"] : ["#wzPv", "กด<b>ดูหน้าตาแอด</b>ก่อนยิงนะ"];
+  }
+  function guideTick(scroll = false) {
+    document.querySelectorAll(".hl").forEach((el) => el.classList.remove("hl"));
+    const tx = $("botTx");
+    if (!wz.guide) { if (tx) tx.innerHTML = 'ยิงแอดไม่เป็นใช่ไหม? <b>แตะผมสิ</b> เดี๋ยวพาจับมือทำทีละขั้น 👋'; return; }
+    const [sel, text] = nextAction();
+    if (tx) tx.innerHTML = text;
+    const el = sel && document.querySelector(sel);
+    if (el) { el.classList.add("hl"); if (scroll) el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  }
+  function botHtml() {
+    const say = wz.botMin ? "" : `<div class="say" id="botSay"><span id="botTx"></span><button class="x" id="botX" aria-label="ซ่อนคำพูด">×</button></div>`;
+    return `<div class="bot ${wz.guide ? "on" : ""}">${say}<button class="face" id="botFace" aria-label="ผู้ช่วยยิงแอด">${BOT_SVG(!wz.guide)}</button></div>`;
   }
   // อ่านขนาด/ความยาวไฟล์ เพื่อเตือนภาพแนวนอนหรือคลิปยาว
   function probeDims(up, kind) {
@@ -1239,8 +1304,15 @@
   function igNote() {
     if (wz.igFor !== wz.page) { setTimeout(loadIg); return ""; }
     if (wz.ig === undefined) return "";
-    return wz.ig ? `<div class="note ok">Instagram: @${esc(wz.ig.username)} ✓ แอดบน Instagram จะขึ้นในชื่อบัญชีนี้</div>`
-      : '<div class="note warn">เพจนี้ยังไม่ได้ผูกบัญชี Instagram — ผูกได้ที่ Meta Business Suite > ตั้งค่า > บัญชี Instagram</div>';
+    if (wz.ig) return `<div class="note ok">Instagram: @${esc(wz.ig.username)} ✓ แอดบน Instagram จะขึ้นในชื่อบัญชีนี้</div>`;
+    return `<div class="note warn">${wz.igChecked === false ? "ตอนนี้เช็กบัญชี Instagram ของเพจไม่ได้ ลองกดเช็กอีกครั้ง" : "ยังไม่เห็นบัญชี Instagram ที่ผูกกับเพจนี้"}
+      <details style="margin-top:6px"><summary style="cursor:pointer;font-weight:600">วิธีผูก Instagram กับเพจ</summary>
+      <ol style="margin:6px 0 0;padding-left:20px;line-height:1.6">
+        <li>บัญชี IG ต้องเป็น<b>บัญชีมืออาชีพ</b> (ธุรกิจ/ครีเอเตอร์)</li>
+        <li>ในแอป Facebook สลับเป็นโปรไฟล์เพจ → การตั้งค่าและความเป็นส่วนตัว → การตั้งค่า → <b>บัญชีที่ลิงก์ไว้</b> → Instagram → เชื่อมต่อบัญชี</li>
+        <li>หรือในคอม: Meta Business Suite → การตั้งค่า → <b>บัญชี Instagram</b> → เพิ่ม/เชื่อมต่อ</li>
+        <li>ผูกเสร็จแล้วกลับมากด <b>เช็กอีกครั้ง</b></li></ol></details>
+      <button class="btn ghost sm" id="igRe" style="margin-top:8px">เช็กอีกครั้ง</button></div>`;
   }
   function previewBox() {
     if (!wz.previews?.length) return "";
@@ -1299,24 +1371,23 @@
       box.innerHTML = `<div class="done"><div class="ok"><svg class="i" viewBox="0 0 24 24" style="width:44px;height:44px;stroke-width:2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>ส่งแอดให้ Facebook แล้ว</h3>
         <p>Facebook จะตรวจแอดก่อนเริ่มวิ่ง ปกติไม่นาน<br>ถ้าไม่ผ่าน ระบบจะแจ้งในไลน์</p>
         <div class="row2" style="flex-direction:column"><button class="btn" id="wzSee">ดูแอดของฉัน</button><button class="btn ghost" id="wzAgain">ยิงอีกตัว</button></div></div>`;
-      bar("");
+      bar(""); document.querySelectorAll(".hl").forEach((el) => el.classList.remove("hl"));
       $("wzSee").onclick = () => { reload(); goTab("ads"); };
       $("wzAgain").onclick = () => { wzReset(); renderWizard(); window.scrollTo(0, 0); };
       return;
     }
     const n = wz.step;
     const head = `<div class="wz-top"><div class="wz-steps">${STEP_NAMES.map((_, i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>
-      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">🎓 ผู้ช่วย${wz.guide ? " เปิด" : ""}</button></div></div>`;
-    const start = n === 0 && !wz.guide ? '<button class="startcard" id="wzStartGuide"><b>🎓 ไม่เคยยิงแอด? เริ่มที่นี่</b><span>เปิดผู้ช่วย จะบอกทีละขั้นว่าเลือกอะไรดี และเตือนจุดที่ควรแก้ก่อนยิง</span></button>' : "";
+      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">${BOT_SVG(false)}${wz.guide ? "ปิดผู้ช่วย" : "ผู้ช่วย"}</button></div></div>`;
     const body = [stepPage, stepGoal, stepMedia, stepText, stepBudget, stepAudience, stepReview][n]();
-    box.innerHTML = head + start + coachBox(n) + body;
+    box.innerHTML = head + coachBox(n) + body + botHtml();
 
     const back = n > 0 ? '<button class="btn grey" id="wzBack" style="flex:0 0 32%">ย้อนกลับ</button>' : "";
     const next = n < LAST ? `<button class="btn" id="wzNext" ${canNext() ? "" : "disabled"}>ถัดไป</button>`
       : `<button class="btn" id="wzGo" ${wz.sending ? "disabled" : ""}>${wz.sending ? "กำลังสร้างแอด…" : "🚀 ยิงแอดเลย"}</button>`;
     bar(back + next);
     const on = (id, ev, fn) => { if ($(id)) $(id)[ev] = fn; };
-    const refreshNext = () => { if ($("wzNext")) $("wzNext").disabled = !canNext(); };
+    const refreshNext = () => { if ($("wzNext")) $("wzNext").disabled = !canNext(); guideTick(); };
     on("wzBack", "onclick", () => { wz.step--; wz.err = ""; wz.previews = null; wz.pvErr = ""; renderWizard(); window.scrollTo(0, 0); });
     on("wzNext", "onclick", () => {
       if (!canNext()) return;
@@ -1325,12 +1396,15 @@
         const bad = allCr().findIndex((c) => !crReady(c));
         if (bad >= 0) { loadCr(bad); wz.step = upOf(wz)?.phase === "ready" ? 3 : 2; renderWizard(); window.scrollTo(0, 0); return toast(`แบบ ${TAGS[bad]} ยังไม่ครบ`, 3000); }
       }
-      wz.step++; wz.err = ""; wz.previews = null; wz.pvErr = ""; renderWizard(); window.scrollTo(0, 0);
+      wz.step++; wz.err = ""; wz.previews = null; wz.pvErr = ""; if (wz.guide) wz.botMin = false; renderWizard(); window.scrollTo(0, 0);
     });
     on("wzGo", "onclick", wzSubmit);
-    const setGuide = (v) => { wz.guide = v; store.set("nads_guide", v ? "1" : "0"); renderWizard(); };
+    const setGuide = (v) => { wz.guide = v; store.set("nads_guide", v ? "1" : "0"); if (v) wz.botMin = false; renderWizard(); if (v) { window.scrollTo(0, 0); guideTick(true); } };
     on("wzGuide", "onclick", () => setGuide(!wz.guide));
-    on("wzStartGuide", "onclick", () => { setGuide(true); toast("เปิดผู้ช่วยแล้ว ทำตามทีละขั้นได้เลย", 3000); });
+    const botGo = () => { if (!wz.guide) { setGuide(true); toast("มาเลย! ทำตามที่ผมชี้ทีละขั้นนะ", 3000); } else { if (wz.botMin) { wz.botMin = false; renderWizard(); } guideTick(true); } };
+    on("botFace", "onclick", botGo);
+    on("botSay", "onclick", (e) => { if (!e.target.closest("#botX")) botGo(); });
+    on("botX", "onclick", () => { wz.botMin = true; store.set("nads_bot_min", "1"); renderWizard(); });
     on("wzRetry", "onclick", () => { wz.err = ""; if (n === 0) wz.info = null; else if (n === 1) wz.formsFor = null; else if (wz.src === "library") wz.lib = null; else wz.postsFor = null; renderWizard(); });
     on("wzFormReload", "onclick", () => { wz.formsFor = null; renderWizard(); });
     on("wzRecheck", "onclick", () => { const u = wz.up; u.phase = "processing"; renderWizard(); pollVideo(u).catch((e) => { if (wz.up === u) { u.phase = "error"; u.msg = e.message; renderWizard(); } }); });
@@ -1415,6 +1489,11 @@
     });
     box.querySelectorAll("[data-fq]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fq)].q = el.value; refreshNext(); });
     box.querySelectorAll("[data-fa]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fa)].a = el.value; refreshNext(); });
+    on("igRe", "onclick", () => { wz.ig = undefined; wz.igFor = null; renderWizard(); });
+    // ซ่อนบอทตอนพิมพ์ จะได้ไม่บังช่องกรอก
+    box.onfocusin = (e) => { if (e.target.matches("input:not([type=file]),textarea,select")) document.body.classList.add("typing"); };
+    box.onfocusout = () => document.body.classList.remove("typing");
+    guideTick();
   }
   async function wzSubmit() {
     wz.sending = true; wz.err = ""; renderWizard();
