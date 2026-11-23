@@ -139,6 +139,18 @@
   .ck:first-of-type{border-top:0}
   .ck i{font-style:normal;flex:none}
   #wz{padding-bottom:96px}
+  .gslot{position:relative;z-index:0;isolation:isolate;height:280px;border-radius:14px;overflow:hidden;margin:8px 0;background:var(--card2);box-shadow:var(--shadow)}
+  .gslot.arm{outline:3px solid #EF4444;outline-offset:-3px}
+  .gmap{width:100%;height:100%}
+  .gpin span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);font-size:15px}
+  .gmode{margin:8px 0}
+  .ghd{font-weight:600;font-size:14px;margin:12px 0 2px}.ghd.exc{color:var(--red)}
+  .grow{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:12px;padding:8px 10px;margin-top:6px;box-shadow:var(--shadow);border-left:4px solid var(--pri)}
+  .grow.exc{border-left-color:var(--red)}
+  .grow .gt{flex:1;min-width:0}.grow .gt b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.grow small{display:block;color:var(--mute);font-size:12px}
+  .grow select{width:auto;padding:6px 8px;font-size:14px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
+  .grow button{border:0;background:none;color:var(--mute);font-size:22px;line-height:1;cursor:pointer;padding:2px 4px}
+  .glink{display:flex;gap:8px;margin-top:8px}.glink .inp{flex:1}
   .gtog svg{width:20px;height:20px;vertical-align:-5px;margin-right:4px}
   .bot{position:fixed;right:max(12px,calc(50% - 268px));bottom:calc(84px + 76px + env(safe-area-inset-bottom));z-index:6;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
   .bot>*{pointer-events:auto}
@@ -763,6 +775,7 @@
       src: "upload", posts: null, postsFor: null, post: null, up: null, lib: null, libUp: null, cover: null, coverFor: null, thumbs: null, thumbsFor: null, coverBusy: false,
       gender: "all", interests: [], excludes: [], iq: "", ires: [], xq: "", xres: [], placeMode: "auto", platforms: ["facebook", "instagram", "messenger"], ig: undefined, igFor: null,
       startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") === "1", botMin: store.get("nads_bot_min") === "1",
+      geoInc: [], geoExc: [], geoInit: false, geoMode: "inc", pinArm: false, gq: "", gres: [],
       name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, pin: "", ageMin: 25, ageMax: 65, sending: false, result: null });
   }
   wzReset();
@@ -776,6 +789,111 @@
   const ageText = () => `${wz.ageMin}–${wz.ageMax}${wz.ageMax >= 65 ? "+" : ""} ปี`;
   const faqList = () => wz.faq.map((f) => ({ q: f.q.trim(), a: f.a.trim() })).filter((f) => f.q || f.a);
   const radiusOk = (km) => km === 0 || (Number.isInteger(km) && km >= 1 && km <= 80);
+  // ---------- พื้นที่แบบ Ads Manager ----------
+  const inTH = (lat, lng) => lat >= 5 && lat <= 21 && lng >= 97 && lng <= 106;
+  const r6 = (n) => Math.round(n * 1e6) / 1e6;
+  const centerLL = () => wz.info?.center || [16.473, 99.523];
+  const MAX_GEO = 20, PIN_RADII = [1, 2, 3, 5, 10, 15, 20, 25, 30, 40, 50, 80], CITY_RADII = [17, 20, 25, 30, 40, 50, 80];
+  function geoInit() {
+    if (wz.geoInit) return;
+    const [lat, lng] = centerLL();
+    wz.geoInc = [{ kind: "pin", lat, lng, radius_km: 25, label: wz.info?.center_name || "ตัวเมือง" }]; wz.geoExc = []; wz.geoInit = true; wz.geoFit = true;
+  }
+  const geoList = (m) => (m === "exc" ? wz.geoExc : wz.geoInc);
+  const geoIcon = (g) => ({ pin: "📍", region: "🗺️", city: "🏙️", country: "🇹🇭" })[g.kind];
+  const geoName = (g) => g.kind === "pin" ? `${g.label} · ${g.radius_km} กม.` : g.kind === "city" && g.radius_km ? `${g.name} +${g.radius_km} กม.` : g.name;
+  const geoOk = () => wz.geoInc.length > 0 && [...wz.geoInc, ...wz.geoExc].every((g) => g.kind !== "pin" || inTH(g.lat, g.lng));
+  const areaSum = () => wz.geoInc.map(geoName).join(", ") || "ยังไม่ได้เลือก";
+  function geoAdd(item, mode = wz.geoMode) {
+    const list = geoList(mode);
+    if (list.length >= MAX_GEO) return toast(`เพิ่มได้ไม่เกิน ${MAX_GEO} พื้นที่`);
+    if (item.kind === "country" && mode === "exc") return toast("ตัดทั้งประเทศไม่ได้");
+    if (item.kind === "city" && item.region_id && list.some((g) => g.kind === "region" && g.key === item.region_id)) return toast(`${item.name} อยู่ในจังหวัดที่เลือกไว้แล้ว`, 3500);
+    if (item.kind === "region" && list.some((g) => g.kind === "city" && g.region_id === item.key)) return toast("มีอำเภอในจังหวัดนี้อยู่แล้ว ลบอำเภอนั้นก่อน", 3500);
+    if (item.kind !== "pin" && list.some((g) => g.kind === item.kind && g.key === item.key)) return toast("มีพื้นที่นี้แล้ว");
+    if (mode === "inc") { if (item.kind === "country") list.length = 0; else { const i = list.findIndex((g) => g.kind === "country"); if (i >= 0) list.splice(i, 1); } }
+    list.push(item); wz.pinArm = false; wz.gq = ""; wz.gres = []; renderWizard(); drawGeo(true);
+  }
+  function addPin(lat, lng, label) {
+    if (!inTH(lat, lng)) return toast("ตำแหน่งนี้อยู่นอกประเทศไทย");
+    const n = [...wz.geoInc, ...wz.geoExc].filter((g) => g.kind === "pin").length + 1;
+    geoAdd({ kind: "pin", lat: r6(lat), lng: r6(lng), radius_km: wz.geoMode === "exc" ? 3 : 10, label: label || `หมุด ${n}` });
+  }
+  // แผนที่ (Leaflet + OpenStreetMap) โหลดเมื่อเปิดหน้ากลุ่มคน
+  let botTimer = null;
+  let leafP = null, geoEl = null, geoMap = null, geoLayer = null;
+  function loadLeaflet() {
+    if (window.L?.map) return Promise.resolve();
+    if (leafP) return leafP;
+    leafP = new Promise((ok, no) => {
+      const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      css.integrity = "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="; css.crossOrigin = ""; document.head.appendChild(css);
+      const js = document.createElement("script"); js.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      js.integrity = "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="; js.crossOrigin = "";
+      js.onload = () => ok(); js.onerror = () => { leafP = null; no(new Error("map")); }; document.head.appendChild(js);
+    });
+    return leafP;
+  }
+  function mountMap() {
+    const slot = $("geoSlot"); if (!slot) return;
+    if (!window.L?.map) {
+      loadLeaflet().then(() => { if (wz.step === 5) mountMap(); }).catch(() => { const s2 = $("geoSlot"); if (s2) s2.innerHTML = '<div class="note warn" style="margin:12px">โหลดแผนที่ไม่ได้ — ยังเพิ่มพื้นที่ด้วยการค้นหา หรือวางลิงก์ Google Maps ได้</div>'; });
+      return;
+    }
+    const first = !geoEl;
+    if (first) {
+      geoEl = document.createElement("div"); geoEl.className = "gmap";
+      slot.appendChild(geoEl);
+      geoMap = L.map(geoEl).setView(centerLL(), 10);
+      geoMap.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(geoMap);
+      geoLayer = L.layerGroup().addTo(geoMap);
+      geoMap.on("click", (e) => { if (wz.pinArm) addPin(e.latlng.lat, e.latlng.lng); });
+    } else slot.appendChild(geoEl);
+    const fit = first || wz.geoFit; wz.geoFit = false;
+    setTimeout(() => { geoMap.invalidateSize(); drawGeo(fit); }, 0);
+  }
+  function drawGeo(fit) {
+    if (!geoLayer || !window.L?.map) return;
+    geoLayer.clearLayers();
+    let bounds = null;
+    [["inc", wz.geoInc], ["exc", wz.geoExc]].forEach(([m, list]) => list.forEach((g) => {
+      if (g.kind !== "pin") return;
+      const col = m === "inc" ? "#2563EB" : "#DC2626";
+      const c = L.circle([g.lat, g.lng], { radius: g.radius_km * 1000, color: col, weight: 2, fillOpacity: 0.12 }).addTo(geoLayer);
+      const mk = L.marker([g.lat, g.lng], { draggable: true, icon: L.divIcon({ className: "gpin", html: `<span style="background:${col}">${m === "inc" ? "📍" : "⛔"}</span>`, iconSize: [30, 30], iconAnchor: [15, 15] }) }).addTo(geoLayer);
+      mk.on("drag", (ev) => c.setLatLng(ev.target.getLatLng()));
+      mk.on("dragend", (ev) => { const p = ev.target.getLatLng(); g.lat = r6(p.lat); g.lng = r6(p.lng); if (!inTH(g.lat, g.lng)) toast("หมุดอยู่นอกประเทศไทย"); });
+      bounds = bounds ? bounds.extend(c.getBounds()) : c.getBounds();
+    }));
+    if (!fit) return;
+    if (bounds) geoMap.fitBounds(bounds, { padding: [24, 24], maxZoom: 13 });
+    else if (wz.geoInc.some((g) => g.kind === "country")) geoMap.setView([13.2, 101], 5);
+  }
+  // ค้นหาจังหวัด/อำเภอจากระบบ Facebook
+  let geoTimer = null;
+  function geoSearch(term) {
+    clearTimeout(geoTimer);
+    if (term.trim().length < 2) { wz.gres = []; drawGeoRes(); return; }
+    geoTimer = setTimeout(async () => {
+      try { wz.gres = (await api("/api/geo/search?q=" + encodeURIComponent(term.trim()))).items; } catch (e) { wz.gres = []; toast(e.message, 4000); }
+      drawGeoRes();
+    }, 400);
+  }
+  function drawGeoRes() {
+    const el = $("geoRes"); if (!el) return;
+    el.innerHTML = (wz.gres || []).map((it, i) => `<button data-gres="${i}">${it.kind === "region" ? "🗺️" : "🏙️"} ${esc(it.name)}<small>${it.kind === "region" ? "จังหวัด" : "อำเภอ/เมือง" + (it.region ? " · " + esc(it.region) : "")} · แตะเพื่อ${wz.geoMode === "exc" ? "ไม่รวม" : "เพิ่ม"}</small></button>`).join("");
+    el.querySelectorAll("[data-gres]").forEach((b) => b.onclick = () => { const it = wz.gres[Number(b.dataset.gres)]; geoAdd({ kind: it.kind, key: it.key, name: it.name, ...(it.region_id ? { region_id: it.region_id } : {}) }); });
+  }
+  function geoRows(m) {
+    return geoList(m).map((g, i) => {
+      const id = `${m}:${i}`;
+      const sel = g.kind === "pin" ? `<select data-grad="${id}" aria-label="รัศมี">${[...new Set([...PIN_RADII, g.radius_km])].sort((a, b) => a - b).map((r) => `<option value="${r}" ${r === g.radius_km ? "selected" : ""}>${r} กม.</option>`).join("")}</select>`
+        : g.kind === "city" ? `<select data-grad="${id}" aria-label="รัศมีรอบเมือง"><option value="">ทั้งเขต</option>${CITY_RADII.map((r) => `<option value="${r}" ${r === g.radius_km ? "selected" : ""}>+${r} กม.</option>`).join("")}</select>` : "";
+      const sub = g.kind === "pin" ? `${g.lat.toFixed(4)}, ${g.lng.toFixed(4)}${inTH(g.lat, g.lng) ? "" : " · นอกประเทศไทย!"}` : g.kind === "region" ? "ทั้งจังหวัด" : g.kind === "city" ? "อำเภอ/เมือง" : "ทั้งประเทศ";
+      return `<div class="grow ${m}"><span>${geoIcon(g)}</span><div class="gt"><b>${esc(g.kind === "pin" ? g.label : g.name)}</b><small>${esc(sub)}</small></div>${sel}<button data-gdel="${id}" aria-label="ลบ">×</button></div>`;
+    }).join("");
+  }
   // สื่อที่เลือกอยู่ (อัปใหม่ หรือ วิดีโอเดิมในบัญชีโฆษณา)
   const upOf = (c) => c.src === "library" ? c.libUp : c.src === "upload" ? c.up : null;
   const vidOf = (c) => { const u = upOf(c); return u?.kind === "video" && u.phase === "ready" ? u.media?.video_id : null; };
@@ -879,10 +997,11 @@
     const list = allCr(), A = list[0], boost = A.src === "post" && wz.goal === "reach";
     const body = { page_id: wz.page, goal: wz.goal, source: A.src === "post" ? "post" : "upload", name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
       message: boost ? "" : A.message.trim(), headline: boost ? "" : A.headline.trim(),
-      daily_thb: wz.daily, days: wz.days, radius_km: wz.radius, age_min: wz.ageMin, age_max: wz.ageMax,
+      daily_thb: wz.daily, days: wz.days, radius_km: 0, age_min: wz.ageMin, age_max: wz.ageMax,
       gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: wz.placeMode === "manual" ? wz.platforms : [] };
-    const pin = wz.radius ? parsePin(wz.pin) : null;
-    if (pin) { body.center_lat = pin.lat; body.center_lng = pin.lng; }
+    geoInit();
+    const strip = (g) => g.kind === "pin" ? { kind: "pin", lat: g.lat, lng: g.lng, radius_km: g.radius_km, label: g.label } : g.kind === "country" ? { kind: "country", key: "TH" } : { kind: g.kind, key: g.key, name: g.name, ...(g.radius_km ? { radius_km: g.radius_km } : {}) };
+    body.geo = { include: wz.geoInc.map(strip), exclude: wz.geoExc.map(strip) };
     const cov = (c) => { const x = coverOf(c); return x ? (x.kind === "thumb" ? { kind: "thumb", url: x.url } : { kind: "image", image_hash: x.image_hash }) : null; };
     if (A.src === "post") body.post_id = A.post.id; else body.media = upOf(A).media;
     if (cov(A)) body.cover = cov(A);
@@ -944,11 +1063,15 @@
       if (wz.cr.length > 1 && wz.daily < 150) out.push({ lvl: "tip", t: `มี ${wz.cr.length} แบบในงบ ${wz.daily} บาท/วัน แต่ละแบบจะได้เห็นน้อย อาจต้องรอนานกว่าจะรู้ผล` });
     }
     if (step === 5) {
-      if (wz.radius >= 1 && wz.radius <= 3) out.push({ lvl: "warn", t: `รัศมี ${wz.radius} กม. เล็กมาก คนเห็นน้อย ราคาต่อผลอาจแพงขึ้น` });
-      if (wz.radius === 0) out.push({ lvl: "tip", t: "ทั่วประเทศ: เหมาะกับทรัพย์ที่คนต่างถิ่นซื้อ งบจะกระจายกว้าง" });
-      if (wz.radius > 0 && wz.radius <= 10 && !parsePin(wz.pin)) out.push({ lvl: "tip", t: "รัศมีเล็กแต่ยังไม่ปักหมุดทรัพย์ — วัดจากตัวเมืองแทน ถ้าทรัพย์อยู่นอกเมืองควรปักหมุด" });
+      const pins = wz.geoInc.filter((g) => g.kind === "pin"), center = wz.info?.center_name || "ตัวเมือง";
+      if (!wz.geoInc.length) out.push({ lvl: "warn", t: "ยังไม่ได้เลือกพื้นที่ที่จะแสดงแอด" });
+      pins.filter((g) => g.radius_km <= 3).forEach((g) => out.push({ lvl: "warn", t: `${g.label}: รัศมี ${g.radius_km} กม. เล็กมาก คนเห็นน้อย ราคาต่อผลอาจแพงขึ้น` }));
+      if (wz.geoInc.some((g) => g.kind === "country")) out.push({ lvl: "tip", t: "ทั่วประเทศ: เหมาะกับทรัพย์ที่คนต่างถิ่นซื้อ งบจะกระจายกว้าง" });
+      if (wz.geoInc.length === 1 && pins.length === 1 && pins[0].label === center && pins[0].radius_km <= 10) out.push({ lvl: "tip", t: "รัศมีเล็กแต่วัดจากตัวเมือง — ถ้าทรัพย์อยู่นอกเมือง กด 'ปักหมุด' ที่ทรัพย์" });
+      if (pins.length && wz.geoInc.some((g) => g.kind === "region" || g.kind === "city")) out.push({ lvl: "tip", t: "มีทั้งหมุดและจังหวัด/อำเภอ — ถ้าหมุดอยู่ในพื้นที่ที่เลือกแล้ว จะซ้อนกัน Facebook อาจไม่รับ" });
+      if (wz.geoInc.filter((g) => g.kind === "city" && g.radius_km).length > 1) out.push({ lvl: "tip", t: "ใส่รัศมีรอบอำเภอหลายแห่ง Facebook อาจไม่รับ — ถ้ายิงไม่ผ่าน ให้เลือก 'ทั้งเขต'" });
       if (wz.ageMax - wz.ageMin < 10) out.push({ lvl: "warn", t: `ช่วงอายุแคบ (${ageText()}) กลุ่มคนจะเล็ก` });
-      if (wz.interests.length && wz.radius > 0 && wz.radius <= 5) out.push({ lvl: "warn", t: "รัศมีเล็ก + เลือกความสนใจ กลุ่มอาจแคบเกินไป ลองเอาความสนใจออก" });
+      if (wz.interests.length && wz.geoInc.length && wz.geoInc.every((g) => g.kind === "pin" && g.radius_km <= 5)) out.push({ lvl: "warn", t: "รัศมีเล็ก + เลือกความสนใจ กลุ่มอาจแคบเกินไป ลองเอาความสนใจออก" });
       if (wz.gender !== "all") out.push({ lvl: "tip", t: "เลือกเพศเดียว — ถ้าไม่แน่ใจว่าใครเป็นคนตัดสินใจซื้อ เลือก 'ทุกเพศ' ดีกว่า" });
     }
     return out;
@@ -967,7 +1090,7 @@
     ["รูป/วิดีโอ", ["สิ่งแรกที่คนเห็น — ใช้ภาพจริงของทรัพย์ ชัด สว่าง", "แนวตั้ง 4:5 หรือ 9:16 เต็มจอมือถือกว่า", "เคยอัปวิดีโอแล้ว? เลือก 'วิดีโอเดิม' ไม่ต้องอัปซ้ำ", "วิดีโอ: เลือกภาพปกที่เห็นทรัพย์ชัด ๆ"]],
     ["ข้อความ", ["บรรทัดแรกสำคัญสุด: ประเภททรัพย์ + ทำเล + ราคา", "ตามด้วย ขนาด จุดเด่น 2–3 ข้อ แล้วชวนให้ทัก", "อยากรู้ว่าแบบไหนดีกว่า? กด 'เพิ่มแบบ B' ด้านล่าง"]],
     ["งบ", ["งบต่อวันคือค่าเฉลี่ย บางวัน Facebook ใช้เกินได้ แต่รวมทั้งสัปดาห์ไม่เกิน 7 เท่า", "ช่วงแรก Facebook ยังเรียนรู้ ผลจะแกว่ง แนะนำให้เวลาหลายวันก่อนตัดสิน และอย่าปรับบ่อย", "ไม่แน่ใจกี่วัน เลือก 'ไม่กำหนด' แล้วกดหยุดเองในแอป"]],
-    ["กลุ่มคน", ["เริ่มกว้างไว้ก่อน ให้ Facebook หาคนเอง แล้วค่อยปรับจากผลจริง", "ปักหมุดทรัพย์ จะได้คนรอบทรัพย์จริง", "ความสนใจไม่ใส่ก็ได้ ใส่มากไปกลุ่มจะแคบ", "'แสดงที่ไหน' ปล่อยอัตโนมัติได้ ถ้าเพจผูก IG ไว้ แอดจะขึ้นใน IG ด้วย"]],
+    ["กลุ่มคน", ["เริ่มกว้างไว้ก่อน ให้ Facebook หาคนเอง แล้วค่อยปรับจากผลจริง", "กด 'ปักหมุด' แล้วแตะแผนที่ตรงทรัพย์ หรือยืนที่ทรัพย์แล้วกด 'ตำแหน่งฉัน'", "'ไม่รวม' ใช้ตัดพื้นที่ที่ไม่อยากให้เห็น", "ความสนใจไม่ใส่ก็ได้ ใส่มากไปกลุ่มจะแคบ", "'แสดงที่ไหน' ปล่อยอัตโนมัติได้ ถ้าเพจผูก IG ไว้ แอดจะขึ้นใน IG ด้วย"]],
     ["ตรวจแล้วยิง", ["กด 'ดูหน้าตาบน Facebook / Instagram' ดูก่อนทุกครั้ง", "อ่านรายการ 'เช็กก่อนยิง' ด้านล่าง ข้อที่มี ⚠️ ควรแก้ก่อน", "ยิงแล้ว ระบบจะแจ้งผลและเตือนในไลน์"]],
   ];
   function coachBox(step) {
@@ -1009,7 +1132,11 @@
       return ["#wzNext", "อ่านทวน<b>คำผิด</b>อีกที แล้วกด <b>ถัดไป</b>"];
     }
     if (s === 4) return ["#wzNext", "เลือก<b>งบต่อวัน</b>กับจำนวนวัน ไม่แน่ใจเลือก <b>ไม่กำหนด</b> ได้"];
-    if (s === 5) return placeOk() ? ["#wzNext", "แนะนำรัศมี <b>10–25 กม.</b> ปักหมุดทรัพย์ถ้ามี แล้วกด <b>ถัดไป</b>"] : ["[data-plat]", "เลือก <b>Facebook หรือ Instagram</b> อย่างน้อย 1 อย่าง"];
+    if (s === 5) {
+      if (wz.pinArm) return ["#geoSlot", "แตะบน<b>แผนที่</b>ตรงตำแหน่งทรัพย์ได้เลย"];
+      if (!wz.geoInc.length) return ["#geoQ", "ค้นหา<b>จังหวัด/อำเภอ</b> หรือกด <b>ปักหมุด</b> แล้วแตะแผนที่"];
+      return placeOk() ? ["#wzNext", "แนะนำรัศมี <b>10–25 กม.</b> กด <b>ปักหมุด</b> ที่ทรัพย์ถ้ามี แล้วกด <b>ถัดไป</b>"] : ["[data-plat]", "เลือก <b>Facebook หรือ Instagram</b> อย่างน้อย 1 อย่าง"];
+    }
     return wz.previews?.length ? ["#wzGo", "ดูโอเคแล้ว อ่าน <b>เช็กก่อนยิง</b> แล้วกด <b>ยิงแอดเลย</b>"] : ["#wzPv", "กด<b>ดูหน้าตาแอด</b>ก่อนยิงนะ"];
   }
   function guideTick(scroll = false) {
@@ -1044,7 +1171,7 @@
     }
     if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0)
       && (wz.goal !== "chat" || faqList().every((f) => f.q));
-    if (s === 5) return radiusOk(wz.radius) && wz.ageMin <= wz.ageMax && (!wz.radius || !wz.pin.trim() || !!parsePin(wz.pin)) && placeOk();
+    if (s === 5) return geoOk() && wz.ageMin <= wz.ageMax && placeOk();
     if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && (wz.days === 0 || (wz.days >= 1 && wz.days <= 30)) && startOk();
     return true;
   }
@@ -1268,20 +1395,19 @@
   }
   function stepAudience() {
     const [amin, amax] = wz.info?.age_limits || [18, 65];
-    const radii = wz.info?.presets || RADII, custom = wz.radius > 0 && !radii.includes(wz.radius), pin = parsePin(wz.pin);
+    geoInit();
     const opts = (sel) => Array.from({ length: amax - amin + 1 }, (_, i) => amin + i).map((a) => `<option value="${a}" ${a === sel ? "selected" : ""}>${a === amax ? a + "+" : a} ปี</option>`).join("");
+    const exc = wz.geoMode === "exc";
     let b = `<div class="wz-q">ให้ใครเห็น?</div>
-      <label class="f">รัศมี (Facebook ให้เล็กสุด 1 กม. ใหญ่สุด 80 กม.)</label>
-      <div class="chips">${radii.map((km) => `<button class="chip2 ${wz.radius === km ? "sel" : ""}" data-km="${km}">${km} กม.</button>`).join("")}
-      <button class="chip2 ${wz.radius === 0 ? "sel" : ""}" data-km="0">ทั่วประเทศ</button></div>
-      <input class="inp" id="wzKm" type="number" inputmode="numeric" min="1" max="80" placeholder="หรือพิมพ์เอง 1–80 กม." value="${custom ? wz.radius : ""}" style="margin-top:6px">`;
-    if (wz.radius > 0) {
-      b += `<label class="f" for="wzPin">นับรัศมีจาก (ไม่ใส่ = ${esc(wz.info?.center_name || "ตัวเมือง")})</label>
-        <input class="inp" id="wzPin" value="${esc(wz.pin)}" placeholder="วางพิกัดหรือลิงก์ Google Maps ของทรัพย์">
-        ${wz.pin.trim() && !pin ? '<div class="note warn">อ่านพิกัดไม่ได้ — ลิงก์ย่อ (maps.app.goo.gl) ใช้ไม่ได้ ให้กดค้างที่หมุดใน Google Maps แล้วคัดลอกตัวเลขพิกัด เช่น 16.48210, 99.51120</div>'
-          : pin ? `<div class="note ok">✓ ใช้หมุด ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}</div>` : ""}`;
-    }
-    b += `<div class="note info">${esc(areaLabel(wz.radius))}${wz.radius && wz.radius <= 3 ? " · รัศมีเล็ก คนเห็นอาจน้อย" : ""}</div>
+      <div class="sec">📍 ตำแหน่ง</div>
+      <div class="seg gmode"><button data-gmode="inc" class="${exc ? "" : "on"}">✅ รวม</button><button data-gmode="exc" class="${exc ? "on" : ""}">⛔ ไม่รวม</button></div>
+      <input class="inp" id="geoQ" autocomplete="off" placeholder="${exc ? "ค้นหาพื้นที่ที่จะไม่แสดง" : "ค้นหาจังหวัด / อำเภอ เช่น กำแพงเพชร"}" value="${esc(wz.gq)}"><div class="ires" id="geoRes"></div>
+      <div class="chips" style="margin-top:8px"><button class="chip2 ${wz.pinArm ? "sel" : ""}" data-gact="pin">📍 ${wz.pinArm ? "แตะบนแผนที่ได้เลย" : "ปักหมุด"}</button><button class="chip2" data-gact="me">◎ ตำแหน่งฉัน</button>${exc ? "" : '<button class="chip2" data-gact="th">🇹🇭 ทั้งประเทศ</button>'}</div>
+      <div class="gslot ${wz.pinArm ? "arm" : ""}" id="geoSlot"></div>
+      <div class="glink"><input class="inp" id="geoLink" placeholder="หรือวางพิกัด/ลิงก์ Google Maps"><button class="btn ghost sm" id="geoLinkAdd">เพิ่มหมุด</button></div>
+      <div class="ghd">✅ แสดงให้คนใน</div>${geoRows("inc") || '<div class="note warn">ยังไม่ได้เลือกพื้นที่</div>'}
+      ${wz.geoExc.length ? `<div class="ghd exc">⛔ ไม่แสดงให้คนใน</div>${geoRows("exc")}` : ""}
+      <div class="wz-hint" style="margin-top:8px">ลากหมุดบนแผนที่เพื่อขยับได้ · วงกลม = รัศมีที่แอดจะแสดง</div>
       <label class="f">ช่วงอายุ</label>
       <div class="agerow"><select class="inp" id="wzAgeMin">${opts(wz.ageMin)}</select><span>ถึง</span><select class="inp" id="wzAgeMax">${opts(wz.ageMax)}</select></div>
       <div class="note info">Facebook จะส่งแอดให้เฉพาะคนอายุ ${ageText()} เท่านั้น</div>
@@ -1345,7 +1471,8 @@
         ${list.length < 2 && A.headline.trim() && !isBoost() ? `<div><span>หัวข้อ</span><b>${esc(A.headline.trim())}</b></div>` : ""}
         <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน${wz.days ? ` × ${wz.days} วัน` : ""}</b></div>
         ${wz.days ? `<div><span>รวมประมาณ</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>` : ""}
-        <div><span>พื้นที่</span><b>${esc(areaLabel(wz.radius))}</b></div>
+        <div><span>พื้นที่</span><b style="text-align:right">${esc(areaSum())}</b></div>
+        ${wz.geoExc.length ? `<div><span>ไม่แสดงใน</span><b style="text-align:right">${esc(wz.geoExc.map(geoName).join(", "))}</b></div>` : ""}
         <div><span>อายุ</span><b>${ageText()}</b></div>
         <div><span>เพศ</span><b>${{ all: "ทุกเพศ", male: "ชาย", female: "หญิง" }[wz.gender]}</b></div>
         <div><span>ความสนใจ</span><b style="text-align:right">${wz.interests.length ? esc(wz.interests.map((x) => x.name).join(", ")) : "ไม่จำกัด"}</b></div>
@@ -1490,9 +1617,38 @@
     box.querySelectorAll("[data-fq]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fq)].q = el.value; refreshNext(); });
     box.querySelectorAll("[data-fa]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fa)].a = el.value; refreshNext(); });
     on("igRe", "onclick", () => { wz.ig = undefined; wz.igFor = null; renderWizard(); });
+    if (n === 5) {
+      mountMap(); drawGeoRes();
+      box.querySelectorAll("[data-gmode]").forEach((el) => el.onclick = () => { wz.geoMode = el.dataset.gmode; renderWizard(); });
+      on("geoQ", "oninput", (e) => { wz.gq = e.target.value; geoSearch(wz.gq); });
+      box.querySelectorAll("[data-gact]").forEach((el) => el.onclick = () => {
+        const a = el.dataset.gact;
+        if (a === "pin") { wz.pinArm = !wz.pinArm; renderWizard(); if (wz.pinArm) { $("geoSlot")?.scrollIntoView({ behavior: "smooth", block: "center" }); toast("แตะบนแผนที่ตรงตำแหน่งที่ต้องการ", 3000); } }
+        else if (a === "th") geoAdd({ kind: "country", key: "TH", name: "ประเทศไทย" }, "inc");
+        else if (a === "me") {
+          if (!navigator.geolocation) return toast("มือถือนี้ใช้ตำแหน่งไม่ได้");
+          toast("กำลังหาตำแหน่ง…");
+          navigator.geolocation.getCurrentPosition((p) => addPin(p.coords.latitude, p.coords.longitude, "ตำแหน่งที่ยืนอยู่"),
+            () => toast("เปิดตำแหน่งไม่ได้ — อนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์ก่อน", 4000), { enableHighAccuracy: true, timeout: 15000 });
+        }
+      });
+      on("geoLinkAdd", "onclick", () => {
+        const p = parsePin($("geoLink").value);
+        if (!p) return toast("อ่านพิกัดไม่ได้ — ลิงก์ย่อ maps.app.goo.gl ใช้ไม่ได้ ให้กดค้างที่หมุดใน Google Maps แล้วคัดลอกตัวเลขพิกัด", 5000);
+        addPin(p.lat, p.lng, "หมุดจากลิงก์");
+      });
+      box.querySelectorAll("[data-gdel]").forEach((el) => el.onclick = () => { const [m, i] = el.dataset.gdel.split(":"); geoList(m).splice(Number(i), 1); renderWizard(); drawGeo(false); });
+      box.querySelectorAll("[data-grad]").forEach((el) => el.onchange = () => {
+        const [m, i] = el.dataset.grad.split(":"), g = geoList(m)[Number(i)];
+        if (el.value === "") delete g.radius_km; else g.radius_km = Number(el.value);
+        renderWizard(); drawGeo(false);
+      });
+    }
     // ซ่อนบอทตอนพิมพ์ จะได้ไม่บังช่องกรอก
     box.onfocusin = (e) => { if (e.target.matches("input:not([type=file]),textarea,select")) document.body.classList.add("typing"); };
     box.onfocusout = () => document.body.classList.remove("typing");
+    clearTimeout(botTimer);
+    if ($("botSay")) botTimer = setTimeout(() => { const el = $("botSay"); if (el) { el.remove(); wz.botMin = true; } }, 10000);
     guideTick();
   }
   async function wzSubmit() {
@@ -1550,11 +1706,12 @@
     if (path === "/api/media/videos") return Promise.resolve({ videos: [{ id: "9100", title: "ทัวร์ที่ดินหน้าโรบินสัน (ตัวอย่าง)", created_time: new Date().toISOString(), picture: null, length: 170 }] });
     if (path.startsWith("/api/media/thumbs")) return Promise.resolve({ thumbs: [] });
     if (path.startsWith("/api/page-info")) return Promise.resolve({ instagram: { id: "1", username: "n.property.network" } });
+    if (path.startsWith("/api/geo/search")) return Promise.resolve({ items: [{ kind: "region", key: "2681", name: "จังหวัดกำแพงเพชร (ตัวอย่าง)", region: "", region_id: "" }, { kind: "city", key: "1675383", name: "อำเภอเมืองกำแพงเพชร (ตัวอย่าง)", region: "จังหวัดกำแพงเพชร", region_id: "2681" }] });
     if (path.startsWith("/api/targeting/search")) return Promise.resolve({ items: [{ id: "6003014261718", name: "อสังหาริมทรัพย์", size_min: 1e6, size_max: 2e6, path: "ความสนใจ › ธุรกิจ" }, { id: "6003020834693", name: "การซื้อบ้าน", size_min: 3e5, size_max: 5e5, path: "ความสนใจ › บ้านและสวน" }] });
     if (path === "/api/preview") return Promise.resolve({ previews: [] });
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
     if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
-      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [1, 3, 5, 10, 25, 50, 80], radius_range: [1, 80], age_limits: [18, 65], max_faq: 3, max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
+      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", center: [16.473, 99.523], city_radius: [17, 80], max_geo: 20, presets: [1, 3, 5, 10, 25, 50, 80], radius_range: [1, 80], age_limits: [18, 65], max_faq: 3, max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
     if (path.startsWith("/api/forms")) return Promise.resolve({ forms: [{ id: "55", name: "ฟอร์มฝากขายบ้าน (ตัวอย่าง)" }] });
     if (path === "/api/team") {
       const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
