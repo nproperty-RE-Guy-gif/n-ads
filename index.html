@@ -755,7 +755,7 @@
   }
   function updUp() { const u = wz.up; if (!u) return; if ($("upBar")) $("upBar").style.width = (u.pct || 0) + "%"; if ($("upTx")) $("upTx").textContent = upText(u); }
   function upText(u) {
-    return { uploading: `กำลังอัปโหลด… ${u.pct || 0}%`, sending: "กำลังส่งให้ Facebook…", processing: `Facebook กำลังประมวลผลวิดีโอ… ${u.pct ? u.pct + "%" : ""} (อาจใช้เวลาสักครู่ เปิดหน้านี้ค้างไว้)`,
+    return { uploading: `กำลังอัปโหลด… ${u.pct || 0}%${u.big ? ` (ไฟล์ ${(u.size / 1048576).toFixed(0)} MB อาจใช้เวลาหลายนาที เปิดหน้านี้ค้างไว้)` : ""}`, sending: "กำลังส่งให้ Facebook…", processing: `Facebook กำลังประมวลผลวิดีโอ… ${u.pct ? u.pct + "%" : ""} (อาจใช้เวลาสักครู่ เปิดหน้านี้ค้างไว้)`,
       ready: "✓ พร้อมใช้", error: u.msg || "ผิดพลาด" }[u.phase] || "";
   }
   async function wzPickFile(file) {
@@ -763,12 +763,20 @@
     const mime = MIME_BY_EXT[ext] && (!file.type || file.type === "application/octet-stream") ? MIME_BY_EXT[ext] : file.type;
     const kind = /^video\//.test(mime) ? "video" : /^image\//.test(mime) ? "image" : null;
     if (!kind || !Object.values(MIME_BY_EXT).includes(mime)) return toast("รองรับเฉพาะวิดีโอ MP4/MOV หรือรูป JPG/PNG", 4000);
-    const max = wz.info?.max_upload_mb || 50;
-    if (file.size > max * 1048576) return toast(`ไฟล์ ${(file.size / 1048576).toFixed(0)} MB ใหญ่เกิน ${max} MB — ย่อไฟล์ก่อน หรือโพสต์ลงเพจแล้วเลือกจาก "โพสต์ในเพจ"`, 6000);
+    const max = kind === "video" ? (wz.info?.max_video_mb || 1024) : (wz.info?.max_upload_mb || 50);
+    if (file.size > max * 1048576) return toast(`ไฟล์ ${(file.size / 1048576).toFixed(0)} MB ใหญ่เกิน ${max >= 1024 ? max / 1024 + " GB" : max + " MB"} — ย่อไฟล์ก่อน หรือโพสต์ลงเพจแล้วเลือกจาก "โพสต์ในเพจ"`, 6000);
+    const direct = kind === "video" && file.size > (wz.info?.direct_video_mb || 45) * 1048576;
     if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
-    const up = wz.up = { name: file.name, kind, mime, size: file.size, preview: URL.createObjectURL(file), phase: "uploading", pct: 0, msg: "", media: null, thumb: null };
+    const up = wz.up = { name: file.name, kind, mime, size: file.size, preview: URL.createObjectURL(file), phase: "uploading", pct: 0, msg: "", media: null, thumb: null, big: direct };
     renderWizard();
     try {
+      if (direct && !st.demo) {
+        up.media = await uploadVideoDirect(file, up);
+        if (!up.media || wz.up !== up) return;
+        up.phase = "processing"; up.pct = 0; renderWizard();
+        await pollVideo(up);
+        return;
+      }
       if (st.demo) { for (let p = 0; p <= 100; p += 20) { up.pct = p; updUp(); await new Promise((r) => setTimeout(r, 150)); } up.media = kind === "video" ? { kind, video_id: "1" } : { kind, image_hash: "demo" }; up.phase = "ready"; renderWizard(); return; }
       const u = await api("/api/media/upload-url", { body: { mime, size: file.size } });
       await putFile(u.upload_url, file, mime, (p) => { if (wz.up === up) { up.pct = p; updUp(); } });
@@ -780,6 +788,36 @@
       up.phase = "processing"; up.pct = 0; renderWizard();
       await pollVideo(up);
     } catch (e) { if (wz.up === up) { up.phase = "error"; up.msg = e.message; renderWizard(); } }
+  }
+  // วิดีโอไฟล์ใหญ่: ส่งตรงให้ Facebook ทีละชิ้นผ่านระบบหลังบ้าน (Facebook เป็นคนกำหนดขนาดชิ้น)
+  async function uploadVideoDirect(file, up) {
+    const s = await api("/api/media/video/start", { body: { size: file.size } });
+    let start = s.start_offset, end = s.end_offset, rounds = 0;
+    while (start < end && rounds++ < 5000) {
+      if (wz.up !== up) return null;
+      const from = start;
+      let r = null;
+      for (let tries = 1; ; tries++) {
+        try { r = await sendChunk(s.session, from, file.slice(from, end), (loaded) => { up.pct = Math.min(99, Math.round(((from + loaded) / file.size) * 100)); updUp(); }); break; }
+        catch (e) { if (tries >= 4 || wz.up !== up) throw e; up.msg = ""; await new Promise((ok) => setTimeout(ok, 2000 * tries)); }
+      }
+      start = Number(r.start_offset); end = Number(r.end_offset);
+      up.pct = Math.min(99, Math.round((start / file.size) * 100)); updUp();
+    }
+    if (start < file.size) throw new Error("ส่งวิดีโอไม่ครบ ลองใหม่อีกครั้ง");
+    return await api("/api/media/video/finish", { body: { session: s.session, video_id: s.video_id } });
+  }
+  function sendChunk(session, start, blob, onp) {
+    return new Promise((res, rej) => {
+      const x = new XMLHttpRequest();
+      x.open("POST", st.api.replace(/\/$/, "") + `/api/media/video/chunk?session=${encodeURIComponent(session)}&start=${start}`);
+      x.setRequestHeader("authorization", "Bearer " + st.tok);
+      x.setRequestHeader("content-type", "application/octet-stream");
+      x.upload.onprogress = (e) => { if (e.lengthComputable) onp(e.loaded); };
+      x.onload = () => { let d = {}; try { d = JSON.parse(x.responseText); } catch {} x.status >= 200 && x.status < 300 ? res(d) : rej(new Error(d.error || `ส่งวิดีโอไม่สำเร็จ (${x.status})`)); };
+      x.onerror = () => rej(new Error("อินเทอร์เน็ตหลุดระหว่างส่งวิดีโอ ลองใหม่อีกครั้ง"));
+      x.send(blob);
+    });
   }
   async function pollVideo(up) {
     for (let i = 0; i < 120 && wz.up === up; i++) {
@@ -825,7 +863,7 @@
       const max = wz.info?.max_upload_mb || 50;
       const u = wz.up;
       if (!u) return b + `<label class="drop"><input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png"><b>＋ เลือกไฟล์</b>
-        <span>วิดีโอ MP4/MOV หรือรูป JPG/PNG · ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>`;
+        <span>วิดีโอ MP4/MOV ไม่เกิน ${(wz.info?.max_video_mb || 1024) / 1024} GB · รูป JPG/PNG ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>`;
       b += `<div class="prev">${u.kind === "video" ? `<video src="${esc(u.preview)}" controls playsinline muted></video>` : `<img src="${esc(u.preview)}" alt="">`}
         <div class="pbar ${u.phase === "ready" ? "done" : ""}"><i id="upBar" style="width:${u.phase === "ready" ? 100 : u.pct || 0}%"></i></div>
         <div class="uptx" id="upTx">${esc(upText(u))}</div>
@@ -1024,7 +1062,7 @@
     }
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
     if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
-      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], ages: [18, 20, 25], max_upload_mb: 50 });
+      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], ages: [18, 20, 25], max_upload_mb: 50, max_video_mb: 1024, direct_video_mb: 45 });
     if (path.startsWith("/api/forms")) return Promise.resolve({ forms: [{ id: "55", name: "ฟอร์มฝากขายบ้าน (ตัวอย่าง)" }] });
     if (path === "/api/team") {
       const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
