@@ -152,6 +152,10 @@
   .total{background:var(--card);border-radius:var(--r);padding:16px;margin-top:12px;text-align:center;box-shadow:var(--shadow)}
   .total .k{font-size:14px;color:var(--mute)} .total .v{font-size:34px;font-weight:700;color:var(--pri);letter-spacing:-.5px}
   .note{border-radius:14px;padding:10px 12px;font-size:14px;margin-top:10px}
+  .sec{font-weight:600;font-size:18px;margin:26px 0 2px}
+  .faq{background:var(--card);border-radius:14px;padding:10px;margin-top:8px;box-shadow:var(--shadow)}
+  .btn.sm{flex:none;padding:9px 14px;font-size:15px}
+  .agerow{display:flex;gap:10px;align-items:center}.agerow select{flex:1}
   .note.ok{background:var(--green-l);color:var(--green)} .note.warn{background:var(--amber-l);color:var(--amber)} .note.bad{background:var(--red-l);color:var(--red)} .note.info{background:var(--card2);color:var(--mute)}
   .sum{background:var(--card);border-radius:var(--r);padding:6px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
   .sum div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
@@ -686,7 +690,21 @@
   }
 
   // ---------- ยิงแอดใหม่ (Ads Manager ฉบับย่อ): ทำทีละขั้น ----------
-  const WELCOME = "สวัสดีครับ สนใจทรัพย์นี้ ขอรายละเอียดเพิ่มเติมครับ";
+  const NAME_TAG = "{ชื่อลูกค้า}";
+  const WELCOME = `สวัสดีครับคุณ${NAME_TAG} ขอบคุณที่สนใจทรัพย์นี้ครับ สอบถามรายละเอียดหรือนัดดูทรัพย์ได้เลยครับ`;
+  const FAQ_DEFAULT = ["ราคาเท่าไหร่ครับ", "ทรัพย์อยู่ตรงไหนครับ", "ขอนัดดูทรัพย์ได้ไหมครับ"];
+  const RADII = [1, 3, 5, 10, 25, 50, 80];
+  // อ่านพิกัดจากที่วางมา: ตัวเลข "16.48, 99.51", ลิงก์ Google Maps (หมุด !3d!4d / q= / @), หรือแบบ Apple Maps "16.48° N, 99.51° E"
+  function parsePin(t) {
+    const s = String(t || "").trim(); if (!s) return null;
+    let m = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || s.match(/[?&](?:q|query|ll|destination)=(-?\d+\.\d+)(?:,|%2C)\s*(-?\d+\.\d+)/i)
+      || s.match(/@(-?\d+\.\d+),\s*(-?\d+\.\d+)/) || s.match(/^\(?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)?$/);
+    let lat, lng;
+    if (m) { lat = Number(m[1]); lng = Number(m[2]); }
+    else if ((m = s.match(/(\d+(?:\.\d+)?)\s*°\s*([NS])[\s,]+(\d+(?:\.\d+)?)\s*°\s*([EW])/i))) { lat = Number(m[1]) * (/s/i.test(m[2]) ? -1 : 1); lng = Number(m[3]) * (/w/i.test(m[4]) ? -1 : 1); }
+    else return null;
+    return lat >= 5 && lat <= 21 && lng >= 97 && lng <= 106 ? { lat, lng } : null;
+  }
   const STEP_NAMES = ["เพจ", "เป้าหมาย", "รูป/วิดีโอ", "ข้อความ", "งบ", "กลุ่มคน", "ตรวจแล้วยิง"];
   const LAST = STEP_NAMES.length - 1;
   const GOAL_INFO = {
@@ -695,15 +713,14 @@
     reach: { ic: "👀", t: "ให้คนเห็นเยอะ", d: "เน้นให้คนในพื้นที่เห็นมากที่สุด เหมาะกับสร้างการรู้จัก" },
     traffic: { ic: "🔗", t: "ให้คนเข้าเว็บ/ลิงก์", d: "พาคนไปหน้าเว็บหรือลิงก์ที่กำหนด" },
   };
-  const AREA_DESC = { 0: "ทั่วประเทศไทย", 10: "เฉพาะในตัวเมือง", 25: "ในเมืองและรอบ ๆ", 50: "กว้างขึ้น อำเภอรอบนอก", 80: "กว้างสุด รวมจังหวัดใกล้เคียง" };
   const MIME_BY_EXT = { mp4: "video/mp4", mov: "video/quicktime", m4v: "video/x-m4v", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png" };
   const wz = {};
   function wzReset() {
     if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
     Object.assign(wz, { step: 0, info: wz.info || null, page: wz.info?.default_page || null, loading: false, err: "",
-      goal: "chat", welcome: WELCOME, forms: null, formsFor: null, form_id: "", link: "",
+      goal: "chat", welcome: WELCOME, faq: FAQ_DEFAULT.map((q) => ({ q, a: "" })), forms: null, formsFor: null, form_id: "", link: "",
       src: "upload", posts: null, postsFor: null, post: null, up: null,
-      name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, age: 25, sending: false, result: null });
+      name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, pin: "", ageMin: 25, ageMax: 65, sending: false, result: null });
   }
   wzReset();
   const firstLine = (t) => (String(t || "").split("\n").map((x) => x.trim()).find(Boolean) || "แอดใหม่").slice(0, 40);
@@ -711,7 +728,11 @@
   const pageOf = () => (wz.info?.pages || []).find((p) => p.id === wz.page);
   const isBoost = () => wz.src === "post" && wz.goal === "reach";
   const linkOk = (s) => { try { const u = new URL(s); return /^https?:$/.test(u.protocol) && u.hostname.includes("."); } catch { return false; } };
-  const areaLabel = (km) => km === 0 ? "ทั่วประเทศไทย" : `รัศมี ${km} กม. จาก${wz.info?.center_name || "ตัวเมือง"}`;
+  const centerName = () => parsePin(wz.pin) ? "หมุดที่ปักไว้" : (wz.info?.center_name || "ตัวเมือง");
+  const areaLabel = (km) => km === 0 ? "ทั่วประเทศไทย" : `รัศมี ${km} กม. จาก${centerName()}`;
+  const ageText = () => `${wz.ageMin}–${wz.ageMax}${wz.ageMax >= 65 ? "+" : ""} ปี`;
+  const faqList = () => wz.faq.map((f) => ({ q: f.q.trim(), a: f.a.trim() })).filter((f) => f.q || f.a);
+  const radiusOk = (km) => km === 0 || (Number.isInteger(km) && km >= 1 && km <= 80);
 
   async function wzLoad(what) {
     wz.loading = true; wz.err = ""; renderWizard();
@@ -737,7 +758,9 @@
       if (wz.src === "upload") return wz.up?.phase === "ready";
       return !!wz.post && wz.post.eligible && (wz.goal === "reach" || !!wz.post.picture);
     }
-    if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0);
+    if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0)
+      && (wz.goal !== "chat" || faqList().every((f) => f.q));
+    if (s === 5) return radiusOk(wz.radius) && wz.ageMin <= wz.ageMax && (!wz.radius || !wz.pin.trim() || !!parsePin(wz.pin));
     if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && (wz.days === 0 || (wz.days >= 1 && wz.days <= 30));
     return true;
   }
@@ -843,7 +866,6 @@
     let b = `<div class="wz-q">อยากได้อะไรจากแอดนี้?</div><div class="wz-hint">เลือก 1 อย่าง</div>`;
     b += Object.entries(GOAL_INFO).map(([k, g]) => `<button class="opt ${wz.goal === k ? "sel" : ""}" data-goal="${k}"><div class="ic">${g.ic}</div>
       <div><b>${g.t}${g.rec ? "<em>แนะนำ</em>" : ""}</b><span>${g.d}</span></div></button>`).join("");
-    if (wz.goal === "chat") b += `<label class="f" for="wzWel">ข้อความที่ลูกค้าจะส่งมาตอนกดทัก (แก้ได้)</label><input class="inp" id="wzWel" maxlength="300" value="${esc(wz.welcome)}">`;
     if (wz.goal === "traffic") b += `<label class="f" for="wzLink">ลิงก์ปลายทาง</label><input class="inp" id="wzLink" type="url" inputmode="url" placeholder="https://npropertynetwork.com/..." value="${esc(wz.link)}">
       ${wz.link && !linkOk(wz.link.trim()) ? '<div class="note warn">ลิงก์ต้องขึ้นต้นด้วย https://</div>' : ""}`;
     if (wz.goal === "lead") {
@@ -893,6 +915,17 @@
       <textarea class="inp" id="wzMsg" maxlength="2000" placeholder="เช่น ขายบ้านเดี่ยว 2 ชั้น 3 ห้องนอน ใกล้ตลาด ทักสอบถามได้เลย">${esc(wz.message)}</textarea>
       <label class="f" for="wzHead">หัวข้อสั้น ๆ (ไม่ใส่ก็ได้)</label>
       <input class="inp" id="wzHead" maxlength="60" value="${esc(wz.headline)}" placeholder="เช่น ราคาจบ 1.89 ล้าน">`;
+    if (wz.goal === "chat") {
+      b += `<div class="sec">💬 ข้อความในแชต</div><div class="wz-hint">ลูกค้ากดทักจากแอด จะเห็นข้อความนี้จากเพจทันที</div>
+        <label class="f" for="wzWel">ข้อความทักทาย</label>
+        <textarea class="inp" id="wzWel" maxlength="280">${esc(wz.welcome)}</textarea>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px"><button class="btn ghost sm" id="wzAddName">＋ ใส่ชื่อลูกค้า</button>
+        <span style="font-size:13px;color:var(--mute)">${NAME_TAG} = ชื่อในบัญชี Facebook ของลูกค้า</span></div>
+        <label class="f">คำถามที่พบบ่อย · ลูกค้ากดถามได้ทันที (ไม่ใส่ก็ได้)</label>
+        ${wz.faq.map((f, i) => `<div class="faq"><input class="inp" data-fq="${i}" maxlength="80" placeholder="คำถาม ${i + 1}" value="${esc(f.q)}">
+          <input class="inp" data-fa="${i}" maxlength="300" placeholder="คำตอบอัตโนมัติ (เว้นว่าง = ทีมตอบเอง)" value="${esc(f.a)}" style="margin-top:6px"></div>`).join("")}
+        ${faqList().some((f) => !f.q) ? '<div class="note warn">ใส่คำถามก่อนคำตอบ</div>' : ""}`;
+    }
     return b;
   }
   function stepBudget() {
@@ -915,13 +948,25 @@
       ${box}${note}`;
   }
   function stepAudience() {
-    const presets = [...(wz.info?.presets || [10, 25, 50, 80]), 0];
-    const ages = wz.info?.ages || [18, 20, 25];
-    return `<div class="wz-q">ให้ใครเห็น?</div><div class="wz-hint">นับรัศมีจาก${esc(wz.info?.center_name || "ตัวเมือง")}</div>
-      ${presets.map((km) => `<button class="opt ${wz.radius === km ? "sel" : ""}" data-km="${km}"><div class="ic" style="font-size:${km ? 15 : 22}px;font-weight:600;color:var(--pri)">${km || "🇹🇭"}</div>
-        <div><b>${km ? `รัศมี ${km} กม.` : "ทั่วประเทศ"}</b><span>${AREA_DESC[km] || ""}</span></div></button>`).join("")}
-      <label class="f">อายุขั้นต่ำ</label><div class="chips">${ages.map((a) => `<button class="chip2 ${wz.age === a ? "sel" : ""}" data-age="${a}">${a}+ ปี</button>`).join("")}</div>
-      <div class="note info">Facebook จะช่วยหาคนที่น่าจะสนใจในกลุ่มนี้ให้อัตโนมัติ (อายุสูงสุด 65+ · เลือกอายุขั้นต่ำได้ไม่เกิน 25 ตามเงื่อนไขของ Facebook)</div>`;
+    const [amin, amax] = wz.info?.age_limits || [18, 65];
+    const radii = wz.info?.presets || RADII, custom = wz.radius > 0 && !radii.includes(wz.radius), pin = parsePin(wz.pin);
+    const opts = (sel) => Array.from({ length: amax - amin + 1 }, (_, i) => amin + i).map((a) => `<option value="${a}" ${a === sel ? "selected" : ""}>${a === amax ? a + "+" : a} ปี</option>`).join("");
+    let b = `<div class="wz-q">ให้ใครเห็น?</div>
+      <label class="f">รัศมี (Facebook ให้เล็กสุด 1 กม. ใหญ่สุด 80 กม.)</label>
+      <div class="chips">${radii.map((km) => `<button class="chip2 ${wz.radius === km ? "sel" : ""}" data-km="${km}">${km} กม.</button>`).join("")}
+      <button class="chip2 ${wz.radius === 0 ? "sel" : ""}" data-km="0">ทั่วประเทศ</button></div>
+      <input class="inp" id="wzKm" type="number" inputmode="numeric" min="1" max="80" placeholder="หรือพิมพ์เอง 1–80 กม." value="${custom ? wz.radius : ""}" style="margin-top:6px">`;
+    if (wz.radius > 0) {
+      b += `<label class="f" for="wzPin">นับรัศมีจาก (ไม่ใส่ = ${esc(wz.info?.center_name || "ตัวเมือง")})</label>
+        <input class="inp" id="wzPin" value="${esc(wz.pin)}" placeholder="วางพิกัดหรือลิงก์ Google Maps ของทรัพย์">
+        ${wz.pin.trim() && !pin ? '<div class="note warn">อ่านพิกัดไม่ได้ — ลิงก์ย่อ (maps.app.goo.gl) ใช้ไม่ได้ ให้กดค้างที่หมุดใน Google Maps แล้วคัดลอกตัวเลขพิกัด เช่น 16.48210, 99.51120</div>'
+          : pin ? `<div class="note ok">✓ ใช้หมุด ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}</div>` : ""}`;
+    }
+    b += `<div class="note info">${esc(areaLabel(wz.radius))}${wz.radius && wz.radius <= 3 ? " · รัศมีเล็ก คนเห็นอาจน้อย" : ""}</div>
+      <label class="f">ช่วงอายุ</label>
+      <div class="agerow"><select class="inp" id="wzAgeMin">${opts(wz.ageMin)}</select><span>ถึง</span><select class="inp" id="wzAgeMax">${opts(wz.ageMax)}</select></div>
+      <div class="note info">Facebook จะส่งแอดให้เฉพาะคนอายุ ${ageText()} เท่านั้น</div>`;
+    return b;
   }
   function stepReview() {
     const g = GOAL_INFO[wz.goal];
@@ -942,7 +987,9 @@
         <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน${wz.days ? ` × ${wz.days} วัน` : ""}</b></div>
         ${wz.days ? `<div><span>รวมประมาณ</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>` : ""}
         <div><span>พื้นที่</span><b>${esc(areaLabel(wz.radius))}</b></div>
-        <div><span>อายุ</span><b>${wz.age}–65+ ปี</b></div>
+        <div><span>อายุ</span><b>${ageText()}</b></div>
+        ${wz.goal === "chat" ? `<div><span>ทักทายในแชต</span><b style="white-space:pre-wrap;text-align:right">${esc(wz.welcome.trim() || WELCOME)}</b></div>
+        ${faqList().length ? `<div><span>คำถามที่พบบ่อย</span><b style="text-align:right">${faqList().map((f) => esc(f.q) + (f.a ? `<br><span style="font-weight:400;color:var(--mute)">→ ${esc(f.a)}</span>` : "")).join("<br>")}</b></div>` : ""}` : ""}
         <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – ${wz.days ? `อีก ${wz.days} วัน` : "ไม่กำหนด (กดหยุดเองในแอป)"}</b></div>
       </div>
       ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
@@ -1006,13 +1053,27 @@
     box.querySelectorAll("[data-daily]").forEach((el) => el.onclick = () => { wz.daily = Number(el.dataset.daily); renderWizard(); });
     box.querySelectorAll("[data-days]").forEach((el) => el.onclick = () => { wz.days = Number(el.dataset.days); renderWizard(); });
     box.querySelectorAll("[data-km]").forEach((el) => el.onclick = () => { wz.radius = Number(el.dataset.km); renderWizard(); });
-    box.querySelectorAll("[data-age]").forEach((el) => el.onclick = () => { wz.age = Number(el.dataset.age); renderWizard(); });
+    on("wzKm", "oninput", (e) => { const v = Number(e.target.value); if (e.target.value !== "" && radiusOk(v) && v > 0) wz.radius = v; refreshNext(); });
+    on("wzKm", "onchange", () => renderWizard());
+    on("wzPin", "oninput", (e) => { wz.pin = e.target.value; refreshNext(); });
+    on("wzPin", "onchange", () => renderWizard());
+    on("wzAgeMin", "onchange", (e) => { wz.ageMin = Number(e.target.value); if (wz.ageMax < wz.ageMin) wz.ageMax = wz.ageMin; renderWizard(); });
+    on("wzAgeMax", "onchange", (e) => { wz.ageMax = Number(e.target.value); if (wz.ageMin > wz.ageMax) wz.ageMin = wz.ageMax; renderWizard(); });
+    on("wzAddName", "onclick", () => {
+      const t = $("wzWel"), at = t.selectionStart ?? t.value.length;
+      t.value = t.value.slice(0, at) + NAME_TAG + t.value.slice(t.selectionEnd ?? at); wz.welcome = t.value;
+      t.focus(); t.selectionStart = t.selectionEnd = at + NAME_TAG.length;
+    });
+    box.querySelectorAll("[data-fq]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fq)].q = el.value; refreshNext(); });
+    box.querySelectorAll("[data-fa]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fa)].a = el.value; refreshNext(); });
   }
   async function wzSubmit() {
     wz.sending = true; wz.err = ""; renderWizard();
-    const body = { page_id: wz.page, goal: wz.goal, source: wz.src, name: wz.name.trim(), welcome: wz.welcome,
+    const body = { page_id: wz.page, goal: wz.goal, source: wz.src, name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
       message: isBoost() ? "" : wz.message.trim(), headline: isBoost() ? "" : wz.headline.trim(),
-      daily_thb: wz.daily, days: wz.days, radius_km: wz.radius, age_min: wz.age };
+      daily_thb: wz.daily, days: wz.days, radius_km: wz.radius, age_min: wz.ageMin, age_max: wz.ageMax };
+    const pin = wz.radius ? parsePin(wz.pin) : null;
+    if (pin) { body.center_lat = pin.lat; body.center_lng = pin.lng; }
     if (wz.src === "post") body.post_id = wz.post.id; else body.media = wz.up.media;
     if (wz.goal === "lead") body.form_id = wz.form_id;
     if (wz.goal === "traffic") body.link = wz.link.trim();
@@ -1067,7 +1128,7 @@
     }
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
     if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
-      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], ages: [18, 20, 25], max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
+      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [1, 3, 5, 10, 25, 50, 80], radius_range: [1, 80], age_limits: [18, 65], max_faq: 3, max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
     if (path.startsWith("/api/forms")) return Promise.resolve({ forms: [{ id: "55", name: "ฟอร์มฝากขายบ้าน (ตัวอย่าง)" }] });
     if (path === "/api/team") {
       const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
