@@ -133,6 +133,7 @@
   .gtog.on{background:var(--pri-l);color:var(--pri);font-weight:600}
   .upmini{position:relative;display:block;width:100%;text-align:left;border:1px solid var(--pri-l2);background:var(--pri-l);color:var(--ink);border-radius:12px;padding:9px 12px 11px;margin:8px 0 4px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;overflow:hidden}
   .upmini i{position:absolute;left:0;bottom:0;height:3px;background:var(--pri);transition:width .4s}
+  .upmini.miss{border-color:#E39B00;background:rgba(227,155,0,.12)}
   .upmini.bad{border-color:#DC2626;background:rgba(220,38,38,.1);color:#DC2626}
   .upnote{font-size:12.5px;color:var(--mute);margin:2px 2px 8px}
   .coach{background:var(--pri-l);border:1px solid var(--pri-l2);border-radius:16px;padding:12px 14px;margin:6px 0 14px;font-size:14px;line-height:1.55;display:flex;gap:10px}
@@ -914,14 +915,21 @@
   }
   // อัปโหลดเบื้องหลัง: ไปขั้นอื่นระหว่างรอได้ ล็อกเฉพาะตอนยิง/ดูตัวอย่าง
   const inFlight = (u) => !!u && ["uploading", "sending", "processing"].includes(u.phase);
-  const mediaOk = (u) => u?.phase === "ready" || inFlight(u);
   const alive = (up) => wz.up === up || wz.cr.some((c, i) => i !== wz.ci && c.up === up);
   const crList = () => (wz.cr.length ? wz.cr.map((c, i) => (i === wz.ci ? pickCr() : c)) : [pickCr()]);
+  // สื่อที่ยังไม่พร้อม: ยังไม่ได้ใส่ (missing) / กำลังอัป / ผิดพลาด
   function pendingMedia() {
-    const seen = new Set();
-    return crList().map((c, i) => ({ i, u: upOf(c) })).filter((x) => x.u && x.u.phase !== "ready" && !seen.has(x.u) && seen.add(x.u));
+    const seen = new Set(), out = [];
+    crList().forEach((c, i) => {
+      if (c.src === "post") { if (!c.post) out.push({ i, u: null, missing: true }); return; }
+      const u = upOf(c);
+      if (!u) out.push({ i, u: null, missing: true });
+      else if (u.phase !== "ready" && !seen.has(u)) { seen.add(u); out.push({ i, u }); }
+    });
+    return out;
   }
-  const crReady = (c) => mediaOk(upOf(c)) && (wz.goal === "reach" || !!c.message.trim());
+  const isBad = (x) => x.missing || x.u.phase === "error";
+  const crReady = (c) => wz.goal === "reach" || !!c.message.trim();
   const busyUp = () => wz.coverBusy;
   function crTabs() {
     if (wz.cr.length < 2) return "";
@@ -1025,7 +1033,7 @@
     return body;
   }
   async function wzPreview() {
-    if (pendingMedia().length) return toast("ดูตัวอย่างได้เมื่อวิดีโอพร้อม", 3000);
+    if (pendingMedia().length) return toast("ดูตัวอย่างได้เมื่อใส่รูป/วิดีโอแล้ว", 3000);
     wz.pvLoading = true; wz.pvErr = ""; renderWizard();
     try { const r = await api("/api/preview", { body: { ...buildBody(), variant: wz.pvCr } }); wz.previews = r.previews || []; wz.pvTab = 0; if (!wz.previews.length) wz.pvErr = "โหมดตัวอย่างดูพรีวิวจริงไม่ได้ ต้องเข้าระบบจริง"; }
     catch (e) { wz.pvErr = e.message; }
@@ -1134,9 +1142,9 @@
       return ["#wzNext", "ขายทรัพย์แนะนำ <b>ให้คนทักแชต</b> เลือกแล้วกด <b>ถัดไป</b>"];
     }
     if (s === 2) {
-      if (wz.src === "post") return wz.post ? ["#wzNext", "เลือกโพสต์แล้ว กด <b>ถัดไป</b>"] : [".post[data-i]:not(.off)", "แตะเลือก<b>โพสต์</b>ที่จะใช้"];
-      if (wz.src === "library" && !wz.libUp) return ["[data-lib]", "แตะเลือก<b>วิดีโอ</b>ที่เคยอัปไว้"];
-      if (wz.src === "upload" && !u) return [".drop", "แตะตรงนี้เพื่อ<b>เลือกรูปหรือวิดีโอ</b>จากมือถือ"];
+      if (wz.src === "post") return wz.post ? ["#wzNext", "เลือกโพสต์แล้ว กด <b>ถัดไป</b>"] : [".post[data-i]:not(.off)", "แตะเลือก<b>โพสต์</b>ที่จะใช้ หรือกด <b>ถัดไป</b> ข้ามไปก่อน"];
+      if (wz.src === "library" && !wz.libUp) return ["[data-lib]", "แตะเลือก<b>วิดีโอ</b>ที่เคยอัปไว้ หรือกด <b>ถัดไป</b> ข้ามไปก่อน"];
+      if (wz.src === "upload" && !u) return [".drop", "แตะตรงนี้เพื่อ<b>เลือกรูปหรือวิดีโอ</b> ยังไม่มีไฟล์? กด <b>ถัดไป</b> ข้ามไปก่อนได้"];
       if (inFlight(u)) return ["#wzNext", "กำลังอัปโหลดอยู่ กด <b>ถัดไป</b> ไปกรอกขั้นอื่นก่อนได้เลย (<b>อย่าปิดหน้านี้</b>)"];
       if (u && u.phase !== "ready") return [null, "อัปโหลดมีปัญหา กด <b>เปลี่ยนไฟล์</b> แล้วลองใหม่"];
       return ["#wzNext", "เรียบร้อย! เลือก<b>ภาพปก</b>ได้ แล้วกด <b>ถัดไป</b>"];
@@ -1153,7 +1161,7 @@
       return placeOk() ? ["#wzNext", "แนะนำรัศมี <b>10–25 กม.</b> กด <b>ปักหมุด</b> ที่ทรัพย์ถ้ามี แล้วกด <b>ถัดไป</b>"] : ["[data-plat]", "เลือก <b>Facebook หรือ Instagram</b> อย่างน้อย 1 อย่าง"];
     }
     const pend = pendingMedia();
-    if (pend.length) return ["#upMini", pend.some((x) => x.u.phase === "error") ? "รูป/วิดีโอมีปัญหา <b>แตะแถบแดง</b>ด้านบนเพื่อแก้" : "รอวิดีโออัปโหลดเสร็จก่อน ปุ่ม <b>ยิงแอดเลย</b> จะกดได้เอง (<b>อย่าปิดหน้านี้</b>)"];
+    if (pend.length) return ["#upMini", pend.some((x) => x.missing) ? "ยังไม่ได้ใส่<b>รูป/วิดีโอ</b> แตะแถบด้านบนเพื่อเลือกไฟล์" : pend.some(isBad) ? "รูป/วิดีโอมีปัญหา <b>แตะแถบแดง</b>ด้านบนเพื่อแก้" : "รอวิดีโออัปโหลดเสร็จก่อน ปุ่ม <b>ยิงแอดเลย</b> จะกดได้เอง (<b>อย่าปิดหน้านี้</b>)"];
     return wz.previews?.length ? ["#wzGo", "ดูโอเคแล้ว อ่าน <b>เช็กก่อนยิง</b> แล้วกด <b>ยิงแอดเลย</b>"] : ["#wzPv", "กด<b>ดูหน้าตาแอด</b>ก่อนยิงนะ"];
   }
   function guideTick(scroll = false) {
@@ -1183,8 +1191,8 @@
     if (s === 0) return !!wz.page;
     if (s === 1) return wz.goal === "lead" ? !!wz.form_id : wz.goal === "traffic" ? linkOk(wz.link.trim()) : !!wz.goal;
     if (s === 2) {
-      if (wz.src !== "post") return mediaOk(curUp()) && !wz.coverBusy;
-      return !!wz.post && wz.post.eligible && (wz.goal === "reach" || !!wz.post.picture);
+      if (wz.src !== "post") return !wz.coverBusy; // ยังไม่มีไฟล์ก็ข้ามไปก่อนได้ ค่อยกลับมาใส่
+      return !wz.post || (wz.post.eligible && (wz.goal === "reach" || !!wz.post.picture));
     }
     if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0)
       && (wz.goal !== "chat" || faqList().every((f) => f.q));
@@ -1211,9 +1219,12 @@
     if (wz.step === 2) return "";
     const pend = pendingMedia(), multi = wz.cr.length > 1;
     if (!pend.length) return "";
-    return pend.map(({ i, u }) => { const bad = u.phase === "error", tag = multi ? `แบบ ${TAGS[i]} · ` : "";
+    return pend.map((x) => { const { i, u } = x, tag = multi ? `แบบ ${TAGS[i]} · ` : "";
+      if (x.missing) return `<button class="upmini miss" data-upgo="${i}"><span>📎 ${tag}ยังไม่ได้ใส่${crList()[i].src === "post" ? "โพสต์" : "รูป/วิดีโอ"} · แตะเพื่อเลือก</span></button>`;
+      const bad = u.phase === "error";
       return `<button class="upmini ${bad ? "bad" : ""}" data-upgo="${i}"><span>${bad ? "⚠️" : "📤"} ${tag}${bad ? "รูป/วิดีโอมีปัญหา แตะเพื่อแก้" : `${u.kind === "image" ? "รูป" : "วิดีโอ"} ${miniText(u)}`}</span>${bad ? "" : `<i style="width:${u.phase === "uploading" ? u.pct || 0 : 100}%"></i>`}</button>`; }).join("")
-      + (pend.some((x) => inFlight(x.u)) ? '<div class="upnote">กรอกขั้นอื่นต่อได้เลย · อย่าปิดหน้านี้จนกว่าจะเสร็จ</div>' : "");
+      + (pend.some((x) => inFlight(x.u)) ? '<div class="upnote">กรอกขั้นอื่นต่อได้เลย · อย่าปิดหน้านี้จนกว่าจะเสร็จ</div>'
+        : pend.some((x) => x.missing) ? '<div class="upnote">กรอกขั้นอื่นไปก่อนได้ · ปุ่มยิงแอดจะกดได้เมื่อใส่ครบ</div>' : "");
   }
   function updMini() { const el = $("upMini"); if (el) el.innerHTML = miniHtml(); }
   // สถานะอัปโหลดเปลี่ยน: วาดใหม่เฉพาะขั้นที่เกี่ยว (ขั้นอื่นกำลังพิมพ์อยู่ ไม่วาดทับ)
@@ -1346,7 +1357,8 @@
       const max = wz.info?.max_upload_mb || 50;
       const u = wz.up;
       if (!u) return b + `<label class="drop"><input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png"><b>＋ เลือกไฟล์</b>
-        <span>วิดีโอ MP4/MOV ไม่เกิน ${(wz.info?.max_video_mb || 4096) / 1024} GB · รูป JPG/PNG ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>`;
+        <span>วิดีโอ MP4/MOV ไม่เกิน ${(wz.info?.max_video_mb || 4096) / 1024} GB · รูป JPG/PNG ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>
+        <div class="wz-hint" style="margin-top:8px">💡 ยังไม่มีวิดีโอ? กด <b>ถัดไป</b> กรอกข้อความ งบ พื้นที่ไปก่อน แล้วค่อยกลับมาใส่</div>`;
       b += `<div class="prev">${u.kind === "video" ? `<video src="${esc(u.preview)}" controls playsinline muted></video>` : `<img src="${esc(u.preview)}" alt="">`}
         <div class="pbar ${u.phase === "ready" ? "done" : ""}"><i id="upBar" style="width:${u.phase === "ready" ? 100 : u.pct || 0}%"></i></div>
         <div class="uptx" id="upTx">${esc(upText(u))}</div>
@@ -1498,15 +1510,15 @@
     const text = isBoost() ? A.post?.message : (A.message.trim() || A.post?.message || "");
     return `<div class="wz-q">ตรวจก่อนยิง</div><div class="wz-hint">ถ้าถูกต้องแล้ว กด "ยิงแอดเลย"</div>
       ${list.length > 1 ? list.map((c, i) => { const cu = upOf(c), cc = coverOf(c), th = cc ? (cc.kind === "image" ? cc.preview : cc.url) : cu ? (cu.kind === "image" ? cu.preview : cu.thumb) : null;
-        return `<div class="post" style="cursor:default">${th ? `<img src="${esc(th)}" alt="">` : `<div class="noimg">${inFlight(cu) ? "⏳ กำลังอัป" : "วิดีโอ"}</div>`}<div style="flex:1;min-width:0"><div class="dt" style="margin:0 0 2px"><b>แบบ ${TAGS[i]}</b>${c.headline.trim() ? " · " + esc(c.headline.trim()) : ""}</div><div class="tx">${esc(c.message.trim())}</div></div></div>`; }).join("")
-        : `<div class="post" style="cursor:default">${thumb ? `<img src="${esc(thumb)}" alt="">` : '<div class="noimg">${inFlight(u) ? "⏳ กำลังอัป" : "ไม่มีภาพ"}</div>'}<div class="tx">${esc(text || "(ไม่มีข้อความ)")}</div></div>`}
+        return `<div class="post" style="cursor:default">${th ? `<img src="${esc(th)}" alt="">` : `<div class="noimg">${inFlight(cu) ? "⏳ กำลังอัป" : !cu ? "📎 ยังไม่ใส่" : "วิดีโอ"}</div>`}<div style="flex:1;min-width:0"><div class="dt" style="margin:0 0 2px"><b>แบบ ${TAGS[i]}</b>${c.headline.trim() ? " · " + esc(c.headline.trim()) : ""}</div><div class="tx">${esc(c.message.trim())}</div></div></div>`; }).join("")
+        : `<div class="post" style="cursor:default">${thumb ? `<img src="${esc(thumb)}" alt="">` : '<div class="noimg">${inFlight(u) ? "⏳ กำลังอัป" : (A.src === "post" ? !A.post : !u) ? "📎 ยังไม่ใส่" : "ไม่มีภาพ"}</div>'}<div class="tx">${esc(text || "(ไม่มีข้อความ)")}</div></div>`}
       <div class="sum">
         <div><span>เพจ</span><b>${esc(pageOf()?.name || wz.page)}</b></div>
         <div><span>ชื่อแอด</span><b>${esc(wz.name)}</b></div>
         <div><span>เป้าหมาย</span><b>${g.ic} ${g.t}</b></div>
         ${wz.goal === "lead" ? `<div><span>ฟอร์ม</span><b>${esc(form?.name || wz.form_id)}</b></div>` : ""}
         ${wz.goal === "traffic" ? `<div><span>ลิงก์</span><b style="word-break:break-all">${esc(wz.link.trim())}</b></div>` : ""}
-        <div><span>สื่อ</span><b>${mediaLbl}${pendingMedia().length ? '<br><span style="font-weight:400;color:var(--mute)">กำลังอัปโหลด/ประมวลผล</span>' : ""}</b></div>
+        <div><span>สื่อ</span><b>${(() => { const pm = pendingMedia(); return pm.length && pm.every((x) => x.missing) && list.length < 2 ? "ยังไม่ได้ใส่" : mediaLbl + (pm.length ? `<br><span style="font-weight:400;color:var(--mute)">${pm.some((x) => x.missing) ? "ยังใส่ไม่ครบ" : "กำลังอัปโหลด/ประมวลผล"}</span>` : ""); })()}</b></div>
         ${list.length < 2 && vidOf(A) ? `<div><span>ภาพปก</span><b>${cv ? "เลือกเอง" : "Facebook เลือกให้"}</b></div>` : ""}
         ${list.length < 2 && A.headline.trim() && !isBoost() ? `<div><span>หัวข้อ</span><b>${esc(A.headline.trim())}</b></div>` : ""}
         <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน${wz.days ? ` × ${wz.days} วัน` : ""}</b></div>
@@ -1526,7 +1538,7 @@
       ${(() => { const ck = allChecks(); return ck.length ? `<div class="card" style="padding:6px 12px">${ckList(ck)}</div>` : '<div class="note ok">✅ ไม่พบจุดที่ควรแก้</div>'; })()}
       <div class="sec">👁 ตัวอย่างแอด</div>
       ${list.length > 1 ? `<div class="chips">${list.map((_, i) => `<button class="chip2 ${i === wz.pvCr ? "sel" : ""}" data-pvcr="${i}">แบบ ${TAGS[i]}</button>`).join("")}</div>` : ""}
-      ${wz.previews?.length ? previewBox() : `<button class="btn ghost" id="wzPv" style="width:100%" ${wz.pvLoading || pendingMedia().length ? "disabled" : ""}>${wz.pvLoading ? "กำลังให้ Facebook สร้างตัวอย่าง…" : pendingMedia().length ? "ดูหน้าตาแอดได้เมื่อรูป/วิดีโอพร้อม" : "ดูหน้าตาบน Facebook / Instagram"}</button>`}
+      ${wz.previews?.length ? previewBox() : `<button class="btn ghost" id="wzPv" style="width:100%" ${wz.pvLoading || pendingMedia().length ? "disabled" : ""}>${wz.pvLoading ? "กำลังให้ Facebook สร้างตัวอย่าง…" : pendingMedia().length ? "ดูหน้าตาแอดได้เมื่อใส่รูป/วิดีโอแล้ว" : "ดูหน้าตาบน Facebook / Instagram"}</button>`}
       ${wz.pvErr ? `<div class="note warn">${esc(wz.pvErr)}</div>` : ""}
       ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
   }
@@ -1553,7 +1565,7 @@
     const back = n > 0 ? '<button class="btn grey" id="wzBack" style="flex:0 0 32%">ย้อนกลับ</button>' : "";
     const next = n < LAST ? `<button class="btn" id="wzNext" ${canNext() ? "" : "disabled"}>ถัดไป</button>`
       : (() => { const pend = pendingMedia(), wait = pend.length > 0;
-        return `<button class="btn" id="wzGo" ${wz.sending || wait ? "disabled" : ""}>${wz.sending ? "กำลังสร้างแอด…" : wait ? (pend.some((x) => x.u.phase === "error") ? "⚠️ แก้รูป/วิดีโอก่อน" : "⏳ รอรูป/วิดีโอพร้อม…") : "🚀 ยิงแอดเลย"}</button>`; })();
+        return `<button class="btn" id="wzGo" ${wz.sending || wait ? "disabled" : ""}>${wz.sending ? "กำลังสร้างแอด…" : wait ? (pend.some((x) => x.missing) ? "📎 ใส่รูป/วิดีโอก่อน" : pend.some(isBad) ? "⚠️ แก้รูป/วิดีโอก่อน" : "⏳ รอรูป/วิดีโอพร้อม…") : "🚀 ยิงแอดเลย"}</button>`; })();
     bar(back + next);
     const on = (id, ev, fn) => { if ($(id)) $(id)[ev] = fn; };
     const refreshNext = () => { if ($("wzNext")) $("wzNext").disabled = !canNext(); guideTick(); };
@@ -1563,7 +1575,7 @@
       if (wz.step === 2 && wz.src === "post" && wz.post && !wz.name) wz.name = firstLine(wz.post.message);
       if (wz.step === 3 && wz.cr.length > 1) {
         const bad = allCr().findIndex((c) => !crReady(c));
-        if (bad >= 0) { loadCr(bad); wz.step = mediaOk(upOf(wz)) ? 3 : 2; renderWizard(); window.scrollTo(0, 0); return toast(`แบบ ${TAGS[bad]} ยังไม่ครบ`, 3000); }
+        if (bad >= 0) { loadCr(bad); wz.step = 3; renderWizard(); window.scrollTo(0, 0); return toast(`แบบ ${TAGS[bad]} ยังไม่ครบ`, 3000); }
       }
       wz.step++; wz.err = ""; wz.previews = null; wz.pvErr = ""; if (wz.guide) wz.botMin = false; renderWizard(); window.scrollTo(0, 0);
     });
@@ -1700,7 +1712,7 @@
     guideTick();
   }
   async function wzSubmit() {
-    if (pendingMedia().length) return toast("รอรูป/วิดีโอพร้อมก่อน", 3000);
+    if (pendingMedia().length) return toast(pendingMedia().some((x) => x.missing) ? "ยังไม่ได้ใส่รูป/วิดีโอ" : "รอรูป/วิดีโอพร้อมก่อน", 3000);
     wz.sending = true; wz.err = ""; renderWizard();
     const body = buildBody();
     try {
