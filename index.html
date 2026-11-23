@@ -156,6 +156,17 @@
   .sum{background:var(--card);border-radius:var(--r);padding:6px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
   .sum div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
   .sum div:first-child{border-top:0} .sum span{color:var(--mute);flex:none} .sum b{text-align:right;font-weight:600}
+  .drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed var(--line);border-radius:var(--r);padding:30px 16px;text-align:center;background:var(--card);cursor:pointer;color:var(--mute);font-size:14px}
+  .drop b{font-size:18px;color:var(--pri)} .drop input{display:none}
+  .prev{background:var(--card);border-radius:var(--r);padding:10px;box-shadow:var(--shadow)}
+  .prev video,.prev img{width:100%;max-height:360px;border-radius:12px;background:#000;object-fit:contain;display:block}
+  .pbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+  .pbar i{display:block;height:100%;background:var(--pri);width:0;transition:width .3s} .pbar.done i{background:var(--green)}
+  .uptx{font-size:14px;color:var(--mute)}
+  .vbadge{font-size:12px;font-weight:600;color:var(--pri);margin-left:6px}
+  .opt img.av{width:48px;height:48px;border-radius:14px;object-fit:cover;flex:none}
+  textarea.inp{min-height:140px;resize:vertical;font-family:inherit;line-height:1.5}
+  label.btn{display:block;cursor:pointer}
   .wz-bar{position:fixed;left:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom));padding:10px 14px 6px;background:linear-gradient(transparent,var(--bg) 35%);z-index:5}
   .wz-bar .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
   .wz-bar .btn{padding:15px;font-size:17px}
@@ -209,7 +220,7 @@
 
     <!-- หน้าหลัก -->
     <div id="tab-home">
-      <button class="bigbtn" id="newAdBtn"><span class="pl"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px;stroke-width:2.2"><path d="M12 5v14M5 12h14"/></svg></span><span>ยิงแอดใหม่<small>เลือกโพสต์ → ตั้งงบ → ยิง ใน 5 ขั้น</small></span></button>
+      <button class="bigbtn" id="newAdBtn"><span class="pl"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px;stroke-width:2.2"><path d="M12 5v14M5 12h14"/></svg></span><span>ยิงแอดใหม่<small>เลือกเพจ → เป้าหมาย → รูป/วิดีโอ → ยิง</small></span></button>
       <div class="card bal">
         <div class="lbl">เงินคงเหลือในบัญชีโฆษณา</div>
         <div class="big" id="balBig">-</div>
@@ -674,28 +685,227 @@
     };
   }
 
-  // ---------- ยิงแอดใหม่: ทำทีละขั้น ----------
+  // ---------- ยิงแอดใหม่ (Ads Manager ฉบับย่อ): ทำทีละขั้น ----------
   const WELCOME = "สวัสดีครับ สนใจทรัพย์นี้ ขอรายละเอียดเพิ่มเติมครับ";
-  const STEP_NAMES = ["เลือกโพสต์", "เป้าหมาย", "งบ", "พื้นที่", "ตรวจแล้วยิง"];
-  const wz = { step: 0, posts: null, loading: false, err: "", center: "ตัวเมือง", presets: [10, 25, 50, 80],
-    post: null, goal: "chat", name: "", welcome: WELCOME, daily: 200, days: 7, radius: 25, sending: false, result: null };
-  function wzReset() { Object.assign(wz, { step: 0, post: null, goal: "chat", name: "", welcome: WELCOME, daily: 200, days: 7, radius: 25, sending: false, result: null, err: "" }); }
+  const STEP_NAMES = ["เพจ", "เป้าหมาย", "รูป/วิดีโอ", "ข้อความ", "งบ", "กลุ่มคน", "ตรวจแล้วยิง"];
+  const LAST = STEP_NAMES.length - 1;
+  const GOAL_INFO = {
+    chat: { ic: "💬", t: "ให้คนทักแชต", d: 'ลูกค้ากดปุ่ม "ส่งข้อความ" ทักเข้าเพจ เหมาะกับขายทรัพย์', rec: true },
+    lead: { ic: "📝", t: "ฟอร์มเก็บเบอร์", d: "ลูกค้ากรอกชื่อ-เบอร์ในฟอร์มของ Facebook ได้เลย ไม่ต้องออกจากแอป" },
+    reach: { ic: "👀", t: "ให้คนเห็นเยอะ", d: "เน้นให้คนในพื้นที่เห็นมากที่สุด เหมาะกับสร้างการรู้จัก" },
+    traffic: { ic: "🔗", t: "ให้คนเข้าเว็บ/ลิงก์", d: "พาคนไปหน้าเว็บหรือลิงก์ที่กำหนด" },
+  };
+  const AREA_DESC = { 0: "ทั่วประเทศไทย", 10: "เฉพาะในตัวเมือง", 25: "ในเมืองและรอบ ๆ", 50: "กว้างขึ้น อำเภอรอบนอก", 80: "กว้างสุด รวมจังหวัดใกล้เคียง" };
+  const MIME_BY_EXT = { mp4: "video/mp4", mov: "video/quicktime", m4v: "video/x-m4v", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png" };
+  const wz = {};
+  function wzReset() {
+    if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
+    Object.assign(wz, { step: 0, info: wz.info || null, page: wz.info?.default_page || null, loading: false, err: "",
+      goal: "chat", welcome: WELCOME, forms: null, formsFor: null, form_id: "", link: "",
+      src: "upload", posts: null, postsFor: null, post: null, up: null,
+      name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, age: 25, sending: false, result: null });
+  }
+  wzReset();
   const firstLine = (t) => (String(t || "").split("\n").map((x) => x.trim()).find(Boolean) || "แอดใหม่").slice(0, 40);
   const thDate = (iso) => { try { return new Date(iso).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" }); } catch { return ""; } };
+  const pageOf = () => (wz.info?.pages || []).find((p) => p.id === wz.page);
+  const isBoost = () => wz.src === "post" && wz.goal === "reach";
+  const linkOk = (s) => { try { const u = new URL(s); return /^https?:$/.test(u.protocol) && u.hostname.includes("."); } catch { return false; } };
+  const areaLabel = (km) => km === 0 ? "ทั่วประเทศไทย" : `รัศมี ${km} กม. จาก${wz.info?.center_name || "ตัวเมือง"}`;
 
-  async function wzLoadPosts() {
+  async function wzLoad(what) {
     wz.loading = true; wz.err = ""; renderWizard();
-    try { const d = await api("/api/posts"); wz.posts = d.posts; wz.center = d.center_name || wz.center; wz.presets = d.presets || wz.presets; }
-    catch (e) { wz.err = e.message; }
+    try {
+      if (what === "pages") {
+        wz.info = await api("/api/pages");
+        if (!wz.page || !wz.info.pages.some((p) => p.id === wz.page)) wz.page = (wz.info.pages.find((p) => p.id === wz.info.default_page) || wz.info.pages[0] || {}).id || null;
+      } else if (what === "posts") {
+        wz.posts = (await api("/api/posts?page_id=" + encodeURIComponent(wz.page))).posts; wz.postsFor = wz.page;
+      } else if (what === "forms") {
+        wz.forms = (await api("/api/forms?page_id=" + encodeURIComponent(wz.page))).forms; wz.formsFor = wz.page;
+        if (!wz.forms.some((f) => f.id === wz.form_id)) wz.form_id = wz.forms.length === 1 ? wz.forms[0].id : "";
+      }
+    } catch (e) { wz.err = e.message; }
     finally { wz.loading = false; renderWizard(); }
   }
   function bar(html) { $("wzBarIn").innerHTML = html; $("wzBar").classList.toggle("hide", !html); }
   function canNext() {
-    if (wz.step === 0) return !!wz.post;
-    if (wz.step === 1) return !!wz.goal && wz.name.trim().length >= 2 && !(wz.goal === "chat" && !wz.post?.picture);
-    if (wz.step === 2) return wz.daily >= 50 && wz.daily <= 5000 && wz.days >= 1 && wz.days <= 30;
+    const s = wz.step;
+    if (s === 0) return !!wz.page;
+    if (s === 1) return wz.goal === "lead" ? !!wz.form_id : wz.goal === "traffic" ? linkOk(wz.link.trim()) : !!wz.goal;
+    if (s === 2) {
+      if (wz.src === "upload") return wz.up?.phase === "ready";
+      return !!wz.post && wz.post.eligible && (wz.goal === "reach" || !!wz.post.picture);
+    }
+    if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0);
+    if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && wz.days >= 1 && wz.days <= 30;
     return true;
   }
+
+  // ---------- อัปโหลดรูป/วิดีโอ ----------
+  function putFile(url, file, mime, onp) {
+    return new Promise((res, rej) => {
+      const fd = new FormData(); fd.append("cacheControl", "3600"); fd.append("", new Blob([file], { type: mime }), file.name || "file");
+      const x = new XMLHttpRequest(); x.open("PUT", url); x.setRequestHeader("x-upsert", "false");
+      x.upload.onprogress = (e) => { if (e.lengthComputable) onp(Math.round((e.loaded / e.total) * 100)); };
+      x.onload = () => (x.status >= 200 && x.status < 300 ? res() : rej(new Error(`อัปโหลดไม่สำเร็จ (${x.status}) ${String(x.responseText || "").slice(0, 120)}`)));
+      x.onerror = () => rej(new Error("อัปโหลดไม่สำเร็จ เช็กอินเทอร์เน็ตแล้วลองใหม่"));
+      x.send(fd);
+    });
+  }
+  function updUp() { const u = wz.up; if (!u) return; if ($("upBar")) $("upBar").style.width = (u.pct || 0) + "%"; if ($("upTx")) $("upTx").textContent = upText(u); }
+  function upText(u) {
+    return { uploading: `กำลังอัปโหลด… ${u.pct || 0}%`, sending: "กำลังส่งให้ Facebook…", processing: `Facebook กำลังประมวลผลวิดีโอ… ${u.pct ? u.pct + "%" : ""} (อาจใช้เวลาสักครู่ เปิดหน้านี้ค้างไว้)`,
+      ready: "✓ พร้อมใช้", error: u.msg || "ผิดพลาด" }[u.phase] || "";
+  }
+  async function wzPickFile(file) {
+    const ext = String(file.name || "").split(".").pop().toLowerCase();
+    const mime = MIME_BY_EXT[ext] && (!file.type || file.type === "application/octet-stream") ? MIME_BY_EXT[ext] : file.type;
+    const kind = /^video\//.test(mime) ? "video" : /^image\//.test(mime) ? "image" : null;
+    if (!kind || !Object.values(MIME_BY_EXT).includes(mime)) return toast("รองรับเฉพาะวิดีโอ MP4/MOV หรือรูป JPG/PNG", 4000);
+    const max = wz.info?.max_upload_mb || 50;
+    if (file.size > max * 1048576) return toast(`ไฟล์ ${(file.size / 1048576).toFixed(0)} MB ใหญ่เกิน ${max} MB — ย่อไฟล์ก่อน หรือโพสต์ลงเพจแล้วเลือกจาก "โพสต์ในเพจ"`, 6000);
+    if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
+    const up = wz.up = { name: file.name, kind, mime, size: file.size, preview: URL.createObjectURL(file), phase: "uploading", pct: 0, msg: "", media: null, thumb: null };
+    renderWizard();
+    try {
+      if (st.demo) { for (let p = 0; p <= 100; p += 20) { up.pct = p; updUp(); await new Promise((r) => setTimeout(r, 150)); } up.media = kind === "video" ? { kind, video_id: "1" } : { kind, image_hash: "demo" }; up.phase = "ready"; renderWizard(); return; }
+      const u = await api("/api/media/upload-url", { body: { mime, size: file.size } });
+      await putFile(u.upload_url, file, mime, (p) => { if (wz.up === up) { up.pct = p; updUp(); } });
+      if (wz.up !== up) return;
+      up.phase = "sending"; renderWizard();
+      up.media = await api("/api/media/register", { body: { path: u.path } });
+      if (wz.up !== up) return;
+      if (up.media.kind === "image") { up.phase = "ready"; renderWizard(); return; }
+      up.phase = "processing"; up.pct = 0; renderWizard();
+      await pollVideo(up);
+    } catch (e) { if (wz.up === up) { up.phase = "error"; up.msg = e.message; renderWizard(); } }
+  }
+  async function pollVideo(up) {
+    for (let i = 0; i < 120 && wz.up === up; i++) {
+      const s = await api("/api/media/status?video_id=" + up.media.video_id);
+      if (wz.up !== up) return;
+      if (s.status === "ready" && s.thumb) { up.phase = "ready"; up.thumb = s.thumb; renderWizard(); return; }
+      if (s.status === "error") throw new Error("Facebook ประมวลผลวิดีโอไม่สำเร็จ ลองไฟล์อื่น");
+      up.pct = s.progress || up.pct; updUp();
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+    if (wz.up === up) { up.phase = "error"; up.msg = 'Facebook ประมวลผลนานผิดปกติ กด "เช็กอีกครั้ง"'; renderWizard(); }
+  }
+
+  // ---------- หน้าจอแต่ละขั้น ----------
+  function stepPage() {
+    let b = `<div class="wz-q">ยิงแอดให้เพจไหน?</div><div class="wz-hint">เลือกได้เฉพาะเพจที่อนุญาตไว้ตอนเชื่อม Facebook</div>`;
+    if (!wz.info) { if (!wz.loading && !wz.err) setTimeout(() => wzLoad("pages")); return b + (wz.err ? errBox() : '<div class="card empty">กำลังโหลดรายชื่อเพจ…</div>'); }
+    if (!wz.info.pages.length) return b + '<div class="note warn">ยังไม่มีเพจที่อนุญาต — เจ้าของเข้า ตั้งค่า > ระบบ > เชื่อมใหม่ แล้วติ๊กเพจ</div>';
+    return b + wz.info.pages.map((p) => `<button class="opt ${wz.page === p.id ? "sel" : ""}" data-page="${esc(p.id)}">
+      ${p.picture ? `<img class="av" src="${esc(p.picture)}" alt="">` : '<div class="ic">📄</div>'}<div><b>${esc(p.name)}</b><span>เลขเพจ ${esc(p.id)}</span></div></button>`).join("");
+  }
+  function stepGoal() {
+    let b = `<div class="wz-q">อยากได้อะไรจากแอดนี้?</div><div class="wz-hint">เลือก 1 อย่าง</div>`;
+    b += Object.entries(GOAL_INFO).map(([k, g]) => `<button class="opt ${wz.goal === k ? "sel" : ""}" data-goal="${k}"><div class="ic">${g.ic}</div>
+      <div><b>${g.t}${g.rec ? "<em>แนะนำ</em>" : ""}</b><span>${g.d}</span></div></button>`).join("");
+    if (wz.goal === "chat") b += `<label class="f" for="wzWel">ข้อความที่ลูกค้าจะส่งมาตอนกดทัก (แก้ได้)</label><input class="inp" id="wzWel" maxlength="300" value="${esc(wz.welcome)}">`;
+    if (wz.goal === "traffic") b += `<label class="f" for="wzLink">ลิงก์ปลายทาง</label><input class="inp" id="wzLink" type="url" inputmode="url" placeholder="https://npropertynetwork.com/..." value="${esc(wz.link)}">
+      ${wz.link && !linkOk(wz.link.trim()) ? '<div class="note warn">ลิงก์ต้องขึ้นต้นด้วย https://</div>' : ""}`;
+    if (wz.goal === "lead") {
+      b += '<label class="f" for="wzForm">ใช้ฟอร์มไหน</label>';
+      if (wz.err) b += errBox();
+      else if (wz.formsFor !== wz.page) { if (!wz.loading) setTimeout(() => wzLoad("forms")); b += '<div class="card empty">กำลังโหลดฟอร์มของเพจ…</div>'; }
+      else if (!wz.forms.length) b += `<div class="note warn">เพจ ${esc(pageOf()?.name || "")} ยังไม่มีฟอร์มที่เปิดใช้ — สร้างฟอร์มเก็บเบอร์ในเพจก่อน (ทำใน Ads Manager หรือ Meta Business Suite) แล้วกดโหลดใหม่</div>
+        <div class="row2"><button class="btn ghost" id="wzFormReload">โหลดใหม่</button></div>`;
+      else b += `<select class="inp" id="wzForm"><option value="">— เลือกฟอร์ม —</option>${wz.forms.map((f) => `<option value="${esc(f.id)}" ${wz.form_id === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select>`;
+    }
+    return b;
+  }
+  function stepMedia() {
+    let b = `<div class="wz-q">ใช้รูปหรือวิดีโออะไร?</div>
+      <div class="seg" style="margin-top:10px"><button data-src="upload" class="${wz.src === "upload" ? "on" : ""}">📤 อัปโหลดใหม่</button><button data-src="post" class="${wz.src === "post" ? "on" : ""}">📄 โพสต์ในเพจ</button></div>`;
+    if (wz.src === "upload") {
+      const max = wz.info?.max_upload_mb || 50;
+      const u = wz.up;
+      if (!u) return b + `<label class="drop"><input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png"><b>＋ เลือกไฟล์</b>
+        <span>วิดีโอ MP4/MOV หรือรูป JPG/PNG · ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>`;
+      b += `<div class="prev">${u.kind === "video" ? `<video src="${esc(u.preview)}" controls playsinline muted></video>` : `<img src="${esc(u.preview)}" alt="">`}
+        <div class="pbar ${u.phase === "ready" ? "done" : ""}"><i id="upBar" style="width:${u.phase === "ready" ? 100 : u.pct || 0}%"></i></div>
+        <div class="uptx" id="upTx">${esc(upText(u))}</div>
+        <div class="row2" style="margin-top:10px"><label class="btn ghost" style="text-align:center">เปลี่ยนไฟล์<input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png" style="display:none"></label>
+        ${u.phase === "error" && u.media?.video_id ? '<button class="btn ghost" id="wzRecheck">เช็กอีกครั้ง</button>' : ""}</div></div>`;
+      return b;
+    }
+    b += `<div class="wz-hint">${wz.goal === "reach" ? "จะดันโพสต์เดิมให้คนเห็นมากขึ้น ยอดไลก์/คอมเมนต์รวมที่โพสต์เดิม" : "แอดจะใช้รูปหรือวิดีโอและข้อความจากโพสต์ แก้ข้อความได้ในขั้นถัดไป"}</div>`;
+    if (wz.postsFor !== wz.page) { if (!wz.loading && !wz.err) setTimeout(() => wzLoad("posts")); return b + (wz.err ? errBox() : '<div class="card empty">กำลังโหลดโพสต์จากเพจ…</div>'); }
+    if (wz.err) return b + errBox();
+    if (!wz.posts.length) return b + '<div class="card empty">ยังไม่มีโพสต์บนเพจนี้</div>';
+    return b + wz.posts.map((p, i) => {
+      const off = !p.eligible || (wz.goal !== "reach" && !p.picture);
+      const why = !p.eligible ? " · โพสต์นี้ยิงแอดไม่ได้" : off ? " · ไม่มีรูป/วิดีโอ" : "";
+      return `<div class="post ${wz.post?.id === p.id ? "sel" : ""} ${off ? "off" : ""}" data-i="${i}">
+        ${p.picture ? `<img src="${esc(p.picture)}" alt="" loading="lazy">` : '<div class="noimg">ไม่มีรูป</div>'}
+        <div style="flex:1;min-width:0"><div class="tx">${esc(p.message || "(ไม่มีข้อความ)")}</div>
+        <div class="dt">${thDate(p.created_time)}${p.video ? '<span class="vbadge">▶ วิดีโอ</span>' : ""}${why}</div></div></div>`;
+    }).join("");
+  }
+  function stepText() {
+    let b = `<div class="wz-q">ตั้งชื่อและข้อความ</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "ข้อความโฆษณาคือข้อความที่คนเห็นเหนือรูป/วิดีโอ"}</div>
+      <label class="f" for="wzName">ชื่อแอด (ขึ้นในไลน์ตอนแจ้งเตือน คนดูแอดไม่เห็น)</label>
+      <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">`;
+    if (isBoost()) return b;
+    b += `<label class="f" for="wzMsg">ข้อความโฆษณา${wz.src === "upload" && wz.goal !== "reach" ? "" : " (เว้นว่าง = ใช้ข้อความโพสต์)"}</label>
+      <textarea class="inp" id="wzMsg" maxlength="2000" placeholder="เช่น ขายบ้านเดี่ยว 2 ชั้น 3 ห้องนอน ใกล้ตลาด ทักสอบถามได้เลย">${esc(wz.message)}</textarea>
+      <label class="f" for="wzHead">หัวข้อสั้น ๆ (ไม่ใส่ก็ได้)</label>
+      <input class="inp" id="wzHead" maxlength="60" value="${esc(wz.headline)}" placeholder="เช่น ราคาจบ 1.89 ล้าน">`;
+    return b;
+  }
+  function stepBudget() {
+    const total = wz.daily * wz.days;
+    const bal = st.data?.snap?.balance?.value;
+    let note = "";
+    if (bal !== null && bal !== undefined) {
+      note = total <= bal ? `<div class="note ok">เงินในบัญชีมี ${baht(bal, 0)} พอสำหรับแอดนี้</div>`
+        : `<div class="note warn">เงินในบัญชีมี ${baht(bal, 0)} พอประมาณ ${Math.max(0, Math.floor(bal / wz.daily))} วัน แอดจะหยุดเองเมื่อเงินหมด และระบบจะเตือนในไลน์ก่อน</div>`;
+    }
+    return `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">Facebook จะใช้ไม่เกินงบต่อวันที่ตั้ง และหยุดเองเมื่อครบวัน</div>
+      <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
+      <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
+      <label class="f">ยิงกี่วัน</label><div class="chips">${[1, 3, 5, 7, 14].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v} วัน</button>`).join("")}</div>
+      <div class="total"><div class="k">รวมทั้งหมดไม่เกิน</div><div class="v">${baht(total, 0)}</div><div class="k">${wz.daily.toLocaleString("en-US")} บาท × ${wz.days} วัน</div></div>${note}`;
+  }
+  function stepAudience() {
+    const presets = [...(wz.info?.presets || [10, 25, 50, 80]), 0];
+    const ages = wz.info?.ages || [18, 20, 25];
+    return `<div class="wz-q">ให้ใครเห็น?</div><div class="wz-hint">นับรัศมีจาก${esc(wz.info?.center_name || "ตัวเมือง")}</div>
+      ${presets.map((km) => `<button class="opt ${wz.radius === km ? "sel" : ""}" data-km="${km}"><div class="ic" style="font-size:${km ? 15 : 22}px;font-weight:600;color:var(--pri)">${km || "🇹🇭"}</div>
+        <div><b>${km ? `รัศมี ${km} กม.` : "ทั่วประเทศ"}</b><span>${AREA_DESC[km] || ""}</span></div></button>`).join("")}
+      <label class="f">อายุขั้นต่ำ</label><div class="chips">${ages.map((a) => `<button class="chip2 ${wz.age === a ? "sel" : ""}" data-age="${a}">${a}+ ปี</button>`).join("")}</div>
+      <div class="note info">Facebook จะช่วยหาคนที่น่าจะสนใจในกลุ่มนี้ให้อัตโนมัติ (อายุสูงสุด 65+ · เลือกอายุขั้นต่ำได้ไม่เกิน 25 ตามเงื่อนไขของ Facebook)</div>`;
+  }
+  function stepReview() {
+    const g = GOAL_INFO[wz.goal];
+    const thumb = wz.src === "upload" ? (wz.up?.kind === "image" ? wz.up.preview : wz.up?.thumb) : wz.post?.picture;
+    const mediaLbl = wz.src === "upload" ? (wz.up?.kind === "video" ? "วิดีโอที่อัปโหลด" : "รูปที่อัปโหลด") : isBoost() ? "ดันโพสต์เดิม" : wz.post?.video ? "วิดีโอจากโพสต์" : "รูปจากโพสต์";
+    const form = (wz.forms || []).find((f) => f.id === wz.form_id);
+    const text = isBoost() ? wz.post?.message : (wz.message.trim() || wz.post?.message || "");
+    return `<div class="wz-q">ตรวจก่อนยิง</div><div class="wz-hint">ถ้าถูกต้องแล้ว กด "ยิงแอดเลย"</div>
+      <div class="post" style="cursor:default">${thumb ? `<img src="${esc(thumb)}" alt="">` : '<div class="noimg">ไม่มีภาพ</div>'}<div class="tx">${esc(text || "(ไม่มีข้อความ)")}</div></div>
+      <div class="sum">
+        <div><span>เพจ</span><b>${esc(pageOf()?.name || wz.page)}</b></div>
+        <div><span>ชื่อแอด</span><b>${esc(wz.name)}</b></div>
+        <div><span>เป้าหมาย</span><b>${g.ic} ${g.t}</b></div>
+        ${wz.goal === "lead" ? `<div><span>ฟอร์ม</span><b>${esc(form?.name || wz.form_id)}</b></div>` : ""}
+        ${wz.goal === "traffic" ? `<div><span>ลิงก์</span><b style="word-break:break-all">${esc(wz.link.trim())}</b></div>` : ""}
+        <div><span>สื่อ</span><b>${mediaLbl}</b></div>
+        ${wz.headline.trim() && !isBoost() ? `<div><span>หัวข้อ</span><b>${esc(wz.headline.trim())}</b></div>` : ""}
+        <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน × ${wz.days} วัน</b></div>
+        <div><span>รวมไม่เกิน</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>
+        <div><span>พื้นที่</span><b>${esc(areaLabel(wz.radius))}</b></div>
+        <div><span>อายุ</span><b>${wz.age}–65+ ปี</b></div>
+        <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – อีก ${wz.days} วัน</b></div>
+      </div>
+      ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
+  }
+  const errBox = () => `<div class="note bad">${esc(wz.err)}</div><div class="row2"><button class="btn ghost" id="wzRetry">ลองใหม่</button></div>`;
+
   function renderWizard() {
     const box = $("wz");
     if (wz.step === "done") {
@@ -709,88 +919,62 @@
     }
     const n = wz.step;
     const head = `<div class="wz-top"><div class="wz-steps">${STEP_NAMES.map((_, i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>
-      <div class="wz-lbl">ขั้นที่ ${n + 1} จาก 5 · ${STEP_NAMES[n]}</div></div>`;
-    let body = "";
-    if (n === 0) {
-      body = `<div class="wz-q">จะยิงแอดโพสต์ไหน?</div><div class="wz-hint">แตะเลือกโพสต์ทรัพย์จากเพจ 1 โพสต์</div>`;
-      if (wz.loading) body += '<div class="card empty">กำลังโหลดโพสต์จากเพจ…</div>';
-      else if (wz.err) body += `<div class="note bad">${esc(wz.err)}</div><div class="row2"><button class="btn ghost" id="wzRetry">ลองใหม่</button></div>`;
-      else if (!wz.posts) { body += '<div class="card empty">กำลังโหลด…</div>'; setTimeout(wzLoadPosts); }
-      else if (!wz.posts.length) body += '<div class="card empty">ยังไม่มีโพสต์บนเพจ ลองโพสต์ทรัพย์ก่อนแล้วกลับมาใหม่</div>';
-      else body += wz.posts.map((p, i) => `<div class="post ${wz.post?.id === p.id ? "sel" : ""} ${p.eligible ? "" : "off"}" data-i="${i}">
-        ${p.picture ? `<img src="${esc(p.picture)}" alt="" loading="lazy">` : '<div class="noimg">ไม่มีรูป</div>'}
-        <div style="flex:1;min-width:0"><div class="tx">${esc(p.message || "(ไม่มีข้อความ)")}</div>
-        <div class="dt">${thDate(p.created_time)}${p.eligible ? "" : " · โพสต์นี้ยิงแอดไม่ได้"}</div></div></div>`).join("");
-    } else if (n === 1) {
-      const noPic = !wz.post?.picture;
-      body = `<div class="wz-q">อยากได้อะไรจากแอดนี้?</div><div class="wz-hint">เลือก 1 อย่าง</div>
-        <button class="opt ${wz.goal === "chat" ? "sel" : ""}" data-goal="chat" ${noPic ? "disabled" : ""}><div class="ic">💬</div>
-          <div><b>ให้คนทักแชตมาถาม<em>แนะนำ</em></b><span>${noPic ? "โพสต์นี้ไม่มีรูป ใช้แบบนี้ไม่ได้" : "เหมาะกับขายบ้าน/ที่ดิน ได้คนที่สนใจจริง แอดจะใช้รูปแรกกับข้อความของโพสต์ และมีปุ่ม \"ส่งข้อความ\""}</span></div></button>
-        <button class="opt ${wz.goal === "reach" ? "sel" : ""}" data-goal="reach"><div class="ic">👀</div>
-          <div><b>ให้คนในพื้นที่เห็นเยอะ</b><span>ดันโพสต์เดิมให้คนเห็นมากที่สุด ยอดไลก์/คอมเมนต์รวมอยู่ที่โพสต์เดิม</span></div></button>
-        <label class="f" for="wzName">ตั้งชื่อแอด (ชื่อนี้จะขึ้นในไลน์ตอนแจ้งเตือน)</label>
-        <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">
-        ${wz.goal === "chat" ? `<label class="f" for="wzWel">ข้อความที่ลูกค้าจะส่งมาตอนกดทัก (แก้ได้)</label>
-        <input class="inp" id="wzWel" maxlength="300" value="${esc(wz.welcome)}">` : ""}`;
-    } else if (n === 2) {
-      const total = wz.daily * wz.days;
-      const bal = st.data?.snap?.balance?.value;
-      let note = "";
-      if (bal !== null && bal !== undefined) {
-        note = total <= bal ? `<div class="note ok">เงินในบัญชีมี ${baht(bal, 0)} พอสำหรับแอดนี้</div>`
-          : `<div class="note warn">เงินในบัญชีมี ${baht(bal, 0)} พอประมาณ ${Math.max(0, Math.floor(bal / wz.daily))} วัน แอดจะหยุดเองเมื่อเงินหมด และระบบจะเตือนในไลน์ก่อน</div>`;
-      }
-      body = `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">Facebook จะใช้ไม่เกินงบต่อวันที่ตั้ง และหยุดเองเมื่อครบวัน</div>
-        <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
-        <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
-        <label class="f">ยิงกี่วัน</label><div class="chips">${[3, 5, 7, 14].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v} วัน</button>`).join("")}</div>
-        <div class="total"><div class="k">รวมทั้งหมดไม่เกิน</div><div class="v">${baht(total, 0)}</div><div class="k">${wz.daily.toLocaleString("en-US")} บาท × ${wz.days} วัน</div></div>${note}`;
-    } else if (n === 3) {
-      const desc = { 10: "เฉพาะในตัวเมือง", 25: "ในเมืองและรอบ ๆ", 50: "กว้างขึ้น อำเภอรอบนอก", 80: "กว้างสุด รวมจังหวัดใกล้เคียง" };
-      body = `<div class="wz-q">ให้คนแถวไหนเห็น?</div><div class="wz-hint">นับรัศมีจาก${esc(wz.center)}</div>
-        ${wz.presets.map((km) => `<button class="opt ${wz.radius === km ? "sel" : ""}" data-km="${km}"><div class="ic" style="font-size:15px;font-weight:600;color:var(--pri)">${km}</div><div><b>รัศมี ${km} กม.</b><span>${desc[km] || ""}</span></div></button>`).join("")}
-        <div class="note info">ตั้งอายุ 25 ปีขึ้นไป และให้ Facebook ช่วยหาคนที่น่าจะสนใจในพื้นที่นี้ให้อัตโนมัติ</div>`;
-    } else if (n === 4) {
-      const p = wz.post;
-      body = `<div class="wz-q">ตรวจก่อนยิง</div><div class="wz-hint">ถ้าถูกต้องแล้ว กด "ยิงแอดเลย"</div>
-        <div class="post" style="cursor:default">${p.picture ? `<img src="${esc(p.picture)}" alt="">` : '<div class="noimg">ไม่มีรูป</div>'}<div class="tx">${esc(p.message)}</div></div>
-        <div class="sum">
-          <div><span>ชื่อแอด</span><b>${esc(wz.name)}</b></div>
-          <div><span>เป้าหมาย</span><b>${wz.goal === "chat" ? "💬 ให้คนทักแชต" : "👀 ให้คนเห็นเยอะ"}</b></div>
-          <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน × ${wz.days} วัน</b></div>
-          <div><span>รวมไม่เกิน</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>
-          <div><span>พื้นที่</span><b>รัศมี ${wz.radius} กม. จาก${esc(wz.center)}</b></div>
-          <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – อีก ${wz.days} วัน</b></div>
-        </div>
-        ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
-    }
+      <div class="wz-lbl">ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</div></div>`;
+    const body = [stepPage, stepGoal, stepMedia, stepText, stepBudget, stepAudience, stepReview][n]();
     box.innerHTML = head + body;
 
-    // ปุ่มล่าง
     const back = n > 0 ? '<button class="btn grey" id="wzBack" style="flex:0 0 32%">ย้อนกลับ</button>' : "";
-    const next = n < 4 ? `<button class="btn" id="wzNext" ${canNext() ? "" : "disabled"}>ถัดไป</button>`
+    const next = n < LAST ? `<button class="btn" id="wzNext" ${canNext() ? "" : "disabled"}>ถัดไป</button>`
       : `<button class="btn" id="wzGo" ${wz.sending ? "disabled" : ""}>${wz.sending ? "กำลังสร้างแอด…" : "🚀 ยิงแอดเลย"}</button>`;
     bar(back + next);
-    if ($("wzBack")) $("wzBack").onclick = () => { wz.step--; wz.err = ""; renderWizard(); window.scrollTo(0, 0); };
-    if ($("wzNext")) $("wzNext").onclick = () => { if (!canNext()) return; wz.step++; renderWizard(); window.scrollTo(0, 0); };
-    if ($("wzGo")) $("wzGo").onclick = wzSubmit;
-    if ($("wzRetry")) $("wzRetry").onclick = wzLoadPosts;
-    box.querySelectorAll(".post[data-i]").forEach((el) => el.onclick = () => {
-      const p = wz.posts[Number(el.dataset.i)]; if (!p.eligible) return toast("โพสต์นี้ Facebook ไม่ให้ยิงแอด");
-      wz.post = p; wz.name = firstLine(p.message); if (!p.picture) wz.goal = "reach"; renderWizard();
+    const on = (id, ev, fn) => { if ($(id)) $(id)[ev] = fn; };
+    const refreshNext = () => { if ($("wzNext")) $("wzNext").disabled = !canNext(); };
+    on("wzBack", "onclick", () => { wz.step--; wz.err = ""; renderWizard(); window.scrollTo(0, 0); });
+    on("wzNext", "onclick", () => {
+      if (!canNext()) return;
+      if (wz.step === 2 && wz.src === "post" && wz.post && !wz.name) wz.name = firstLine(wz.post.message);
+      wz.step++; wz.err = ""; renderWizard(); window.scrollTo(0, 0);
     });
-    box.querySelectorAll("[data-goal]").forEach((el) => el.onclick = () => { wz.goal = el.dataset.goal; renderWizard(); });
+    on("wzGo", "onclick", wzSubmit);
+    on("wzRetry", "onclick", () => { wz.err = ""; if (n === 0) wz.info = null; else if (n === 1) wz.formsFor = null; else wz.postsFor = null; renderWizard(); });
+    on("wzFormReload", "onclick", () => { wz.formsFor = null; renderWizard(); });
+    on("wzRecheck", "onclick", () => { const u = wz.up; u.phase = "processing"; renderWizard(); pollVideo(u).catch((e) => { if (wz.up === u) { u.phase = "error"; u.msg = e.message; renderWizard(); } }); });
+    on("wzFile", "onchange", (e) => { const f = e.target.files?.[0]; if (f) wzPickFile(f); });
+    on("wzWel", "oninput", (e) => { wz.welcome = e.target.value; });
+    on("wzLink", "oninput", (e) => { wz.link = e.target.value; refreshNext(); });
+    on("wzLink", "onchange", () => renderWizard());
+    on("wzForm", "onchange", (e) => { wz.form_id = e.target.value; refreshNext(); });
+    on("wzName", "oninput", (e) => { wz.name = e.target.value; refreshNext(); });
+    on("wzMsg", "oninput", (e) => { wz.message = e.target.value; refreshNext(); });
+    on("wzHead", "oninput", (e) => { wz.headline = e.target.value; });
+    on("wzDaily", "onchange", (e) => { wz.daily = Math.round(Number(e.target.value) || 0); renderWizard(); });
+    box.querySelectorAll("[data-page]").forEach((el) => el.onclick = () => {
+      if (wz.page !== el.dataset.page) Object.assign(wz, { page: el.dataset.page, posts: null, postsFor: null, post: null, forms: null, formsFor: null, form_id: "" });
+      renderWizard();
+    });
+    box.querySelectorAll("[data-goal]").forEach((el) => el.onclick = () => { wz.goal = el.dataset.goal; wz.err = ""; renderWizard(); });
+    box.querySelectorAll("[data-src]").forEach((el) => el.onclick = () => { wz.src = el.dataset.src; wz.err = ""; renderWizard(); });
+    box.querySelectorAll(".post[data-i]").forEach((el) => el.onclick = () => {
+      const p = wz.posts[Number(el.dataset.i)];
+      if (!p.eligible) return toast("โพสต์นี้ Facebook ไม่ให้ยิงแอด");
+      if (wz.goal !== "reach" && !p.picture) return toast("โพสต์นี้ไม่มีรูปหรือวิดีโอ ใช้กับเป้าหมายนี้ไม่ได้");
+      wz.post = p; wz.name = firstLine(p.message); wz.message = p.message || ""; renderWizard();
+    });
     box.querySelectorAll("[data-daily]").forEach((el) => el.onclick = () => { wz.daily = Number(el.dataset.daily); renderWizard(); });
     box.querySelectorAll("[data-days]").forEach((el) => el.onclick = () => { wz.days = Number(el.dataset.days); renderWizard(); });
     box.querySelectorAll("[data-km]").forEach((el) => el.onclick = () => { wz.radius = Number(el.dataset.km); renderWizard(); });
-    if ($("wzName")) $("wzName").oninput = (e) => { wz.name = e.target.value; $("wzNext").disabled = !canNext(); };
-    if ($("wzWel")) $("wzWel").oninput = (e) => { wz.welcome = e.target.value; };
-    if ($("wzDaily")) $("wzDaily").onchange = (e) => { wz.daily = Math.round(Number(e.target.value) || 0); renderWizard(); };
+    box.querySelectorAll("[data-age]").forEach((el) => el.onclick = () => { wz.age = Number(el.dataset.age); renderWizard(); });
   }
   async function wzSubmit() {
     wz.sending = true; wz.err = ""; renderWizard();
+    const body = { page_id: wz.page, goal: wz.goal, source: wz.src, name: wz.name.trim(), welcome: wz.welcome,
+      message: isBoost() ? "" : wz.message.trim(), headline: isBoost() ? "" : wz.headline.trim(),
+      daily_thb: wz.daily, days: wz.days, radius_km: wz.radius, age_min: wz.age };
+    if (wz.src === "post") body.post_id = wz.post.id; else body.media = wz.up.media;
+    if (wz.goal === "lead") body.form_id = wz.form_id;
+    if (wz.goal === "traffic") body.link = wz.link.trim();
     try {
-      wz.result = await api("/api/create-ad", { body: { post_id: wz.post.id, goal: wz.goal, name: wz.name.trim(), welcome: wz.welcome, daily_thb: wz.daily, days: wz.days, radius_km: wz.radius } });
+      wz.result = await api("/api/create-ad", { body });
       wz.step = "done";
     } catch (e) { wz.err = e.message; }
     finally { wz.sending = false; renderWizard(); window.scrollTo(0, wz.step === "done" ? 0 : document.body.scrollHeight); }
@@ -829,7 +1013,7 @@
           : { me: { id: 1, name: "นุ๊ก", role: "owner", role_label: "เจ้าของ", active: true, line_linked: true, notify_daily: true, notify_money: true, notify_ads: true }, perms: ["view", "ads", "money", "settings", "team"] }),
       });
     }
-    if (path === "/api/posts") {
+    if (path.startsWith("/api/posts")) {
       const pic = (c1, c2, label) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="300" height="300" fill="url(#g)"/><path d="M70 170 150 100 230 170V240H70Z" fill="#fff" opacity=".92"/><rect x="132" y="190" width="36" height="50" fill="${c2}"/><text x="150" y="282" font-size="22" text-anchor="middle" fill="#fff" font-family="sans-serif">${label}</text></svg>`);
       return new Promise((r) => setTimeout(() => r({ center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], posts: [
         { id: "1_101", message: "ขายบ้านเดี่ยว 2 ชั้น นครชุม 1.89 ล้าน\n3 ห้องนอน 2 ห้องน้ำ ที่ดิน 60 ตร.ว. (ตัวอย่าง)", picture: pic("#60A5FA", "#1E40AF", "ตัวอย่าง 1"), created_time: new Date(Date.now() - 86400e3).toISOString(), eligible: true },
@@ -839,6 +1023,9 @@
       ] }), 400));
     }
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
+    if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
+      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [10, 25, 50, 80], ages: [18, 20, 25], max_upload_mb: 50 });
+    if (path.startsWith("/api/forms")) return Promise.resolve({ forms: [{ id: "55", name: "ฟอร์มฝากขายบ้าน (ตัวอย่าง)" }] });
     if (path === "/api/team") {
       const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
       return Promise.resolve({
