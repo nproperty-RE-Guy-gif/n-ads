@@ -128,7 +128,17 @@
   .wz-steps{display:flex;gap:6px;margin-bottom:8px}
   .wz-steps i{flex:1;height:6px;border-radius:99px;background:var(--line)}
   .wz-steps i.on{background:var(--pri)}
-  .wz-lbl{font-size:13px;color:var(--mute)}
+  .wz-lbl{font-size:13px;color:var(--mute);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .gtog{border:0;background:var(--card);color:var(--mute);border-radius:99px;padding:5px 10px;font-size:13px;cursor:pointer;box-shadow:var(--shadow)}
+  .gtog.on{background:var(--pri-l);color:var(--pri);font-weight:600}
+  .coach{background:linear-gradient(135deg,#EEF4FF,#F7FAFF);border:1px solid #D6E3FF;border-radius:16px;padding:12px 14px;margin:6px 0 14px;font-size:14px;line-height:1.55}
+  .coach b.h{display:block;font-size:15px;margin-bottom:4px;color:var(--pri)}
+  .coach ul{margin:6px 0 0;padding-left:18px}.coach li{margin:2px 0}
+  .ck{display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:6px 0;border-top:1px dashed var(--line)}
+  .ck:first-of-type{border-top:0}
+  .ck i{font-style:normal;flex:none}
+  .startcard{display:block;width:100%;text-align:left;border:0;cursor:pointer;background:linear-gradient(135deg,#1E3A8A,#2563EB);color:#fff;border-radius:18px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .startcard b{display:block;font-size:17px}.startcard span{font-size:13px;opacity:.9}
   .wz-q{font-size:22px;font-weight:600;margin:4px 0 2px}
   .wz-hint{font-size:14px;color:var(--mute);margin-bottom:12px}
   .post{display:flex;gap:12px;background:var(--card);border-radius:16px;padding:10px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;align-items:center;box-shadow:var(--shadow)}
@@ -156,6 +166,20 @@
   .faq{background:var(--card);border-radius:14px;padding:10px;margin-top:8px;box-shadow:var(--shadow)}
   .btn.sm{flex:none;padding:9px 14px;font-size:15px}
   .agerow{display:flex;gap:10px;align-items:center}.agerow select{flex:1}
+  .covers{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px}
+  .cv{flex:none;width:84px;height:124px;border-radius:12px;border:2px solid transparent;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--mute);overflow:hidden;position:relative;cursor:pointer;padding:0;box-shadow:var(--shadow)}
+  .cv img{width:100%;height:100%;object-fit:cover}
+  .cv span{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:3px 2px;text-align:center}
+  .cv.sel{border-color:var(--pri)}
+  .tag{display:inline-flex;align-items:center;gap:6px;background:var(--pri-l);color:var(--pri);border-radius:99px;padding:6px 10px;font-size:14px;margin:0 6px 6px 0}
+  .tag button{border:0;background:none;color:inherit;font-size:16px;line-height:1;cursor:pointer;padding:0}
+  .ires button{display:block;width:100%;text-align:left;border:0;background:var(--card);border-radius:12px;padding:10px 12px;margin-top:6px;cursor:pointer;color:var(--ink);box-shadow:var(--shadow)}
+  .ires small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+  details.adv{margin-top:14px;background:var(--card);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow)}
+  details.adv summary{cursor:pointer;font-weight:600}
+  .crtabs{margin-bottom:4px}.crtabs span{margin-left:4px;opacity:.7}
+  .pvwrap{background:#fff;border-radius:14px;overflow:hidden;margin-top:8px;display:flex;justify-content:center}
+  .pvwrap iframe{border:0;width:100%;max-width:400px;height:680px}
   .note.ok{background:var(--green-l);color:var(--green)} .note.warn{background:var(--amber-l);color:var(--amber)} .note.bad{background:var(--red-l);color:var(--red)} .note.info{background:var(--card2);color:var(--mute)}
   .sum{background:var(--card);border-radius:var(--r);padding:6px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
   .sum div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
@@ -719,7 +743,9 @@
     if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
     Object.assign(wz, { step: 0, info: wz.info || null, page: wz.info?.default_page || null, loading: false, err: "",
       goal: "chat", welcome: WELCOME, faq: FAQ_DEFAULT.map((q) => ({ q, a: "" })), forms: null, formsFor: null, form_id: "", link: "",
-      src: "upload", posts: null, postsFor: null, post: null, up: null,
+      src: "upload", posts: null, postsFor: null, post: null, up: null, lib: null, libUp: null, cover: null, coverFor: null, thumbs: null, thumbsFor: null, coverBusy: false,
+      gender: "all", interests: [], excludes: [], iq: "", ires: [], xq: "", xres: [], placeMode: "auto", platforms: ["facebook", "instagram", "messenger"], ig: undefined, igFor: null,
+      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") === "1",
       name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, pin: "", ageMin: 25, ageMax: 65, sending: false, result: null });
   }
   wzReset();
@@ -733,6 +759,34 @@
   const ageText = () => `${wz.ageMin}–${wz.ageMax}${wz.ageMax >= 65 ? "+" : ""} ปี`;
   const faqList = () => wz.faq.map((f) => ({ q: f.q.trim(), a: f.a.trim() })).filter((f) => f.q || f.a);
   const radiusOk = (km) => km === 0 || (Number.isInteger(km) && km >= 1 && km <= 80);
+  // สื่อที่เลือกอยู่ (อัปใหม่ หรือ วิดีโอเดิมในบัญชีโฆษณา)
+  const upOf = (c) => c.src === "library" ? c.libUp : c.src === "upload" ? c.up : null;
+  const vidOf = (c) => { const u = upOf(c); return u?.kind === "video" && u.phase === "ready" ? u.media?.video_id : null; };
+  const coverOf = (c) => (c.cover && c.coverFor === vidOf(c) ? c.cover : null);
+  const curUp = () => upOf(wz), curVideoId = () => vidOf(wz), coverNow = () => coverOf(wz);
+  // ทดสอบหลายแบบ: เก็บสื่อ+ข้อความของแต่ละแบบ (A/B/C) แล้วสลับเข้าออกจากช่องที่กำลังแก้
+  const CR_KEYS = ["src", "up", "libUp", "post", "cover", "coverFor", "message", "headline"], TAGS = ["A", "B", "C"];
+  const pickCr = () => Object.fromEntries(CR_KEYS.map((k) => [k, wz[k]]));
+  const saveCr = () => { if (wz.cr.length) wz.cr[wz.ci] = pickCr(); };
+  const allCr = () => { saveCr(); return wz.cr.length ? wz.cr : [pickCr()]; };
+  function loadCr(i) {
+    saveCr(); Object.assign(wz, wz.cr[i]); wz.ci = i; wz.err = "";
+    const u = curUp(); if (u?.phase === "processing") pollVideo(u).catch((e) => { if (wz.up === u) { u.phase = "error"; u.msg = e.message; renderWizard(); } });
+  }
+  const crReady = (c) => (upOf(c)?.phase === "ready") && (wz.goal === "reach" || !!c.message.trim());
+  const busyUp = () => curUp()?.phase === "uploading" || wz.coverBusy;
+  function crTabs() {
+    if (wz.cr.length < 2) return "";
+    return `<div class="chips crtabs">${wz.cr.map((c, i) => `<button class="chip2 ${i === wz.ci ? "sel" : ""}" data-ci="${i}">แบบ ${TAGS[i]}${i === wz.ci && i > 0 ? ` <span data-cdel="${i}" aria-label="ลบแบบนี้">✕</span>` : ""}</button>`).join("")}</div>`;
+  }
+  const localNow = (addMin = 0) => new Date(Date.now() + addMin * 60e3 - new Date().getTimezoneOffset() * 60e3).toISOString().slice(0, 16);
+  const startIso = () => (wz.startMode === "later" && wz.startAt ? new Date(wz.startAt).toISOString() : null);
+  const startOk = () => wz.startMode === "now" || (!!wz.startAt && Date.parse(new Date(wz.startAt).toISOString()) > Date.now());
+  const thDateTime = (iso) => { try { return new Date(iso).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return ""; } };
+  const fmtLen = (sec) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
+  const fmtSize = (a, b) => { const f = (n) => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + " ล้าน" : n >= 1e3 ? Math.round(n / 1e3) + " พัน" : String(n); return a && b ? `ประมาณ ${f(a)}–${f(b)} คน` : ""; };
+  const placeOk = () => wz.placeMode === "auto" || ((wz.platforms.includes("facebook") || wz.platforms.includes("instagram")) && (!wz.platforms.includes("messenger") || wz.platforms.includes("facebook")));
+  const PLAT_TH = { facebook: "Facebook", instagram: "Instagram", messenger: "Messenger" };
 
   async function wzLoad(what) {
     wz.loading = true; wz.err = ""; renderWizard();
@@ -749,19 +803,184 @@
     } catch (e) { wz.err = e.message; }
     finally { wz.loading = false; renderWizard(); }
   }
+  async function loadLib() {
+    wz.libLoading = true; wz.err = "";
+    try { wz.lib = (await api("/api/media/videos")).videos; } catch (e) { wz.err = e.message; }
+    finally { wz.libLoading = false; renderWizard(); }
+  }
+  async function loadThumbs(vid) {
+    wz.thumbsLoading = true;
+    try { wz.thumbs = (await api("/api/media/thumbs?video_id=" + encodeURIComponent(vid))).thumbs; } catch { wz.thumbs = []; }
+    finally { wz.thumbsFor = vid; wz.thumbsLoading = false; renderWizard(); }
+  }
+  async function loadIg() {
+    const pid = wz.page; wz.igFor = pid;
+    try { wz.ig = (await api("/api/page-info?page_id=" + encodeURIComponent(pid))).instagram; } catch { wz.ig = null; }
+    if (wz.page === pid) renderWizard();
+  }
+  async function wzPickCover(file) {
+    const mime = file.type || MIME_BY_EXT[String(file.name || "").split(".").pop().toLowerCase()];
+    if (!/^image\/(jpeg|png)$/.test(mime)) return toast("ภาพปกต้องเป็น JPG หรือ PNG", 4000);
+    if (file.size > (wz.info?.max_upload_mb || 50) * 1048576) return toast("รูปใหญ่เกินไป", 4000);
+    const vid = curVideoId(); wz.coverBusy = true; renderWizard();
+    try {
+      let hash = "demo";
+      if (!st.demo) {
+        const u = await api("/api/media/upload-url", { body: { mime, size: file.size } });
+        await putFile(u.upload_url, file, mime, () => {});
+        hash = (await api("/api/media/register", { body: { path: u.path } })).image_hash;
+      }
+      if (wz.cover?.preview && !wz.cr.some((c, i) => i !== wz.ci && c.cover === wz.cover)) URL.revokeObjectURL(wz.cover.preview);
+      wz.cover = { kind: "image", image_hash: hash, preview: URL.createObjectURL(file) }; wz.coverFor = vid; wz.previews = null;
+    } catch (e) { toast(e.message, 5000); }
+    finally { wz.coverBusy = false; renderWizard(); }
+  }
+  // ค้นหาความสนใจ (พิมพ์แล้วรอ 0.4 วิ ค่อยค้น)
+  let searchTimer = null;
+  function searchInterests(kind, term) {
+    clearTimeout(searchTimer);
+    const key = kind === "x" ? "xres" : "ires";
+    if (term.trim().length < 2) { wz[key] = []; drawResults(kind); return; }
+    searchTimer = setTimeout(async () => {
+      try { wz[key] = (await api("/api/targeting/search?q=" + encodeURIComponent(term.trim()))).items; } catch (e) { wz[key] = []; toast(e.message, 4000); }
+      drawResults(kind);
+    }, 400);
+  }
+  function drawResults(kind) {
+    const el = $(kind === "x" ? "wzXres" : "wzIres"); if (!el) return;
+    const list = wz[kind === "x" ? "xres" : "ires"] || [];
+    el.innerHTML = list.map((it, i) => `<button data-res="${kind}:${i}">＋ ${esc(it.name)}<small>${esc([it.path, fmtSize(it.size_min, it.size_max)].filter(Boolean).join(" · "))}</small></button>`).join("");
+    el.querySelectorAll("[data-res]").forEach((b) => b.onclick = () => {
+      const [k, i] = b.dataset.res.split(":"), it = (k === "x" ? wz.xres : wz.ires)[Number(i)], arr = k === "x" ? wz.excludes : wz.interests;
+      if (arr.length >= 10) return toast("เลือกได้ไม่เกิน 10 อย่าง");
+      if (!arr.some((x) => x.id === it.id)) arr.push({ id: it.id, name: it.name });
+      if (k === "x") { wz.xq = ""; wz.xres = []; } else { wz.iq = ""; wz.ires = []; }
+      renderWizard();
+    });
+  }
+  function buildBody() {
+    const list = allCr(), A = list[0], boost = A.src === "post" && wz.goal === "reach";
+    const body = { page_id: wz.page, goal: wz.goal, source: A.src === "post" ? "post" : "upload", name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
+      message: boost ? "" : A.message.trim(), headline: boost ? "" : A.headline.trim(),
+      daily_thb: wz.daily, days: wz.days, radius_km: wz.radius, age_min: wz.ageMin, age_max: wz.ageMax,
+      gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: wz.placeMode === "manual" ? wz.platforms : [] };
+    const pin = wz.radius ? parsePin(wz.pin) : null;
+    if (pin) { body.center_lat = pin.lat; body.center_lng = pin.lng; }
+    const cov = (c) => { const x = coverOf(c); return x ? (x.kind === "thumb" ? { kind: "thumb", url: x.url } : { kind: "image", image_hash: x.image_hash }) : null; };
+    if (A.src === "post") body.post_id = A.post.id; else body.media = upOf(A).media;
+    if (cov(A)) body.cover = cov(A);
+    if (list.length > 1) body.extras = list.slice(1).map((c) => ({ media: upOf(c).media, message: c.message.trim(), headline: c.headline.trim(), ...(cov(c) ? { cover: cov(c) } : {}) }));
+    const sa = startIso(); if (sa) body.start_at = sa;
+    if (wz.goal === "lead") body.form_id = wz.form_id;
+    if (wz.goal === "traffic") body.link = wz.link.trim();
+    return body;
+  }
+  async function wzPreview() {
+    wz.pvLoading = true; wz.pvErr = ""; renderWizard();
+    try { const r = await api("/api/preview", { body: { ...buildBody(), variant: wz.pvCr } }); wz.previews = r.previews || []; wz.pvTab = 0; if (!wz.previews.length) wz.pvErr = "โหมดตัวอย่างดูพรีวิวจริงไม่ได้ ต้องเข้าระบบจริง"; }
+    catch (e) { wz.pvErr = e.message; }
+    finally { wz.pvLoading = false; renderWizard(); }
+  }
+  // ---------- ผู้ช่วยมือใหม่ (กฎตายตัว ไม่ใช้ AI) ----------
+  const TYPOS = [["ที่เปล่า", "ที่ดินเปล่า"], ["อนุญาติ", "อนุญาต"], ["โฉนท", "โฉนด"], ["โฉนต", "โฉนด"], ["สังเกตุ", "สังเกต"], ["ลายเซ็นต์", "ลายเซ็น"],
+    ["ผลลัพท์", "ผลลัพธ์"], ["ปฎิ", "ปฏิ"], ["คลีนิค", "คลินิก"], ["ศรีษะ", "ศีรษะ"], ["กระทันหัน", "กะทันหัน"], ["ทำเลย์", "ทำเล"], ["สาธารณูปโภคย์", "สาธารณูปโภค"]];
+  const hasPrice = (t) => /\d[\d,.]*\s*(ล้าน|แสน|หมื่น|พัน|บาท|ลบ\.?)|฿\s*\d/i.test(t);
+  const hasSize = (t) => /(ไร่|งาน|ตร\.?\s?ว|ตารางวา|ตร\.?\s?ม|ตารางเมตร|ห้องนอน|ห้องน้ำ|ชั้น)/.test(t);
+  function textChecks(msg, head, tag = "") {
+    const out = [], m = (msg || "").trim(), p = tag ? `${tag}: ` : "";
+    if (wz.goal !== "reach" || m) {
+      if (m.length && m.length < 40) out.push({ lvl: "warn", t: `${p}ข้อความสั้นไป (${m.length} ตัว) ลองใส่ ประเภททรัพย์ ทำเล ขนาด ราคา และจุดเด่น` });
+      if (m && !hasPrice(m)) out.push({ lvl: "tip", t: `${p}ยังไม่มีราคา — ใส่ราคาช่วยคัดคนที่สนใจจริง` });
+      if (m && !hasSize(m)) out.push({ lvl: "tip", t: `${p}ยังไม่บอกขนาด (เช่น ไร่/ตร.ว./ห้องนอน)` });
+    }
+    for (const [bad, good] of TYPOS) if ((m + " " + head).includes(bad)) out.push({ lvl: "warn", t: `${p}เจอคำว่า "${bad}" — หมายถึง "${good}" หรือเปล่า?` });
+    if (/([ก-ฮ])\1\1/.test(m)) out.push({ lvl: "tip", t: `${p}มีตัวอักษรซ้ำติดกันหลายตัว (เช่น "มากกก") ดูไม่เป็นทางการ` });
+    if (/([\u0E48-\u0E4B])\1|ๆๆ/.test(m + head)) out.push({ lvl: "warn", t: `${p}มีวรรณยุกต์หรือไม้ยมกซ้ำกัน ตรวจคำผิดอีกครั้ง` });
+    if ((head || "").trim().length > 40) out.push({ lvl: "tip", t: `${p}หัวข้อยาว ${head.trim().length} ตัว อาจถูกตัดบนมือถือ` });
+    return out;
+  }
+  function mediaChecks(c, tag = "") {
+    const u = upOf(c), p = tag ? `${tag}: ` : "", out = [];
+    if (!u) return out;
+    if (u.w && u.h) {
+      const r = u.w / u.h;
+      if (r > 1.05) out.push({ lvl: "warn", t: `${p}${u.kind === "video" ? "วิดีโอ" : "รูป"}แนวนอน จะดูเล็กบนมือถือ — แนะนำแนวตั้ง 4:5 หรือ 9:16` });
+      else if (r > 0.95) out.push({ lvl: "tip", t: `${p}ภาพจัตุรัสใช้ได้ แต่แนวตั้ง 4:5 หรือ 9:16 จะเต็มจอมือถือกว่า` });
+      else out.push({ lvl: "ok", t: `${p}แนวตั้ง เหมาะกับมือถือ` });
+    }
+    if (u.dur > 90) out.push({ lvl: "tip", t: `${p}คลิปยาว ${fmtLen(u.dur)} นาที — ให้เห็นทรัพย์/ราคาตั้งแต่ช่วงแรก เผื่อคนดูไม่จบ` });
+    return out;
+  }
+  function checksFor(step) {
+    const out = [];
+    if (step === 1 && wz.goal === "reach") out.push({ lvl: "tip", t: "เป้าหมายนี้ Facebook จะเน้นให้คนเห็นมากที่สุด ไม่ได้หาคนทักแชต — ถ้าอยากได้ลูกค้าคุย เลือก 'ให้คนทักแชต'" });
+    if (step === 1 && wz.goal === "lead") out.push({ lvl: "tip", t: "ได้ชื่อ-เบอร์ในฟอร์ม ต้องโทรกลับเอง ยิ่งโทรเร็วยิ่งดี" });
+    if (step === 2) { if (wz.src === "post") out.push({ lvl: "tip", t: "ใช้โพสต์เดิม: ข้อความ/รูปตามโพสต์ ถ้าโพสต์มีคำผิด แก้ที่โพสต์ก่อน" }); else out.push(...mediaChecks(wz)); }
+    if (step === 3 && !isBoost()) {
+      out.push(...textChecks(wz.message, wz.headline));
+      if (wz.goal === "chat" && faqList().length && faqList().every((f) => !f.a)) out.push({ lvl: "tip", t: "ใส่คำตอบอัตโนมัติสัก 1 ข้อ ลูกค้าจะได้คำตอบทันทีแม้ทีมยังไม่ว่าง" });
+    }
+    if (step === 4) {
+      if (wz.days >= 1 && wz.days <= 2) out.push({ lvl: "warn", t: `ยิงแค่ ${wz.days} วัน ช่วงแรก Facebook ยังเรียนรู้ ผลจะแกว่ง อาจยังตัดสินไม่ได้ว่าแอดดีไหม` });
+      if (wz.daily < 100) out.push({ lvl: "tip", t: "งบต่ำกว่า 100 บาท/วัน ผลจะมาช้า ใจเย็นดูผลหลายวัน" });
+      if (wz.days === 0) out.push({ lvl: "tip", t: "ไม่กำหนดวันจบ แอดจะวิ่งจนกว่าจะกดหยุดหรือเงินหมด — ระบบจะแจ้งเตือนในไลน์" });
+      if (wz.cr.length > 1 && wz.daily < 150) out.push({ lvl: "tip", t: `มี ${wz.cr.length} แบบในงบ ${wz.daily} บาท/วัน แต่ละแบบจะได้เห็นน้อย อาจต้องรอนานกว่าจะรู้ผล` });
+    }
+    if (step === 5) {
+      if (wz.radius >= 1 && wz.radius <= 3) out.push({ lvl: "warn", t: `รัศมี ${wz.radius} กม. เล็กมาก คนเห็นน้อย ราคาต่อผลอาจแพงขึ้น` });
+      if (wz.radius === 0) out.push({ lvl: "tip", t: "ทั่วประเทศ: เหมาะกับทรัพย์ที่คนต่างถิ่นซื้อ งบจะกระจายกว้าง" });
+      if (wz.radius > 0 && wz.radius <= 10 && !parsePin(wz.pin)) out.push({ lvl: "tip", t: "รัศมีเล็กแต่ยังไม่ปักหมุดทรัพย์ — วัดจากตัวเมืองแทน ถ้าทรัพย์อยู่นอกเมืองควรปักหมุด" });
+      if (wz.ageMax - wz.ageMin < 10) out.push({ lvl: "warn", t: `ช่วงอายุแคบ (${ageText()}) กลุ่มคนจะเล็ก` });
+      if (wz.interests.length && wz.radius > 0 && wz.radius <= 5) out.push({ lvl: "warn", t: "รัศมีเล็ก + เลือกความสนใจ กลุ่มอาจแคบเกินไป ลองเอาความสนใจออก" });
+      if (wz.gender !== "all") out.push({ lvl: "tip", t: "เลือกเพศเดียว — ถ้าไม่แน่ใจว่าใครเป็นคนตัดสินใจซื้อ เลือก 'ทุกเพศ' ดีกว่า" });
+    }
+    return out;
+  }
+  function allChecks() {
+    const list = allCr(), multi = list.length > 1, out = [];
+    list.forEach((c, i) => { const tag = multi ? `แบบ ${TAGS[i]}` : ""; out.push(...mediaChecks(c, tag)); if (!(c.src === "post" && wz.goal === "reach")) out.push(...textChecks(c.message, c.headline, tag)); });
+    for (const st2 of [1, 4, 5]) out.push(...checksFor(st2));
+    return out.filter((x) => x.lvl !== "ok");
+  }
+  const ICON = { ok: "✅", warn: "⚠️", tip: "💡" };
+  const ckList = (arr) => arr.map((c) => `<div class="ck"><i>${ICON[c.lvl]}</i><span>${esc(c.t)}</span></div>`).join("");
+  const COACH = [
+    ["เลือกเพจ", ["ลูกค้าจะเห็นชื่อเพจนี้บนแอด และทักเข้าเพจนี้", "ต้องเป็นเพจที่อนุญาตตอนเชื่อม Facebook"]],
+    ["เลือกเป้าหมาย", ["ขายบ้าน/ที่ดิน → แนะนำ 'ให้คนทักแชต' คุยต่อได้ทันที", "อยากได้เบอร์โทร → 'ฟอร์มเก็บเบอร์' (ต้องมีฟอร์มในเพจก่อน)", "เปิดตัวทรัพย์ อยากให้คนรู้จัก → 'ให้คนเห็นเยอะ'"]],
+    ["รูป/วิดีโอ", ["สิ่งแรกที่คนเห็น — ใช้ภาพจริงของทรัพย์ ชัด สว่าง", "แนวตั้ง 4:5 หรือ 9:16 เต็มจอมือถือกว่า", "เคยอัปวิดีโอแล้ว? เลือก 'วิดีโอเดิม' ไม่ต้องอัปซ้ำ", "วิดีโอ: เลือกภาพปกที่เห็นทรัพย์ชัด ๆ"]],
+    ["ข้อความ", ["บรรทัดแรกสำคัญสุด: ประเภททรัพย์ + ทำเล + ราคา", "ตามด้วย ขนาด จุดเด่น 2–3 ข้อ แล้วชวนให้ทัก", "อยากรู้ว่าแบบไหนดีกว่า? กด 'เพิ่มแบบ B' ด้านล่าง"]],
+    ["งบ", ["งบต่อวันคือค่าเฉลี่ย บางวัน Facebook ใช้เกินได้ แต่รวมทั้งสัปดาห์ไม่เกิน 7 เท่า", "ช่วงแรก Facebook ยังเรียนรู้ ผลจะแกว่ง แนะนำให้เวลาหลายวันก่อนตัดสิน และอย่าปรับบ่อย", "ไม่แน่ใจกี่วัน เลือก 'ไม่กำหนด' แล้วกดหยุดเองในแอป"]],
+    ["กลุ่มคน", ["เริ่มกว้างไว้ก่อน ให้ Facebook หาคนเอง แล้วค่อยปรับจากผลจริง", "ปักหมุดทรัพย์ จะได้คนรอบทรัพย์จริง", "ความสนใจไม่ใส่ก็ได้ ใส่มากไปกลุ่มจะแคบ", "'แสดงที่ไหน' ปล่อยอัตโนมัติได้ ถ้าเพจผูก IG ไว้ แอดจะขึ้นใน IG ด้วย"]],
+    ["ตรวจแล้วยิง", ["กด 'ดูหน้าตาบน Facebook / Instagram' ดูก่อนทุกครั้ง", "อ่านรายการ 'เช็กก่อนยิง' ด้านล่าง ข้อที่มี ⚠️ ควรแก้ก่อน", "ยิงแล้ว ระบบจะแจ้งผลและเตือนในไลน์"]],
+  ];
+  function coachBox(step) {
+    if (!wz.guide) return "";
+    const [h, lines] = COACH[step], ck = step === LAST ? [] : checksFor(step);
+    return `<div class="coach"><b class="h">🎓 ผู้ช่วย · ${h}</b><ul>${lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
+      ${step === 0 ? `<div style="margin-top:6px">${st.demo ? "ตอนนี้อยู่<b>โหมดตัวอย่าง</b> กดยิงได้โดยไม่เสียเงินจริง ฝึกได้เต็มที่" : "อยากฝึกก่อน? ออกจากระบบแล้วกด 'ดูตัวอย่างหน้าจอ' ฝึกได้ไม่เสียเงิน"}</div>` : ""}
+      ${ck.length ? `<div style="margin-top:8px">${ckList(ck)}</div>` : ""}</div>`;
+  }
+  // อ่านขนาด/ความยาวไฟล์ เพื่อเตือนภาพแนวนอนหรือคลิปยาว
+  function probeDims(up, kind) {
+    const done = (w, h, d) => { up.w = w; up.h = h; if (d) up.dur = d; if (wz.step === 2 && wz.guide) renderWizard(); };
+    try {
+      if (kind === "video") { const v = document.createElement("video"); v.preload = "metadata"; v.muted = true; v.onloadedmetadata = () => done(v.videoWidth, v.videoHeight, v.duration); v.src = up.preview; }
+      else { const im = new Image(); im.onload = () => done(im.naturalWidth, im.naturalHeight); im.src = up.preview; }
+    } catch { /* อ่านไม่ได้ก็ข้าม */ }
+  }
   function bar(html) { $("wzBarIn").innerHTML = html; $("wzBar").classList.toggle("hide", !html); }
   function canNext() {
     const s = wz.step;
     if (s === 0) return !!wz.page;
     if (s === 1) return wz.goal === "lead" ? !!wz.form_id : wz.goal === "traffic" ? linkOk(wz.link.trim()) : !!wz.goal;
     if (s === 2) {
-      if (wz.src === "upload") return wz.up?.phase === "ready";
+      if (wz.src !== "post") return curUp()?.phase === "ready" && !wz.coverBusy;
       return !!wz.post && wz.post.eligible && (wz.goal === "reach" || !!wz.post.picture);
     }
     if (s === 3) return wz.name.trim().length >= 2 && (isBoost() || wz.src === "post" || wz.goal === "reach" || wz.message.trim().length > 0)
       && (wz.goal !== "chat" || faqList().every((f) => f.q));
-    if (s === 5) return radiusOk(wz.radius) && wz.ageMin <= wz.ageMax && (!wz.radius || !wz.pin.trim() || !!parsePin(wz.pin));
-    if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && (wz.days === 0 || (wz.days >= 1 && wz.days <= 30));
+    if (s === 5) return radiusOk(wz.radius) && wz.ageMin <= wz.ageMax && (!wz.radius || !wz.pin.trim() || !!parsePin(wz.pin)) && placeOk();
+    if (s === 4) return wz.daily >= 50 && wz.daily <= 5000 && (wz.days === 0 || (wz.days >= 1 && wz.days <= 30)) && startOk();
     return true;
   }
 
@@ -789,8 +1008,9 @@
     const max = kind === "video" ? (wz.info?.max_video_mb || 4096) : (wz.info?.max_upload_mb || 50);
     if (file.size > max * 1048576) return toast(`ไฟล์ ${(file.size / 1048576).toFixed(0)} MB ใหญ่เกิน ${max >= 1024 ? max / 1024 + " GB" : max + " MB"} — ย่อไฟล์ก่อน หรือโพสต์ลงเพจแล้วเลือกจาก "โพสต์ในเพจ"`, 6000);
     const direct = kind === "video" && file.size > (wz.info?.direct_video_mb || 45) * 1048576;
-    if (wz.up?.preview) URL.revokeObjectURL(wz.up.preview);
+    if (wz.up?.preview && !wz.cr.some((c, i) => i !== wz.ci && c.up === wz.up)) URL.revokeObjectURL(wz.up.preview);
     const up = wz.up = { name: file.name, kind, mime, size: file.size, preview: URL.createObjectURL(file), phase: "uploading", pct: 0, msg: "", media: null, thumb: null, big: direct };
+    probeDims(up, kind);
     renderWizard();
     try {
       if (direct && !st.demo) {
@@ -879,8 +1099,18 @@
     return b;
   }
   function stepMedia() {
-    let b = `<div class="wz-q">ใช้รูปหรือวิดีโออะไร?</div>
-      <div class="seg" style="margin-top:10px"><button data-src="upload" class="${wz.src === "upload" ? "on" : ""}">📤 อัปโหลดใหม่</button><button data-src="post" class="${wz.src === "post" ? "on" : ""}">📄 โพสต์ในเพจ</button></div>`;
+    let b = `${crTabs()}<div class="wz-q">${wz.cr.length > 1 ? `แบบ ${TAGS[wz.ci]}: ` : ""}ใช้รูปหรือวิดีโออะไร?</div>
+      ${wz.ci > 0 ? '<div class="wz-hint">ใช้สื่อเดิมก็ได้ (ทดสอบแค่ข้อความ) หรือเปลี่ยนรูป/วิดีโอ แล้วกดถัดไป</div>' : ""}
+      <div class="seg" style="margin-top:10px"><button data-src="upload" class="${wz.src === "upload" ? "on" : ""}">📤 อัปใหม่</button><button data-src="library" class="${wz.src === "library" ? "on" : ""}">🎬 วิดีโอเดิม</button>${wz.cr.length > 1 ? "" : `<button data-src="post" class="${wz.src === "post" ? "on" : ""}">📄 โพสต์ในเพจ</button>`}</div>`;
+    if (wz.src === "library") {
+      if (!wz.lib) { if (!wz.libLoading && !wz.err) setTimeout(loadLib); return b + (wz.err ? errBox() : '<div class="card empty">กำลังโหลดวิดีโอที่เคยอัป…</div>'); }
+      if (!wz.lib.length) return b + '<div class="card empty">ยังไม่มีวิดีโอในบัญชีโฆษณา</div>';
+      b += '<div class="wz-hint">วิดีโอที่เคยอัปเข้าบัญชีโฆษณา เลือกใช้ซ้ำได้ ไม่ต้องอัปใหม่</div>';
+      b += wz.lib.map((v, i) => `<div class="post ${wz.libUp?.media?.video_id === v.id ? "sel" : ""}" data-lib="${i}">
+        ${v.picture ? `<img src="${esc(v.picture)}" alt="" loading="lazy">` : '<div class="noimg">วิดีโอ</div>'}
+        <div style="flex:1;min-width:0"><div class="tx">${esc(v.title || "วิดีโอ")}</div><div class="dt">${thDate(v.created_time)}${v.length ? " · " + fmtLen(v.length) : ""}</div></div></div>`).join("");
+      return b + coverBox();
+    }
     if (wz.src === "upload") {
       const max = wz.info?.max_upload_mb || 50;
       const u = wz.up;
@@ -891,7 +1121,7 @@
         <div class="uptx" id="upTx">${esc(upText(u))}</div>
         <div class="row2" style="margin-top:10px"><label class="btn ghost" style="text-align:center">เปลี่ยนไฟล์<input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png" style="display:none"></label>
         ${u.phase === "error" && u.media?.video_id ? '<button class="btn ghost" id="wzRecheck">เช็กอีกครั้ง</button>' : ""}</div></div>`;
-      return b;
+      return b + coverBox();
     }
     b += `<div class="wz-hint">${wz.goal === "reach" ? "จะดันโพสต์เดิมให้คนเห็นมากขึ้น ยอดไลก์/คอมเมนต์รวมที่โพสต์เดิม" : "แอดจะใช้รูปหรือวิดีโอและข้อความจากโพสต์ แก้ข้อความได้ในขั้นถัดไป"}</div>`;
     if (wz.postsFor !== wz.page) { if (!wz.loading && !wz.err) setTimeout(() => wzLoad("posts")); return b + (wz.err ? errBox() : '<div class="card empty">กำลังโหลดโพสต์จากเพจ…</div>'); }
@@ -906,15 +1136,35 @@
         <div class="dt">${thDate(p.created_time)}${p.video ? '<span class="vbadge">▶ วิดีโอ</span>' : ""}${why}</div></div></div>`;
     }).join("");
   }
+  function coverBox() {
+    const u = curUp(), vid = curVideoId();
+    if (!vid) return "";
+    if (wz.thumbsFor !== vid && !wz.thumbsLoading) setTimeout(() => loadThumbs(vid));
+    const cur = coverNow(), thumbs = wz.thumbsFor === vid ? wz.thumbs || [] : [];
+    return `<label class="f">ภาพปกวิดีโอ (คนเห็นก่อนกดเล่น)</label><div class="covers">
+      <button class="cv ${!cur ? "sel" : ""}" data-cv="-1">${u.thumb ? `<img src="${esc(u.thumb)}" alt="">` : "🎞"}<span>Facebook เลือกให้</span></button>
+      ${thumbs.map((t, i) => `<button class="cv ${cur?.kind === "thumb" && cur.url === t.url ? "sel" : ""}" data-cv="${i}"><img src="${esc(t.url)}" alt="" loading="lazy"></button>`).join("")}
+      <label class="cv ${cur?.kind === "image" ? "sel" : ""}">${cur?.kind === "image" ? `<img src="${esc(cur.preview)}" alt="">` : "＋"}<span>${wz.coverBusy ? "กำลังอัป…" : "อัปรูปปกเอง"}</span>
+        <input type="file" id="wzCover" accept="image/jpeg,image/png" style="display:none"></label></div>
+      ${wz.thumbsFor !== vid ? '<div class="wz-hint">กำลังโหลดภาพจากวิดีโอ…</div>' : ""}`;
+  }
+  function abBox() {
+    if (wz.src === "post" && wz.cr.length < 2) return "";
+    const n = Math.max(wz.cr.length, 1);
+    return `<div class="sec">🧪 ทดสอบหลายแบบ (ไม่บังคับ)</div>
+      <div class="wz-hint">${n > 1 ? `ตอนนี้มี ${n} แบบ (${TAGS.slice(0, n).join(", ")}) ใช้งบก้อนเดียวกัน` : "ทำอีก 1–2 แบบ เช่น เปลี่ยนวิดีโอ หรือเปลี่ยนข้อความ"} — Facebook จะทดลองส่งทุกแบบ แล้วเทงบให้แบบที่ได้ผลดีกว่าเอง</div>
+      ${n < 3 ? `<button class="btn ghost sm" id="wzAddCr">＋ เพิ่มแบบ ${TAGS[n]}</button>` : ""}`;
+  }
   function stepText() {
-    let b = `<div class="wz-q">ตั้งชื่อและข้อความ</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "ข้อความโฆษณาคือข้อความที่คนเห็นเหนือรูป/วิดีโอ"}</div>
+    let b = `${crTabs()}<div class="wz-q">${wz.cr.length > 1 ? `แบบ ${TAGS[wz.ci]}: ข้อความ` : "ตั้งชื่อและข้อความ"}</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "ข้อความโฆษณาคือข้อความที่คนเห็นเหนือรูป/วิดีโอ"}</div>
       <label class="f" for="wzName">ชื่อแอด (ขึ้นในไลน์ตอนแจ้งเตือน คนดูแอดไม่เห็น)</label>
       <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">`;
     if (isBoost()) return b;
-    b += `<label class="f" for="wzMsg">ข้อความโฆษณา${wz.src === "upload" && wz.goal !== "reach" ? "" : " (เว้นว่าง = ใช้ข้อความโพสต์)"}</label>
+    b += `<label class="f" for="wzMsg">ข้อความโฆษณา${wz.src === "post" ? " (เว้นว่าง = ใช้ข้อความโพสต์)" : wz.goal === "reach" ? " (ไม่ใส่ก็ได้)" : ""}</label>
       <textarea class="inp" id="wzMsg" maxlength="2000" placeholder="เช่น ขายบ้านเดี่ยว 2 ชั้น 3 ห้องนอน ใกล้ตลาด ทักสอบถามได้เลย">${esc(wz.message)}</textarea>
       <label class="f" for="wzHead">หัวข้อสั้น ๆ (ไม่ใส่ก็ได้)</label>
       <input class="inp" id="wzHead" maxlength="60" value="${esc(wz.headline)}" placeholder="เช่น ราคาจบ 1.89 ล้าน">`;
+    b += abBox();
     if (wz.goal === "chat") {
       b += `<div class="sec">💬 ข้อความในแชต</div><div class="wz-hint">ลูกค้ากดทักจากแอด จะเห็นข้อความนี้จากเพจทันที</div>
         <label class="f" for="wzWel">ข้อความทักทาย</label>
@@ -945,7 +1195,11 @@
       <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
       <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
       <label class="f">ยิงกี่วัน</label><div class="chips">${[1, 3, 5, 7, 14, 0].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v ? `${v} วัน` : "ไม่กำหนด"}</button>`).join("")}</div>
-      ${box}${note}`;
+      ${box}${note}
+      <label class="f">เริ่มแอดเมื่อไหร่</label><div class="chips">
+        <button class="chip2 ${wz.startMode === "now" ? "sel" : ""}" data-start="now">ทันที</button><button class="chip2 ${wz.startMode === "later" ? "sel" : ""}" data-start="later">ตั้งเวลา</button></div>
+      ${wz.startMode === "later" ? `<input class="inp" id="wzStart" type="datetime-local" min="${localNow()}" value="${esc(wz.startAt)}">
+        ${!startOk() ? '<div class="note warn">เลือกวันเวลาที่ยังไม่ผ่านไป</div>' : `<div class="note info">แอดจะเริ่มวิ่ง ${esc(thDateTime(startIso()))} (หลัง Facebook ตรวจผ่าน)</div>`}` : ""}`;
   }
   function stepAudience() {
     const [amin, amax] = wz.info?.age_limits || [18, 65];
@@ -965,17 +1219,49 @@
     b += `<div class="note info">${esc(areaLabel(wz.radius))}${wz.radius && wz.radius <= 3 ? " · รัศมีเล็ก คนเห็นอาจน้อย" : ""}</div>
       <label class="f">ช่วงอายุ</label>
       <div class="agerow"><select class="inp" id="wzAgeMin">${opts(wz.ageMin)}</select><span>ถึง</span><select class="inp" id="wzAgeMax">${opts(wz.ageMax)}</select></div>
-      <div class="note info">Facebook จะส่งแอดให้เฉพาะคนอายุ ${ageText()} เท่านั้น</div>`;
+      <div class="note info">Facebook จะส่งแอดให้เฉพาะคนอายุ ${ageText()} เท่านั้น</div>
+      <label class="f">เพศ</label><div class="chips">${[["all", "ทุกเพศ"], ["male", "ชาย"], ["female", "หญิง"]].map(([k, t]) => `<button class="chip2 ${wz.gender === k ? "sel" : ""}" data-gender="${k}">${t}</button>`).join("")}</div>
+      <label class="f" for="wzIq">ความสนใจ (ไม่ใส่ก็ได้)</label>
+      <div>${wz.interests.map((x, i) => `<span class="tag">${esc(x.name)}<button data-rmi="${i}" aria-label="ลบ">×</button></span>`).join("")}</div>
+      <input class="inp" id="wzIq" autocomplete="off" placeholder="พิมพ์ค้นหา เช่น อสังหาริมทรัพย์ บ้าน ที่ดิน" value="${esc(wz.iq)}"><div class="ires" id="wzIres"></div>
+      <div class="note info">${wz.interests.length ? "Facebook จะส่งให้คนที่สนใจอย่างใดอย่างหนึ่งในนี้" : "ไม่ใส่ = ส่งให้ทุกคนในพื้นที่และช่วงอายุ ถ้าใส่ กลุ่มจะแคบลง"}</div>
+      <details class="adv" ${wz.excludes.length ? "open" : ""}><summary>ตั้งค่าขั้นสูง: ไม่แสดงให้คนบางกลุ่ม</summary>
+        <label class="f" for="wzXq">ไม่แสดงให้คนที่สนใจ…</label>
+        <div>${wz.excludes.map((x, i) => `<span class="tag">${esc(x.name)}<button data-rmx="${i}" aria-label="ลบ">×</button></span>`).join("")}</div>
+        <input class="inp" id="wzXq" autocomplete="off" placeholder="พิมพ์ค้นหา" value="${esc(wz.xq)}"><div class="ires" id="wzXres"></div></details>
+      <div class="sec">📍 แสดงแอดที่ไหน</div>
+      <div class="chips"><button class="chip2 ${wz.placeMode === "auto" ? "sel" : ""}" data-place="auto">อัตโนมัติ (แนะนำ)</button><button class="chip2 ${wz.placeMode === "manual" ? "sel" : ""}" data-place="manual">เลือกเอง</button></div>
+      ${wz.placeMode === "manual" ? `<div class="chips">${Object.entries(PLAT_TH).map(([k, t]) => `<button class="chip2 ${wz.platforms.includes(k) ? "sel" : ""}" data-plat="${k}">${wz.platforms.includes(k) ? "✓ " : ""}${t}</button>`).join("")}</div>
+        ${!placeOk() ? '<div class="note warn">ต้องเลือก Facebook หรือ Instagram อย่างน้อย 1 อย่าง (Messenger ต้องคู่กับ Facebook)</div>' : ""}` : '<div class="wz-hint" style="margin:6px 0 0">Facebook เลือกตำแหน่งให้เอง ทั้ง Facebook, Instagram และ Messenger</div>'}
+      ${igNote()}`;
     return b;
+  }
+  function igNote() {
+    if (wz.igFor !== wz.page) { setTimeout(loadIg); return ""; }
+    if (wz.ig === undefined) return "";
+    return wz.ig ? `<div class="note ok">Instagram: @${esc(wz.ig.username)} ✓ แอดบน Instagram จะขึ้นในชื่อบัญชีนี้</div>`
+      : '<div class="note warn">เพจนี้ยังไม่ได้ผูกบัญชี Instagram — ผูกได้ที่ Meta Business Suite > ตั้งค่า > บัญชี Instagram</div>';
+  }
+  function previewBox() {
+    if (!wz.previews?.length) return "";
+    const p = wz.previews[Math.min(wz.pvTab, wz.previews.length - 1)];
+    return `<div class="chips">${wz.previews.map((x, i) => `<button class="chip2 ${x === p ? "sel" : ""}" data-pv="${i}">${esc(x.label)}</button>`).join("")}</div>
+      <div class="pvwrap"><iframe src="${esc(p.src)}" loading="lazy" scrolling="yes" title="ตัวอย่างแอด"></iframe></div>
+      <div class="wz-hint" style="margin-top:6px">ตัวอย่างจาก Facebook · ใช้ได้ 24 ชั่วโมง</div>`;
   }
   function stepReview() {
     const g = GOAL_INFO[wz.goal];
-    const thumb = wz.src === "upload" ? (wz.up?.kind === "image" ? wz.up.preview : wz.up?.thumb) : wz.post?.picture;
-    const mediaLbl = wz.src === "upload" ? (wz.up?.kind === "video" ? "วิดีโอที่อัปโหลด" : "รูปที่อัปโหลด") : isBoost() ? "ดันโพสต์เดิม" : wz.post?.video ? "วิดีโอจากโพสต์" : "รูปจากโพสต์";
+    const list = allCr(), A = list[0];
+    const u = upOf(A), cv = coverOf(A);
+    const thumb = cv ? (cv.kind === "image" ? cv.preview : cv.url) : u ? (u.kind === "image" ? u.preview : u.thumb) : wz.post?.picture;
+    const mediaLbl = list.length > 1 ? `${list.length} แบบ (${TAGS.slice(0, list.length).join(", ")}) ทดสอบในงบเดียวกัน` : A.src === "library" ? "วิดีโอเดิมในบัญชีโฆษณา" : A.src === "upload" ? (u?.kind === "video" ? "วิดีโอที่อัปโหลด" : "รูปที่อัปโหลด") : isBoost() ? "ดันโพสต์เดิม" : A.post?.video ? "วิดีโอจากโพสต์" : "รูปจากโพสต์";
+    const placeTxt = wz.placeMode === "auto" ? "อัตโนมัติ (Facebook เลือกให้)" : wz.platforms.map((k) => PLAT_TH[k]).join(" + ");
     const form = (wz.forms || []).find((f) => f.id === wz.form_id);
-    const text = isBoost() ? wz.post?.message : (wz.message.trim() || wz.post?.message || "");
+    const text = isBoost() ? A.post?.message : (A.message.trim() || A.post?.message || "");
     return `<div class="wz-q">ตรวจก่อนยิง</div><div class="wz-hint">ถ้าถูกต้องแล้ว กด "ยิงแอดเลย"</div>
-      <div class="post" style="cursor:default">${thumb ? `<img src="${esc(thumb)}" alt="">` : '<div class="noimg">ไม่มีภาพ</div>'}<div class="tx">${esc(text || "(ไม่มีข้อความ)")}</div></div>
+      ${list.length > 1 ? list.map((c, i) => { const cu = upOf(c), cc = coverOf(c), th = cc ? (cc.kind === "image" ? cc.preview : cc.url) : cu ? (cu.kind === "image" ? cu.preview : cu.thumb) : null;
+        return `<div class="post" style="cursor:default">${th ? `<img src="${esc(th)}" alt="">` : '<div class="noimg">วิดีโอ</div>'}<div style="flex:1;min-width:0"><div class="dt" style="margin:0 0 2px"><b>แบบ ${TAGS[i]}</b>${c.headline.trim() ? " · " + esc(c.headline.trim()) : ""}</div><div class="tx">${esc(c.message.trim())}</div></div></div>`; }).join("")
+        : `<div class="post" style="cursor:default">${thumb ? `<img src="${esc(thumb)}" alt="">` : '<div class="noimg">ไม่มีภาพ</div>'}<div class="tx">${esc(text || "(ไม่มีข้อความ)")}</div></div>`}
       <div class="sum">
         <div><span>เพจ</span><b>${esc(pageOf()?.name || wz.page)}</b></div>
         <div><span>ชื่อแอด</span><b>${esc(wz.name)}</b></div>
@@ -983,15 +1269,26 @@
         ${wz.goal === "lead" ? `<div><span>ฟอร์ม</span><b>${esc(form?.name || wz.form_id)}</b></div>` : ""}
         ${wz.goal === "traffic" ? `<div><span>ลิงก์</span><b style="word-break:break-all">${esc(wz.link.trim())}</b></div>` : ""}
         <div><span>สื่อ</span><b>${mediaLbl}</b></div>
-        ${wz.headline.trim() && !isBoost() ? `<div><span>หัวข้อ</span><b>${esc(wz.headline.trim())}</b></div>` : ""}
+        ${list.length < 2 && vidOf(A) ? `<div><span>ภาพปก</span><b>${cv ? "เลือกเอง" : "Facebook เลือกให้"}</b></div>` : ""}
+        ${list.length < 2 && A.headline.trim() && !isBoost() ? `<div><span>หัวข้อ</span><b>${esc(A.headline.trim())}</b></div>` : ""}
         <div><span>งบ</span><b>${wz.daily.toLocaleString("en-US")} บาท/วัน${wz.days ? ` × ${wz.days} วัน` : ""}</b></div>
         ${wz.days ? `<div><span>รวมประมาณ</span><b style="color:var(--pri)">${baht(wz.daily * wz.days, 0)}</b></div>` : ""}
         <div><span>พื้นที่</span><b>${esc(areaLabel(wz.radius))}</b></div>
         <div><span>อายุ</span><b>${ageText()}</b></div>
+        <div><span>เพศ</span><b>${{ all: "ทุกเพศ", male: "ชาย", female: "หญิง" }[wz.gender]}</b></div>
+        <div><span>ความสนใจ</span><b style="text-align:right">${wz.interests.length ? esc(wz.interests.map((x) => x.name).join(", ")) : "ไม่จำกัด"}</b></div>
+        ${wz.excludes.length ? `<div><span>ไม่แสดงให้</span><b style="text-align:right">${esc(wz.excludes.map((x) => x.name).join(", "))}</b></div>` : ""}
+        <div><span>แสดงที่</span><b style="text-align:right">${esc(placeTxt)}${wz.ig && (wz.placeMode === "auto" || wz.platforms.includes("instagram")) ? `<br><span style="font-weight:400;color:var(--mute)">IG: @${esc(wz.ig.username)}</span>` : ""}</b></div>
         ${wz.goal === "chat" ? `<div><span>ทักทายในแชต</span><b style="white-space:pre-wrap;text-align:right">${esc(wz.welcome.trim() || WELCOME)}</b></div>
         ${faqList().length ? `<div><span>คำถามที่พบบ่อย</span><b style="text-align:right">${faqList().map((f) => esc(f.q) + (f.a ? `<br><span style="font-weight:400;color:var(--mute)">→ ${esc(f.a)}</span>` : "")).join("<br>")}</b></div>` : ""}` : ""}
-        <div><span>เริ่ม – จบ</span><b>ทันทีหลัง Facebook ตรวจผ่าน – ${wz.days ? `อีก ${wz.days} วัน` : "ไม่กำหนด (กดหยุดเองในแอป)"}</b></div>
+        <div><span>เริ่ม – จบ</span><b>${startIso() ? esc(thDateTime(startIso())) : "ทันทีหลัง Facebook ตรวจผ่าน"} – ${wz.days ? `อีก ${wz.days} วัน` : "ไม่กำหนด (กดหยุดเองในแอป)"}</b></div>
       </div>
+      <div class="sec">✔️ เช็กก่อนยิง</div>
+      ${(() => { const ck = allChecks(); return ck.length ? `<div class="card" style="padding:6px 12px">${ckList(ck)}</div>` : '<div class="note ok">✅ ไม่พบจุดที่ควรแก้</div>'; })()}
+      <div class="sec">👁 ตัวอย่างแอด</div>
+      ${list.length > 1 ? `<div class="chips">${list.map((_, i) => `<button class="chip2 ${i === wz.pvCr ? "sel" : ""}" data-pvcr="${i}">แบบ ${TAGS[i]}</button>`).join("")}</div>` : ""}
+      ${wz.previews?.length ? previewBox() : `<button class="btn ghost" id="wzPv" style="width:100%" ${wz.pvLoading ? "disabled" : ""}>${wz.pvLoading ? "กำลังให้ Facebook สร้างตัวอย่าง…" : "ดูหน้าตาบน Facebook / Instagram"}</button>`}
+      ${wz.pvErr ? `<div class="note warn">${esc(wz.pvErr)}</div>` : ""}
       ${wz.err ? `<div class="note bad">${esc(wz.err)}</div>` : ""}`;
   }
   const errBox = () => `<div class="note bad">${esc(wz.err)}</div><div class="row2"><button class="btn ghost" id="wzRetry">ลองใหม่</button></div>`;
@@ -1009,9 +1306,10 @@
     }
     const n = wz.step;
     const head = `<div class="wz-top"><div class="wz-steps">${STEP_NAMES.map((_, i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>
-      <div class="wz-lbl">ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</div></div>`;
+      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">🎓 ผู้ช่วย${wz.guide ? " เปิด" : ""}</button></div></div>`;
+    const start = n === 0 && !wz.guide ? '<button class="startcard" id="wzStartGuide"><b>🎓 ไม่เคยยิงแอด? เริ่มที่นี่</b><span>เปิดผู้ช่วย จะบอกทีละขั้นว่าเลือกอะไรดี และเตือนจุดที่ควรแก้ก่อนยิง</span></button>' : "";
     const body = [stepPage, stepGoal, stepMedia, stepText, stepBudget, stepAudience, stepReview][n]();
-    box.innerHTML = head + body;
+    box.innerHTML = head + start + coachBox(n) + body;
 
     const back = n > 0 ? '<button class="btn grey" id="wzBack" style="flex:0 0 32%">ย้อนกลับ</button>' : "";
     const next = n < LAST ? `<button class="btn" id="wzNext" ${canNext() ? "" : "disabled"}>ถัดไป</button>`
@@ -1019,14 +1317,21 @@
     bar(back + next);
     const on = (id, ev, fn) => { if ($(id)) $(id)[ev] = fn; };
     const refreshNext = () => { if ($("wzNext")) $("wzNext").disabled = !canNext(); };
-    on("wzBack", "onclick", () => { wz.step--; wz.err = ""; renderWizard(); window.scrollTo(0, 0); });
+    on("wzBack", "onclick", () => { wz.step--; wz.err = ""; wz.previews = null; wz.pvErr = ""; renderWizard(); window.scrollTo(0, 0); });
     on("wzNext", "onclick", () => {
       if (!canNext()) return;
       if (wz.step === 2 && wz.src === "post" && wz.post && !wz.name) wz.name = firstLine(wz.post.message);
-      wz.step++; wz.err = ""; renderWizard(); window.scrollTo(0, 0);
+      if (wz.step === 3 && wz.cr.length > 1) {
+        const bad = allCr().findIndex((c) => !crReady(c));
+        if (bad >= 0) { loadCr(bad); wz.step = upOf(wz)?.phase === "ready" ? 3 : 2; renderWizard(); window.scrollTo(0, 0); return toast(`แบบ ${TAGS[bad]} ยังไม่ครบ`, 3000); }
+      }
+      wz.step++; wz.err = ""; wz.previews = null; wz.pvErr = ""; renderWizard(); window.scrollTo(0, 0);
     });
     on("wzGo", "onclick", wzSubmit);
-    on("wzRetry", "onclick", () => { wz.err = ""; if (n === 0) wz.info = null; else if (n === 1) wz.formsFor = null; else wz.postsFor = null; renderWizard(); });
+    const setGuide = (v) => { wz.guide = v; store.set("nads_guide", v ? "1" : "0"); renderWizard(); };
+    on("wzGuide", "onclick", () => setGuide(!wz.guide));
+    on("wzStartGuide", "onclick", () => { setGuide(true); toast("เปิดผู้ช่วยแล้ว ทำตามทีละขั้นได้เลย", 3000); });
+    on("wzRetry", "onclick", () => { wz.err = ""; if (n === 0) wz.info = null; else if (n === 1) wz.formsFor = null; else if (wz.src === "library") wz.lib = null; else wz.postsFor = null; renderWizard(); });
     on("wzFormReload", "onclick", () => { wz.formsFor = null; renderWizard(); });
     on("wzRecheck", "onclick", () => { const u = wz.up; u.phase = "processing"; renderWizard(); pollVideo(u).catch((e) => { if (wz.up === u) { u.phase = "error"; u.msg = e.message; renderWizard(); } }); });
     on("wzFile", "onchange", (e) => { const f = e.target.files?.[0]; if (f) wzPickFile(f); });
@@ -1039,7 +1344,7 @@
     on("wzHead", "oninput", (e) => { wz.headline = e.target.value; });
     on("wzDaily", "onchange", (e) => { wz.daily = Math.round(Number(e.target.value) || 0); renderWizard(); });
     box.querySelectorAll("[data-page]").forEach((el) => el.onclick = () => {
-      if (wz.page !== el.dataset.page) Object.assign(wz, { page: el.dataset.page, posts: null, postsFor: null, post: null, forms: null, formsFor: null, form_id: "" });
+      if (wz.page !== el.dataset.page) Object.assign(wz, { page: el.dataset.page, posts: null, postsFor: null, post: null, forms: null, formsFor: null, form_id: "", ig: undefined, igFor: null });
       renderWizard();
     });
     box.querySelectorAll("[data-goal]").forEach((el) => el.onclick = () => { wz.goal = el.dataset.goal; wz.err = ""; renderWizard(); });
@@ -1057,6 +1362,50 @@
     on("wzKm", "onchange", () => renderWizard());
     on("wzPin", "oninput", (e) => { wz.pin = e.target.value; refreshNext(); });
     on("wzPin", "onchange", () => renderWizard());
+    box.querySelectorAll("[data-lib]").forEach((el) => el.onclick = () => {
+      const v = wz.lib[Number(el.dataset.lib)];
+      wz.libUp = { name: v.title, kind: "video", phase: "ready", media: { kind: "video", video_id: v.id }, thumb: v.picture, preview: null, dur: Number(v.length) || 0 };
+      if (!wz.name) wz.name = (v.title || "").slice(0, 80);
+      renderWizard();
+    });
+    box.querySelectorAll("[data-cv]").forEach((el) => el.onclick = () => {
+      const i = Number(el.dataset.cv);
+      wz.cover = i < 0 ? null : { kind: "thumb", url: wz.thumbs[i].url }; wz.coverFor = curVideoId(); wz.previews = null; renderWizard();
+    });
+    on("wzCover", "onchange", (e) => { const f = e.target.files?.[0]; if (f) wzPickCover(f); });
+    box.querySelectorAll("[data-start]").forEach((el) => el.onclick = () => { wz.startMode = el.dataset.start; if (wz.startMode === "later" && !wz.startAt) wz.startAt = localNow(60); renderWizard(); });
+    on("wzStart", "onchange", (e) => { wz.startAt = e.target.value; renderWizard(); });
+    box.querySelectorAll("[data-gender]").forEach((el) => el.onclick = () => { wz.gender = el.dataset.gender; renderWizard(); });
+    on("wzIq", "oninput", (e) => { wz.iq = e.target.value; searchInterests("i", wz.iq); });
+    on("wzXq", "oninput", (e) => { wz.xq = e.target.value; searchInterests("x", wz.xq); });
+    drawResults("i"); drawResults("x");
+    box.querySelectorAll("[data-rmi]").forEach((el) => el.onclick = () => { wz.interests.splice(Number(el.dataset.rmi), 1); renderWizard(); });
+    box.querySelectorAll("[data-rmx]").forEach((el) => el.onclick = () => { wz.excludes.splice(Number(el.dataset.rmx), 1); renderWizard(); });
+    box.querySelectorAll("[data-place]").forEach((el) => el.onclick = () => { wz.placeMode = el.dataset.place; renderWizard(); });
+    box.querySelectorAll("[data-plat]").forEach((el) => el.onclick = () => {
+      const k = el.dataset.plat; wz.platforms = wz.platforms.includes(k) ? wz.platforms.filter((x) => x !== k) : [...wz.platforms, k]; renderWizard();
+    });
+    on("wzPv", "onclick", wzPreview);
+    box.querySelectorAll("[data-pvcr]").forEach((el) => el.onclick = () => { wz.pvCr = Number(el.dataset.pvcr); wz.previews = null; wz.pvErr = ""; renderWizard(); });
+    on("wzAddCr", "onclick", () => {
+      if (busyUp()) return toast("รออัปโหลดให้เสร็จก่อน");
+      if (!wz.cr.length) wz.cr = [pickCr()];
+      saveCr();
+      const A = wz.cr[wz.ci];
+      wz.cr.push({ ...A, src: A.src === "post" ? "upload" : A.src, post: null });
+      loadCr(wz.cr.length - 1); wz.step = 2; wz.previews = null; renderWizard(); window.scrollTo(0, 0);
+    });
+    box.querySelectorAll("[data-ci]").forEach((el) => el.onclick = (e) => {
+      const del = e.target.closest("[data-cdel]");
+      if (del) {
+        const i = Number(del.dataset.cdel); saveCr(); wz.cr.splice(i, 1); wz.ci = -1;
+        const keep = wz.cr.length > 1 ? wz.cr : []; Object.assign(wz, wz.cr[0]); wz.cr = keep; wz.ci = 0; wz.pvCr = 0; renderWizard(); return;
+      }
+      const i = Number(el.dataset.ci); if (i === wz.ci) return;
+      if (busyUp()) return toast("รออัปโหลดให้เสร็จก่อน");
+      loadCr(i); renderWizard();
+    });
+    box.querySelectorAll("[data-pv]").forEach((el) => el.onclick = () => { wz.pvTab = Number(el.dataset.pv); renderWizard(); });
     on("wzAgeMin", "onchange", (e) => { wz.ageMin = Number(e.target.value); if (wz.ageMax < wz.ageMin) wz.ageMax = wz.ageMin; renderWizard(); });
     on("wzAgeMax", "onchange", (e) => { wz.ageMax = Number(e.target.value); if (wz.ageMin > wz.ageMax) wz.ageMin = wz.ageMax; renderWizard(); });
     on("wzAddName", "onclick", () => {
@@ -1069,14 +1418,7 @@
   }
   async function wzSubmit() {
     wz.sending = true; wz.err = ""; renderWizard();
-    const body = { page_id: wz.page, goal: wz.goal, source: wz.src, name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
-      message: isBoost() ? "" : wz.message.trim(), headline: isBoost() ? "" : wz.headline.trim(),
-      daily_thb: wz.daily, days: wz.days, radius_km: wz.radius, age_min: wz.ageMin, age_max: wz.ageMax };
-    const pin = wz.radius ? parsePin(wz.pin) : null;
-    if (pin) { body.center_lat = pin.lat; body.center_lng = pin.lng; }
-    if (wz.src === "post") body.post_id = wz.post.id; else body.media = wz.up.media;
-    if (wz.goal === "lead") body.form_id = wz.form_id;
-    if (wz.goal === "traffic") body.link = wz.link.trim();
+    const body = buildBody();
     try {
       wz.result = await api("/api/create-ad", { body });
       wz.step = "done";
@@ -1126,6 +1468,11 @@
         { id: "1_104", message: "แชร์ข่าว: อัปเดตราคาประเมินที่ดินรอบใหม่ (ตัวอย่าง)", picture: null, created_time: new Date(Date.now() - 9 * 86400e3).toISOString(), eligible: false },
       ] }), 400));
     }
+    if (path === "/api/media/videos") return Promise.resolve({ videos: [{ id: "9100", title: "ทัวร์ที่ดินหน้าโรบินสัน (ตัวอย่าง)", created_time: new Date().toISOString(), picture: null, length: 170 }] });
+    if (path.startsWith("/api/media/thumbs")) return Promise.resolve({ thumbs: [] });
+    if (path.startsWith("/api/page-info")) return Promise.resolve({ instagram: { id: "1", username: "n.property.network" } });
+    if (path.startsWith("/api/targeting/search")) return Promise.resolve({ items: [{ id: "6003014261718", name: "อสังหาริมทรัพย์", size_min: 1e6, size_max: 2e6, path: "ความสนใจ › ธุรกิจ" }, { id: "6003020834693", name: "การซื้อบ้าน", size_min: 3e5, size_max: 5e5, path: "ความสนใจ › บ้านและสวน" }] });
+    if (path === "/api/preview") return Promise.resolve({ previews: [] });
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
     if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
       default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", presets: [1, 3, 5, 10, 25, 50, 80], radius_range: [1, 80], age_limits: [18, 65], max_faq: 3, max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
