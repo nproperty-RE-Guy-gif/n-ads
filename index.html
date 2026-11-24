@@ -3,27 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1E40AF">
-<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#DC2626">
+<meta name="color-scheme" content="light">
 <title>N Ads Alert</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ===== N Ads Alert · ธีมฟ้า-น้ำเงิน (สว่าง/มืดอัตโนมัติ) ===== */
+  /* ===== N Ads Alert · ธีมสว่าง ขาว-แดง (แบรนด์ N propertyNetwork) ===== */
   :root{
-    --pri:#2563EB;--pri-d:#1E40AF;--navy:#0B2559;--pri-l:#EAF1FF;--pri-l2:#D6E4FF;
-    --ink:#0F172A;--mute:#64748B;--line:#E5EAF2;--bg:#F3F6FB;--card:#FFFFFF;--card2:#F6F8FC;
-    --green:#16A34A;--green-l:#E7F7EE;--amber:#D97706;--amber-l:#FFF5E1;--red:#DC2626;--red-l:#FDECEC;--grey:#94A3B8;
-    --solid:#2563EB;--hdr:linear-gradient(135deg,#0B2559 0%,#1E40AF 55%,#2563EB 100%);--shadow:0 1px 2px rgba(15,23,42,.04),0 6px 20px rgba(15,23,42,.06);--glow:0 6px 16px rgba(37,99,235,.25);
-    --r:20px;color-scheme:light;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --pri:#6B95FF;--pri-d:#4F7BFF;--navy:#0A1A3D;--pri-l:rgba(107,149,255,.15);--pri-l2:rgba(107,149,255,.28);
-      --ink:#E6ECF5;--mute:#93A3BB;--line:#25314A;--bg:#0B1220;--card:#131B2D;--card2:#1A2439;
-      --green:#34D399;--green-l:rgba(52,211,153,.14);--amber:#FBBF24;--amber-l:rgba(251,191,36,.13);--red:#F87171;--red-l:rgba(248,113,113,.14);--grey:#64748B;
-      --solid:#2F5FE0;--hdr:linear-gradient(135deg,#0E1C44 0%,#1A3480 60%,#2448B8 100%);--shadow:0 1px 2px rgba(0,0,0,.35);--glow:0 6px 16px rgba(0,0,0,.35);color-scheme:dark;
-    }
+    --pri:#DC2626;--pri-d:#B91C1C;--navy:#7F1D1D;--pri-l:#FEF2F2;--pri-l2:#FECACA;
+    --ink:#111827;--mute:#4B5563;--line:#E5E7EB;--bg:#F5F5F7;--card:#FFFFFF;--card2:#F9FAFB;
+    --green:#15803D;--green-l:#DCFCE7;--amber:#B45309;--amber-l:#FEF3C7;--red:#B91C1C;--red-l:#FEE2E2;--grey:#9CA3AF;
+    --solid:#DC2626;--hdr:linear-gradient(135deg,#991B1B 0%,#DC2626 58%,#EF4444 100%);--shadow:0 1px 2px rgba(17,24,39,.05),0 4px 14px rgba(17,24,39,.06);--glow:0 6px 18px rgba(220,38,38,.28);
+    --r:18px;--side:0px;color-scheme:light;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Prompt,system-ui,sans-serif;font-size:16px;line-height:1.5}
@@ -133,8 +125,8 @@
   .sn.need b{background:#E39B00;border-color:#E39B00;color:#fff}
   .sn.busy b{background:var(--pri-l);color:var(--pri)}
   .sn.cur{border-color:var(--pri);color:var(--ink);font-weight:600;background:var(--pri-l)}
-  @media (min-width:1080px){
-    .snav{position:fixed;top:140px;left:max(16px,calc(50% - 280px - 250px));width:226px;flex-direction:column;overflow:visible;margin:0;padding:12px 10px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);gap:2px;z-index:4}
+  @media (min-width:1024px){
+    .snav{position:fixed;top:156px;left:calc(var(--side) + 32px);width:228px;flex-direction:column;overflow:visible;margin:0;padding:12px 10px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);gap:2px;z-index:4}
     .snav::before{content:"ขั้นตอนยิงแอด · เลือกขั้นไหนก่อนก็ได้";font-size:12px;color:var(--mute);padding:2px 8px 8px}
     .sn{border:0;background:transparent;border-radius:12px;padding:9px 10px;font-size:15px;width:100%;text-align:left}
     .sn.cur{background:var(--pri-l)}
@@ -280,6 +272,104 @@
   .sheet{max-height:88vh;overflow:auto}
   .code{font-size:40px;font-weight:700;letter-spacing:8px;text-align:center;color:var(--pri);background:var(--pri-l);border-radius:16px;padding:14px;margin:10px 0}
   .steps{margin:8px 0 0;padding-left:20px;color:var(--ink);font-size:15px} .steps li{margin:4px 0}
+  /* ===== v2 · อ่านง่าย + ผู้ช่วย AI เด่น ===== */
+  html,body{line-height:1.55}
+  header{box-shadow:0 6px 18px rgba(185,28,28,.22)}
+  .card,.stat,.seg,.sum,.total,.faq,details.adv{border:1px solid var(--line)}
+  .card.bal{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--pri)}
+  .bal .lbl{font-size:15px}
+  .chip{font-size:13px;padding:4px 11px}
+  .stat .k{font-size:14px} .stat .v{font-size:27px} .stat .s{font-size:13px}
+  h2{font-size:17px;margin:22px 4px 10px}
+  .mini{padding:12px 0} .mini .n{font-size:15px} .mini .n span{font-size:13px} .mini .x{font-size:15px}
+  .ad .name{font-size:16px} .ad .camp{font-size:13px} .ad .st b{font-size:16px} .ad .st span{font-size:12px} .pill{font-size:13px}
+  label.f{font-size:15px;color:#374151;font-weight:500}
+  .help,.foot{font-size:13px}
+  nav button{font-size:13px}
+  .seg button{font-size:15px}
+  .wz-lbl{font-size:14px;flex-wrap:wrap}
+  .sn{font-size:14px}
+  .upnote{font-size:13.5px}
+  .post .tx{font-size:15px} .post .dt{font-size:13px}
+  .opt span{font-size:15px}
+  .grow small{font-size:13px}
+  .empty{font-size:15px}
+  .btn.ghost{background:var(--pri-l);color:var(--pri-d)}
+  .coach{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--pri);box-shadow:var(--shadow);font-size:15px}
+  .coach b.h{color:var(--pri-d)}
+
+  /* ไอคอนผู้ช่วย AI */
+  .aiav{display:block;width:100%;height:100%}
+  .ai-pill{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:99px;padding:4px 14px 4px 4px;background:var(--pri);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(220,38,38,.3);white-space:nowrap}
+  .ai-pill .aiav{width:28px;height:28px;border-radius:50%;border:1.5px solid #fff}
+  .coach .ai-pill{margin-top:10px}
+
+  /* ปุ่มลอย "ผู้ช่วย AI" + กล่องทักทาย */
+  .ai-fab{right:max(16px,calc(50% - 264px));bottom:calc(92px + env(safe-area-inset-bottom));padding:5px 20px 5px 5px;gap:10px;background:linear-gradient(135deg,#B91C1C,#DC2626 55%,#EF4444);font-size:16px;box-shadow:0 10px 26px rgba(220,38,38,.38);text-align:left;line-height:1.2}
+  .ai-fab .av{position:relative;width:48px;height:48px;border-radius:50%;border:2.5px solid #fff;flex:none}
+  .ai-fab .av::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid rgba(255,255,255,.75);animation:aipulse 2.2s ease-out infinite}
+  .ai-fab .tx b{display:block;font-size:16px;font-weight:600} .ai-fab .tx small{display:block;font-size:12.5px;font-weight:400;opacity:.92}
+  @keyframes aipulse{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.3);opacity:0}}
+  .ai-tease{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(166px + env(safe-area-inset-bottom));z-index:7;width:min(300px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px 18px 6px 18px;box-shadow:0 14px 34px rgba(17,24,39,.2);padding:13px 36px 14px 14px;font-size:15px;line-height:1.5;cursor:pointer;animation:teasein .35s ease-out}
+  .ai-tease::after{content:"";position:absolute;right:30px;bottom:-8px;width:14px;height:14px;background:var(--card);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+  .ai-tease .hd{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--pri-d);margin-bottom:4px}
+  .ai-tease .hd .aiav{width:24px;height:24px}
+  .ai-tease b{color:var(--pri-d)}
+  .ai-tease .go{display:inline-block;margin-top:9px;font-weight:600;color:#fff;background:var(--pri);border-radius:99px;padding:5px 14px;font-size:14px}
+  .ai-tease .x{position:absolute;top:6px;right:6px;border:0;background:none;color:var(--mute);font-size:22px;line-height:1;cursor:pointer;padding:2px 6px}
+  @keyframes teasein{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.ai-fab .av::after,.ai-tease{animation:none}}
+
+  /* หน้าต่างแชต */
+  .ai-box{height:min(92vh,820px)}
+  .ai-hd{background:linear-gradient(135deg,#B91C1C,#DC2626 60%,#EF4444);color:#fff;border-bottom:0;padding:14px 14px 14px 16px;gap:10px}
+  .ai-hd .av{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;flex:none}
+  .ai-hd .tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+  .ai-hd b{font-size:17px;font-weight:600} .ai-hd .u{flex:none;font-size:13px;color:rgba(255,255,255,.9)}
+  .ai-hd button{background:rgba(255,255,255,.2);color:#fff;font-size:14px;padding:7px 12px}
+  .ai-msgs{background:var(--bg)}
+  .ai-row{display:flex;gap:8px;align-items:flex-end;align-self:flex-start;max-width:92%}
+  .ai-row .mav{width:32px;height:32px;flex:none}
+  .ai-row .ai-m{max-width:none}
+  .ai-m{font-size:15.5px}
+  .ai-m.a{background:var(--card);border:1px solid var(--line)}
+  .ai-m.u{background:var(--pri)}
+  .ai-chips{background:var(--bg);padding:2px 14px 10px}
+  .ai-chip{border-color:var(--pri-l2);color:var(--pri-d);background:var(--card);font-size:14px}
+  .ai-in{background:var(--card)}
+  .ai-in textarea:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 4px var(--pri-l)}
+
+  /* ===== คอม: เมนูซ้าย จัดเต็มจอ แชตเป็นแผงด้านขวา ===== */
+  @media (min-width:1024px){
+    :root{--side:248px}
+    nav{left:0;top:0;bottom:0;transform:none;width:var(--side);max-width:none;flex-direction:column;justify-content:flex-start;gap:6px;padding:22px 14px;border-radius:0;border:0;border-right:1px solid var(--line);background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+    nav::before{content:"N Ads Alert";display:block;font-weight:700;font-size:22px;color:var(--pri);padding:2px 14px 20px}
+    nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 14px;font-size:16px;border-radius:12px}
+    header{margin-left:var(--side);border-radius:0;padding:18px 32px}
+    header h1{font-size:24px} header .sub{font-size:14px}
+    .demo{margin-left:var(--side)}
+    main{margin-left:var(--side);max-width:none;padding:24px 32px 120px}
+    #rangeSeg{max-width:440px}
+    #tab-home{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 28px;max-width:1200px}
+    #tab-home .hcol>h2:first-child{margin-top:0}
+    #tab-home .foot{grid-column:1/-1}
+    #adList{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;max-width:1200px}
+    #adList .card{margin:0}
+    #tab-set{max-width:760px}
+    #tab-new{max-width:980px;padding-left:252px}
+    .wz-bar{left:var(--side);bottom:0;padding:14px 32px 18px}
+    .wz-bar .in{max-width:728px;margin:0 0 0 252px}
+    .bot{right:32px;bottom:112px}
+    .ai-fab{right:32px;bottom:28px}
+    .ai-tease{right:32px;bottom:104px}
+    .toast{bottom:40px}
+    .ai-panel{left:auto;width:440px;background:none;align-items:stretch;pointer-events:none}
+    .ai-box{pointer-events:auto;height:100vh;height:100dvh;max-width:none;border-radius:0;border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(17,24,39,.12)}
+    body.ai-open{overflow:auto}
+    body.ai-open header,body.ai-open main{margin-right:440px}
+    body.ai-open .wz-bar{right:440px}
+    body.ai-open .bot{right:472px}
+  }
 </style>
 </head>
 <body>
@@ -317,6 +407,7 @@
 
     <!-- หน้าหลัก -->
     <div id="tab-home">
+      <div class="hcol">
       <button class="bigbtn" id="newAdBtn"><span class="pl"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px;stroke-width:2.2"><path d="M12 5v14M5 12h14"/></svg></span><span>ยิงแอดใหม่<small>เลือกเพจ → เป้าหมาย → รูป/วิดีโอ → ยิง</small></span></button>
       <div class="card bal">
         <div class="lbl">เงินคงเหลือในบัญชีโฆษณา</div>
@@ -335,9 +426,12 @@
         <div class="stat"><div class="k" id="sCprK">ต้นทุนต่อผล</div><div class="v" id="sCpr">-</div><div class="s">ยิ่งต่ำยิ่งดี</div></div>
         <div class="stat"><div class="k">คนเห็นแอด (ครั้ง)</div><div class="v" id="sImp">-</div><div class="s" id="sClk">-</div></div>
       </div>
+      </div>
+      <div class="hcol">
       <h2><i class="dot g-bad"></i>ควรดู</h2><div class="card" id="watchList"></div>
       <h2><i class="dot g-good"></i>แอดเด่น</h2><div class="card" id="bestList"></div>
       <h2>🏆 แอดเก่าที่ดีที่สุด (90 วัน)</h2><div class="card" id="pastBest"></div>
+      </div>
       <div class="foot" id="quota">-</div>
     </div>
 
@@ -390,7 +484,8 @@
       </div>
     </div>
   </main>
-  <button id="aiFab" class="ai-fab hide" aria-label="ถามผู้ช่วย AI"><span class="em">🤖</span>ถาม AI</button>
+  <button id="aiFab" class="ai-fab hide" aria-label="เปิดแชตผู้ช่วยยิงแอด AI"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg></span><span class="tx"><b>ผู้ช่วยยิงแอด AI</b><small>ถามเรื่องแอดได้เลย</small></span></button>
+  <div id="aiTease" class="ai-tease hide" role="button" tabindex="0" aria-label="เปิดแชตผู้ช่วย AI"><div class="hd"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg>ผู้ช่วยยิงแอด AI</div><div id="aiTeaseTx"></div><span class="go">คุยเลย →</span><button class="x" id="aiTeaseX" aria-label="ปิดข้อความ">×</button></div>
   <nav id="nav">
     <button data-t="home" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
     <button data-t="new"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>ยิงแอด</button>
@@ -402,7 +497,7 @@
 <div id="wzBar" class="wz-bar hide"><div class="in" id="wzBarIn"></div></div>
 <div id="modal" class="modal hide"><div class="sheet" id="sheet"></div></div>
 <div id="aiPanel" class="ai-panel hide" role="dialog" aria-label="ผู้ช่วยยิงแอด AI"><div class="ai-box">
-  <div class="ai-hd"><b>🤖 ผู้ช่วยยิงแอด</b><span class="u" id="aiUse"></span><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">ปิด</button></div>
+  <div class="ai-hd"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg></span><div class="tt"><b>ผู้ช่วยยิงแอด AI</b><span class="u" id="aiUse">ดูข้อมูลแอดจริงของบัญชี</span></div><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">✕ ปิด</button></div>
   <div class="ai-msgs" id="aiMsgs"></div><div class="ai-chips" id="aiChips"></div>
   <div class="ai-in"><textarea id="aiInp" rows="1" maxlength="2000" placeholder="ถามเรื่องแอดได้เลย เช่น งบเท่าไหร่ดี"></textarea><button class="btn sm" id="aiSend">ส่ง</button></div>
 </div></div>
@@ -468,7 +563,7 @@
   $("demoBtn").onclick = async () => { st.demo = true; await load(); openApp(); };
   async function logout() {
     if (!st.demo) await api("/api/logout", { body: {} }).catch(() => {});
-    aiClose(); AI.msgs = []; AI.status = null; st.best = undefined; $("aiFab").classList.add("hide");
+    aiClose(); AI.msgs = []; AI.status = null; AI.suggest = ""; st.best = undefined; $("aiFab").classList.add("hide"); aiTeaseHide();
     $("wzBar").classList.add("hide"); store.del("nads_tok"); st.tok = ""; st.data = null; st.team = null; st.demo = false; st.tab = "home"; st.sub = "me";
     [...$("nav").children].forEach((x) => x.classList.toggle("on", x.dataset.t === "home"));
     showLogin();
@@ -537,7 +632,7 @@
     $("balDays").innerHTML = dl === null ? (b.value === null ? 'กด "แก้ยอดให้ตรง" แล้วใส่ยอดจาก Ads Manager' : "ยังไม่มีข้อมูลค่าใช้จ่ายย้อนหลัง")
       : `พอใช้อีกประมาณ <b style="color:${low ? "var(--red)" : "var(--green)"}">${dl < 1 ? "ไม่ถึง 1 วัน" : dl.toFixed(1) + " วัน"}</b> <span style="color:var(--mute);font-size:13px">(เฉลี่ย ${baht(snap.avg_daily, 0)}/วัน)</span>`;
     const pct = dl === null ? 0 : Math.min(100, (dl / 7) * 100);
-    $("balBar").style.width = pct + "%"; $("balBar").style.background = low ? "var(--red)" : pct < 45 ? "var(--amber)" : "var(--pri)";
+    $("balBar").style.width = pct + "%"; $("balBar").style.background = low ? "var(--red)" : pct < 45 ? "var(--amber)" : "var(--green)";
 
     // ตัวเลขสรุป
     const t = snap.totals, main = t.by_type[0];
@@ -568,7 +663,7 @@
     }).join("") : '<div class="card empty">ไม่มีแอดที่วิ่งอยู่หรือหยุดไว้ล่าสุด</div>';
 
     fillSys(settings);
-    aiFabSync(); renderPastBest();
+    aiFabSync(); renderPastBest(); aiTeaseMaybe();
   }
   // ยังอ่านแอดไม่ได้ (ยังไม่เชื่อม Facebook / รหัสหมดอายุ) → พาไปหน้าตั้งค่า
   function renderNoData() {
@@ -1165,7 +1260,8 @@
     const [h, lines] = COACH[step], ck = step === LAST ? [] : checksFor(step);
     return `<div class="coach"><div class="av">${BOT_SVG(false)}</div><div class="tx"><b class="h">ผู้ช่วย · ${h}</b><ul>${lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
       ${step === 0 ? `<div style="margin-top:6px">${st.demo ? "ตอนนี้อยู่<b>โหมดตัวอย่าง</b> กดยิงได้โดยไม่เสียเงินจริง ฝึกได้เต็มที่" : "อยากฝึกก่อน? ออกจากระบบแล้วกด 'ดูตัวอย่างหน้าจอ' ฝึกได้ไม่เสียเงิน"}</div>` : ""}
-      ${ck.length ? `<div style="margin-top:8px">${ckList(ck)}</div>` : ""}</div></div>`;
+      ${ck.length ? `<div style="margin-top:8px">${ckList(ck)}</div>` : ""}
+      <button class="ai-pill" id="wzAiCoach">${AI_SVG}ถาม AI เรื่องขั้นนี้</button></div></div>`;
   }
   // ตัวบอทผู้ช่วย (วาดเอง)
   const BOT_SVG = (arm = true) => `<svg viewBox="0 0 64 64" aria-hidden="true">
@@ -1646,7 +1742,7 @@
     wz.seen.add(n);
     if (!wz.info && !wz.loading && !wz.err) setTimeout(() => wzLoad("pages"));
     const head = `<div class="wz-top"><div class="snav" id="snav">${navHtml()}</div>
-      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">${BOT_SVG(false)}${wz.guide ? "ปิดผู้ช่วย" : "ผู้ช่วย"}</button><button class="gtog" id="wzAi">🤖 ถาม AI</button></div></div>
+      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">${BOT_SVG(false)}${wz.guide ? "ปิดผู้ช่วย" : "ผู้ช่วย"}</button><button class="ai-pill" id="wzAi">${AI_SVG}ถามผู้ช่วย AI</button></div></div>
       <div id="upMini">${miniHtml()}</div>`;
     const body = [stepPage, stepGoal, stepMedia, stepText, stepBudget, stepAudience, stepReview][n]();
     box.innerHTML = head + coachBox(n) + body + botHtml();
@@ -1760,6 +1856,7 @@
       wz.welcome = t; renderWizard();
     });
     on("wzAi", "onclick", () => aiOpen(true));
+    on("wzAiCoach", "onclick", () => { AI.suggest = `ช่วยดูขั้น "${STEP_NAMES[wz.step]}" ของแอดที่กำลังทำให้หน่อย ควรตั้งยังไง`; aiOpen(true); });
     on("wzAddName", "onclick", () => {
       const t = $("wzWel"), at = t.selectionStart ?? t.value.length;
       t.value = t.value.slice(0, at) + NAME_TAG + t.value.slice(t.selectionEnd ?? at); wz.welcome = t.value;
@@ -1816,29 +1913,56 @@
 
   // ---------- ข้อมูลตัวอย่าง (โหมดดูตัวอย่าง) ----------
   // ---------- ผู้ช่วย AI (Claude) ----------
-  const AI = { msgs: [], busy: false, status: null, draft: false };
+  const AI_SVG = '<svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg>';
+  const AI = { msgs: [], busy: false, status: null, draft: false, suggest: "", teased: false };
+  const sess = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} } };
+  const DESK = matchMedia("(min-width:1024px)");
   const AI_CHIPS = {
     base: ["ช่วยดูแอดตอนนี้แล้วแนะนำหน่อย", "แอดไหนควรหยุดหรือเพิ่มงบ", "งบวันละเท่าไหร่ดี", "แอดเก่าตัวไหนควรยิงซ้ำ"],
     draft: ["ช่วยตรวจแอดที่กำลังทำให้หน่อย", "ช่วยเขียนข้อความโฆษณาให้หน่อย", "งบกับจำนวนวันเท่านี้โอเคไหม", "กลุ่มคนแบบนี้เหมาะไหม"],
   };
   const aiFmt = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,6}\s*/gm, "").replace(/^\s*[-*]\s+/gm, "• ").replace(/\n/g, "<br>");
-  function aiFabSync() { $("aiFab").classList.toggle("hide", !st.data || st.tab === "new"); }
+  function aiFabSync() {
+    const hide = !st.data || !st.data.snap || document.body.classList.contains("ai-open") || st.tab === "new";
+    $("aiFab").classList.toggle("hide", hide);
+    if (hide) aiTeaseHide();
+  }
+  let teaseTimer = 0;
+  function aiTeaseHide() { clearTimeout(teaseTimer); $("aiTease").classList.add("hide"); }
+  // กล่องทักทายเหนือปุ่มผู้ช่วย (โชว์ครั้งเดียวต่อการเปิดแอป)
+  function aiTeaseMaybe() {
+    if (AI.teased || sess.get("nads_ai_tease")) return;
+    AI.teased = true;
+    teaseTimer = setTimeout(() => {
+      const snap = st.data?.snap;
+      if (!snap || $("aiFab").classList.contains("hide") || document.body.classList.contains("ai-open")) return;
+      const bad = snap.ads.filter((a) => a.grade === "bad" || ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status)).length;
+      let tx = "สวัสดีครับ 👋 ถามเรื่อง<b>งบ กลุ่มคน</b> หรือให้ช่วย<b>เขียนข้อความโฆษณา</b>ได้เลย", q = "";
+      if (snap.days_left !== null && snap.days_left < 1) { tx = "เงินแอดเหลือ<b>ไม่ถึง 1 วัน</b>แล้ว ให้ผมช่วยวางแผนงบไหมครับ?"; q = "เงินใกล้หมด ควรเติมเท่าไหร่ และจัดงบแต่ละแอดยังไงดี"; }
+      else if (bad) { tx = `มี <b>${bad} แอด</b>ที่ควรดู ให้ผมช่วยวิเคราะห์ไหมครับ?`; q = "แอดไหนควรหยุดหรือเพิ่มงบ"; }
+      AI.suggest = q; $("aiTeaseTx").innerHTML = tx; $("aiTease").classList.remove("hide");
+      teaseTimer = setTimeout(aiTeaseHide, 20000);
+    }, 1500);
+  }
   async function aiOpen(fromWizard = false) {
     AI.draft = fromWizard || st.tab === "new";
     $("aiPanel").classList.remove("hide"); document.body.classList.add("ai-open");
+    sess.set("nads_ai_tease", "1"); aiFabSync();
     aiRender();
-    if (!AI.status) { try { AI.status = await api("/api/ai/status"); } catch (e) { AI.status = { enabled: false, err: e.message }; } aiRender(); }
+    if (!AI.status || !AI.status.enabled) { try { AI.status = await api("/api/ai/status"); } catch (e) { AI.status = { enabled: false, err: e.message }; } aiRender(); }
     setTimeout(() => { if (!$("aiInp").disabled) $("aiInp").focus(); }, 60);
   }
-  function aiClose() { $("aiPanel").classList.add("hide"); document.body.classList.remove("ai-open"); }
+  function aiClose() { $("aiPanel").classList.add("hide"); document.body.classList.remove("ai-open"); aiFabSync(); }
   function aiRender() {
     const s = AI.status, off = !!(s && !s.enabled), u = s?.usage;
-    $("aiUse").textContent = u ? `วันนี้ถามไป ${u.today}/${u.daily}` : "";
-    const intro = `<div class="ai-m a">สวัสดีครับ 👋 ผมดูผลแอดจริงของบัญชีได้ ช่วยแนะนำงบ กลุ่มคน แอดที่ควรหยุด/ยิงซ้ำ และช่วยเขียนข้อความโฆษณา${AI.draft ? " — ตอนนี้เห็นแอดที่กำลังกรอกอยู่ด้วย" : ""} ถามได้เลยครับ</div>`;
+    $("aiUse").textContent = u ? `ดูข้อมูลแอดจริง · วันนี้ถามไป ${u.today}/${u.daily}` : "ดูข้อมูลแอดจริงของบัญชี";
+    const row = (inner, cls = "") => `<div class="ai-row"><span class="mav">${AI_SVG}</span><div class="ai-m a${cls}">${inner}</div></div>`;
+    const intro = `<div class="ai-row"><span class="mav">${AI_SVG}</span><div class="ai-m a">สวัสดีครับ 👋 ผมดูผลแอดจริงของบัญชีได้ ช่วยแนะนำงบ กลุ่มคน แอดที่ควรหยุด/ยิงซ้ำ และช่วยเขียนข้อความโฆษณา${AI.draft ? " — ตอนนี้เห็นแอดที่กำลังกรอกอยู่ด้วย" : ""} ถามได้เลยครับ</div></div>`;
     const offBox = off ? `<div class="note warn">${s.err ? esc(s.err) : "ผู้ช่วย AI ยังไม่เปิด — เจ้าของต้องใส่ <b>NADS_CLAUDE_KEY</b> ใน Supabase ก่อน (ดูวิธีในคู่มือ)"}</div>` : "";
-    $("aiMsgs").innerHTML = intro + AI.msgs.map((m) => `<div class="ai-m ${m.role === "user" ? "u" : "a"}${m.err ? " err" : ""}">${aiFmt(m.content)}</div>`).join("")
-      + (AI.busy ? '<div class="ai-m a dots"><i></i><i></i><i></i></div>' : "") + offBox;
-    $("aiChips").innerHTML = AI.msgs.length || off ? "" : (AI.draft ? AI_CHIPS.draft : AI_CHIPS.base).map((c) => `<button class="ai-chip" data-aq="${esc(c)}">${esc(c)}</button>`).join("");
+    $("aiMsgs").innerHTML = intro + AI.msgs.map((m) => m.role === "user" ? `<div class="ai-m u${m.err ? " err" : ""}">${aiFmt(m.content)}</div>` : row(aiFmt(m.content), m.err ? " err" : "")).join("")
+      + (AI.busy ? row("<i></i><i></i><i></i>", " dots") : "") + offBox;
+    const base = AI.draft ? AI_CHIPS.draft : AI_CHIPS.base, chips = AI.suggest ? [AI.suggest, ...base.filter((c) => c !== AI.suggest)].slice(0, 5) : base;
+    $("aiChips").innerHTML = AI.msgs.length || off ? "" : chips.map((c) => `<button class="ai-chip" data-aq="${esc(c)}">${esc(c)}</button>`).join("");
     $("aiSend").disabled = AI.busy || off; $("aiInp").disabled = off;
     const box = $("aiMsgs"); box.scrollTop = box.scrollHeight;
   }
@@ -1873,6 +1997,8 @@
     return out.join("\n").slice(0, 3800);
   }
   $("aiFab").onclick = () => aiOpen(false);
+  $("aiTease").onclick = (e) => { sess.set("nads_ai_tease", "1"); if (e.target.closest("#aiTeaseX")) return aiTeaseHide(); aiOpen(false); };
+  DESK.addEventListener?.("change", aiFabSync);
   $("aiClose").onclick = aiClose;
   $("aiClear").onclick = () => { AI.msgs = []; aiRender(); };
   $("aiSend").onclick = () => aiSend();
