@@ -321,7 +321,21 @@
   .ai-fab{padding:6px 24px 6px 6px;gap:12px}
   .ai-fab .av{width:58px;height:58px;border-width:3px}
   .ai-fab .tx b{font-size:18px;font-weight:700} .ai-fab .tx small{font-size:14px;margin-top:2px}
-  .ai-tease{bottom:calc(178px + env(safe-area-inset-bottom))}
+  .ai-tease{bottom:calc(200px + env(safe-area-inset-bottom))}
+  /* ตัวการ์ตูนหุ่นยนต์ N บนปุ่มผู้ช่วย */
+  .ai-fab{padding-left:4px}
+  .ai-fab .av.bot-av{width:78px;height:78px;border:0;border-radius:0;margin:-32px -4px -4px -6px;filter:drop-shadow(0 5px 8px rgba(0,0,0,.28));animation:bob 2.6s ease-in-out infinite}
+  .ai-fab .av.bot-av::after{display:none}
+  .ai-fab .bot-av svg,.ai-hd .av svg,.ai-row .mav svg{display:block;width:100%;height:100%;overflow:visible}
+  .ai-fab .eye,.ai-hd .eye,.ai-row .eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+  .ai-fab .arm{transform-box:fill-box;transform-origin:10% 90%;animation:wave 1.6s ease-in-out infinite}
+  .ai-hd .av{background:#fff;padding:4px 3px 2px}
+  .ai-tease .msg{font-size:15.5px;line-height:1.6}
+  .ai-tease .msg b{font-size:15.5px}
+  .ai-tease{width:min(322px,calc(100vw - 28px))}
+  @media (min-width:1024px){.ai-tease .msg b{font-size:16.5px}}
+  .ai-tease .ctx{margin-top:8px;padding:7px 10px;border-radius:10px;background:var(--amber-l);color:var(--amber);font-size:14px;font-weight:500}
+  @media (prefers-reduced-motion: reduce){.ai-fab .av.bot-av,.ai-fab .eye,.ai-fab .arm,.ai-hd .eye,.ai-row .eye{animation:none}}
   @keyframes aipulse{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.3);opacity:0}}
   .ai-tease{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(166px + env(safe-area-inset-bottom));z-index:7;width:min(300px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px 18px 6px 18px;box-shadow:0 14px 34px rgba(17,24,39,.2);padding:13px 36px 14px 14px;font-size:15px;line-height:1.5;cursor:pointer;animation:teasein .35s ease-out}
   .ai-tease::after{content:"";position:absolute;right:30px;bottom:-8px;width:14px;height:14px;background:var(--card);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
@@ -381,8 +395,9 @@
     .bot{right:32px;bottom:112px}
     .ai-fab{right:32px;bottom:28px;padding:7px 28px 7px 7px;gap:14px}
     .ai-fab .av{width:68px;height:68px}
+    .ai-fab .av.bot-av{width:94px;height:94px;margin:-40px -4px -6px -8px}
     .ai-fab .tx b{font-size:21px} .ai-fab .tx small{font-size:15px}
-    .ai-tease{right:32px;bottom:128px}
+    .ai-tease{right:32px;bottom:160px;width:330px}
     .toast{bottom:40px}
     .ai-panel{left:auto;width:440px;background:none;align-items:stretch;pointer-events:none}
     .ai-box{pointer-events:auto;height:100vh;height:100dvh;max-width:none;border-radius:0;border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(17,24,39,.12)}
@@ -508,7 +523,7 @@
     </div>
   </main>
   <button id="aiFab" class="ai-fab hide" aria-label="เปิดแชตผู้ช่วยยิงแอด AI"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg></span><span class="tx"><b>ผู้ช่วยยิงแอด AI</b><small>ถามเรื่องแอดได้เลย</small></span></button>
-  <div id="aiTease" class="ai-tease hide" role="button" tabindex="0" aria-label="เปิดแชตผู้ช่วย AI"><div class="hd"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg>ผู้ช่วยยิงแอด AI</div><div id="aiTeaseTx"></div><span class="go">คุยเลย →</span><button class="x" id="aiTeaseX" aria-label="ปิดข้อความ">×</button></div>
+  <div id="aiTease" class="ai-tease hide" role="button" tabindex="0" aria-label="เปิดแชตผู้ช่วย AI"><div class="hd">ผู้ช่วยยิงแอด AI</div><div class="msg" id="aiTeaseTx"></div><div class="ctx hide" id="aiTeaseCtx"></div><span class="go">คุยกับผมเลย →</span><button class="x" id="aiTeaseX" aria-label="ปิดข้อความ">×</button></div>
   <nav id="nav">
     <button data-t="home" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
     <button data-t="new"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>ยิงแอด</button>
@@ -1973,11 +1988,14 @@
       const snap = st.data?.snap;
       if (!snap || $("aiFab").classList.contains("hide") || document.body.classList.contains("ai-open")) return;
       const bad = snap.ads.filter((a) => a.grade === "bad" || ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status)).length;
-      let tx = "สวัสดีครับ 👋 ถามเรื่อง<b>งบ กลุ่มคน</b> หรือให้ช่วย<b>เขียนข้อความโฆษณา</b>ได้เลย", q = "";
-      if (snap.days_left !== null && snap.days_left < 1) { tx = "เงินแอดเหลือ<b>ไม่ถึง 1 วัน</b>แล้ว ให้ผมช่วยวางแผนงบไหมครับ?"; q = "เงินใกล้หมด ควรเติมเท่าไหร่ และจัดงบแต่ละแอดยังไงดี"; }
-      else if (bad) { tx = `มี <b>${bad} แอด</b>ที่ควรดู ให้ผมช่วยวิเคราะห์ไหมครับ?`; q = "แอดไหนควรหยุดหรือเพิ่มงบ"; }
-      AI.suggest = q; $("aiTeaseTx").innerHTML = tx; $("aiTease").classList.remove("hide");
-      teaseTimer = setTimeout(aiTeaseHide, 20000);
+      let ctx = "", q = "";
+      if (snap.days_left !== null && snap.days_left < 1) { ctx = "💡 ตอนนี้เงินแอดเหลือไม่ถึง 1 วัน ให้ผมช่วยวางแผนงบไหม"; q = "เงินใกล้หมด ควรเติมเท่าไหร่ และจัดงบแต่ละแอดยังไงดี"; }
+      else if (bad) { ctx = `💡 ตอนนี้มี ${bad} แอดที่ควรดู ให้ผมช่วยวิเคราะห์ได้`; q = "แอดไหนควรหยุดหรือเพิ่มงบ"; }
+      AI.suggest = q;
+      $("aiTeaseTx").innerHTML = "<b>ยิงแอดไม่เป็น เพิ่งเริ่มใช่ไหมครับ?</b> 👋<br>ถามผมได้เลย ไม่ต้องไปถามใคร<br>ผมพาสอน พาทำเอง ทีละขั้น<br><b>ตอบตรง ไม่มโน</b> 😉";
+      $("aiTeaseCtx").textContent = ctx; $("aiTeaseCtx").classList.toggle("hide", !ctx);
+      $("aiTease").classList.remove("hide");
+      teaseTimer = setTimeout(aiTeaseHide, 30000);
     }, 1500);
   }
   async function aiOpen(fromWizard = false) {
@@ -1992,8 +2010,8 @@
   function aiRender() {
     const s = AI.status, off = !!(s && !s.enabled), u = s?.usage;
     $("aiUse").textContent = u ? `ดูข้อมูลแอดจริง · วันนี้ถามไป ${u.today}/${u.daily}` : "ดูข้อมูลแอดจริงของบัญชี";
-    const row = (inner, cls = "") => `<div class="ai-row"><span class="mav">${AI_SVG}</span><div class="ai-m a${cls}">${inner}</div></div>`;
-    const intro = `<div class="ai-row"><span class="mav">${AI_SVG}</span><div class="ai-m a">สวัสดีครับ 👋 ผมดูผลแอดจริงของบัญชีได้ ช่วยแนะนำงบ กลุ่มคน แอดที่ควรหยุด/ยิงซ้ำ และช่วยเขียนข้อความโฆษณา${AI.draft ? " — ตอนนี้เห็นแอดที่กำลังกรอกอยู่ด้วย" : ""} ถามได้เลยครับ</div></div>`;
+    const row = (inner, cls = "") => `<div class="ai-row"><span class="mav">${BOT_SVG(false)}</span><div class="ai-m a${cls}">${inner}</div></div>`;
+    const intro = `<div class="ai-row"><span class="mav">${BOT_SVG(false)}</span><div class="ai-m a">สวัสดีครับ 👋 ผมดูผลแอดจริงของบัญชีได้ ช่วยแนะนำงบ กลุ่มคน แอดที่ควรหยุด/ยิงซ้ำ และช่วยเขียนข้อความโฆษณา${AI.draft ? " — ตอนนี้เห็นแอดที่กำลังกรอกอยู่ด้วย" : ""} ถามได้เลยครับ</div></div>`;
     const offBox = off ? `<div class="note warn">${s.err ? esc(s.err) : "ผู้ช่วย AI ยังไม่เปิด — เจ้าของต้องใส่ <b>NADS_CLAUDE_KEY</b> ใน Supabase ก่อน (ดูวิธีในคู่มือ)"}</div>` : "";
     $("aiMsgs").innerHTML = intro + AI.msgs.map((m) => m.role === "user" ? `<div class="ai-m u${m.err ? " err" : ""}">${aiFmt(m.content)}</div>` : row(aiFmt(m.content), m.err ? " err" : "")).join("")
       + (AI.busy ? row("<i></i><i></i><i></i>", " dots") : "") + offBox;
@@ -2032,6 +2050,7 @@
     out.push(`ตำแหน่ง: ${wz.placeMode === "auto" ? "อัตโนมัติ" : wz.platforms.join(", ")} · ชื่อแอด: ${wz.name || "-"} · อยู่ขั้น: ${STEP_NAMES[wz.step] || "-"}`);
     return out.join("\n").slice(0, 3800);
   }
+  { const av = $("aiFab").querySelector(".av"); av.classList.add("bot-av"); av.innerHTML = BOT_SVG(true); document.querySelector(".ai-hd .av").innerHTML = BOT_SVG(false); }
   $("aiFab").onclick = () => aiOpen(false);
   $("aiTease").onclick = (e) => { sess.set("nads_ai_tease", "1"); if (e.target.closest("#aiTeaseX")) return aiTeaseHide(); aiOpen(false); };
   DESK.addEventListener?.("change", aiFabSync);
