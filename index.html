@@ -188,6 +188,26 @@
   .hl{animation:hlp 1.3s ease-out infinite !important;outline:2px solid #EF4444;outline-offset:2px}
   @keyframes hlp{0%{box-shadow:0 0 0 0 rgba(239,68,68,.55)}100%{box-shadow:0 0 0 14px rgba(239,68,68,0)}}
   @media (prefers-reduced-motion: reduce){.bot .face,.bot .eye,.bot .arm,.hl{animation:none !important}}
+  /* ผู้ช่วย AI */
+  .ai-fab{position:fixed;right:max(14px,calc(50% - 266px));bottom:calc(86px + env(safe-area-inset-bottom));z-index:7;border:0;border-radius:99px;padding:10px 16px 10px 12px;background:var(--solid);color:#fff;font:inherit;font-size:15px;font-weight:600;box-shadow:var(--glow);cursor:pointer;display:flex;align-items:center;gap:6px}
+  .ai-fab .em{font-size:20px;line-height:1}
+  .ai-panel{position:fixed;inset:0;z-index:25;background:rgba(15,23,42,.45);display:flex;align-items:flex-end;justify-content:center}
+  .ai-box{background:var(--card);width:100%;max-width:560px;height:min(88vh,760px);border-radius:24px 24px 0 0;display:flex;flex-direction:column;overflow:hidden}
+  .ai-hd{display:flex;align-items:center;gap:8px;padding:14px 14px 10px 18px;border-bottom:1px solid var(--line)}
+  .ai-hd b{font-size:17px;font-weight:600} .ai-hd .u{flex:1;font-size:12px;color:var(--mute)}
+  .ai-hd button{border:0;background:var(--card2);color:var(--mute);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+  .ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .ai-m{max-width:88%;padding:10px 13px;border-radius:16px;font-size:15px;line-height:1.55;word-wrap:break-word}
+  .ai-m.a{align-self:flex-start;background:var(--card2);color:var(--ink);border-bottom-left-radius:4px}
+  .ai-m.u{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:4px}
+  .ai-m.err{background:var(--amber-l);color:var(--amber)} .ai-m.u.err{opacity:.6}
+  .ai-m.dots{display:flex;gap:5px;padding:14px} .ai-m.dots i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:aidot 1.2s infinite} .ai-m.dots i:nth-child(2){animation-delay:.2s} .ai-m.dots i:nth-child(3){animation-delay:.4s}
+  @keyframes aidot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  .ai-chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px}
+  .ai-chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer;text-align:left}
+  .ai-in{display:flex;gap:8px;align-items:flex-end;padding:10px 12px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+  .ai-in textarea{flex:1;resize:none;max-height:120px;min-height:46px;font:inherit;font-size:16px;padding:11px 13px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink)}
+  body.ai-open{overflow:hidden}
   .wz-q{font-size:22px;font-weight:600;margin:4px 0 2px}
   .wz-hint{font-size:14px;color:var(--mute);margin-bottom:12px}
   .post{display:flex;gap:12px;background:var(--card);border-radius:16px;padding:10px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;align-items:center;box-shadow:var(--shadow)}
@@ -317,6 +337,7 @@
       </div>
       <h2><i class="dot g-bad"></i>ควรดู</h2><div class="card" id="watchList"></div>
       <h2><i class="dot g-good"></i>แอดเด่น</h2><div class="card" id="bestList"></div>
+      <h2>🏆 แอดเก่าที่ดีที่สุด (90 วัน)</h2><div class="card" id="pastBest"></div>
       <div class="foot" id="quota">-</div>
     </div>
 
@@ -369,6 +390,7 @@
       </div>
     </div>
   </main>
+  <button id="aiFab" class="ai-fab hide" aria-label="ถามผู้ช่วย AI"><span class="em">🤖</span>ถาม AI</button>
   <nav id="nav">
     <button data-t="home" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
     <button data-t="new"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>ยิงแอด</button>
@@ -379,6 +401,11 @@
 
 <div id="wzBar" class="wz-bar hide"><div class="in" id="wzBarIn"></div></div>
 <div id="modal" class="modal hide"><div class="sheet" id="sheet"></div></div>
+<div id="aiPanel" class="ai-panel hide" role="dialog" aria-label="ผู้ช่วยยิงแอด AI"><div class="ai-box">
+  <div class="ai-hd"><b>🤖 ผู้ช่วยยิงแอด</b><span class="u" id="aiUse"></span><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">ปิด</button></div>
+  <div class="ai-msgs" id="aiMsgs"></div><div class="ai-chips" id="aiChips"></div>
+  <div class="ai-in"><textarea id="aiInp" rows="1" maxlength="2000" placeholder="ถามเรื่องแอดได้เลย เช่น งบเท่าไหร่ดี"></textarea><button class="btn sm" id="aiSend">ส่ง</button></div>
+</div></div>
 
 <script>
 (() => {
@@ -441,6 +468,7 @@
   $("demoBtn").onclick = async () => { st.demo = true; await load(); openApp(); };
   async function logout() {
     if (!st.demo) await api("/api/logout", { body: {} }).catch(() => {});
+    aiClose(); AI.msgs = []; AI.status = null; st.best = undefined; $("aiFab").classList.add("hide");
     $("wzBar").classList.add("hide"); store.del("nads_tok"); st.tok = ""; st.data = null; st.team = null; st.demo = false; st.tab = "home"; st.sub = "me";
     [...$("nav").children].forEach((x) => x.classList.toggle("on", x.dataset.t === "home"));
     showLogin();
@@ -540,6 +568,7 @@
     }).join("") : '<div class="card empty">ไม่มีแอดที่วิ่งอยู่หรือหยุดไว้ล่าสุด</div>';
 
     fillSys(settings);
+    aiFabSync(); renderPastBest();
   }
   // ยังอ่านแอดไม่ได้ (ยังไม่เชื่อม Facebook / รหัสหมดอายุ) → พาไปหน้าตั้งค่า
   function renderNoData() {
@@ -766,6 +795,7 @@
   const NAME_TAG = "{ชื่อลูกค้า}";
   const WELCOME = `สวัสดีครับคุณ${NAME_TAG} ขอบคุณที่สนใจทรัพย์นี้ครับ สอบถามรายละเอียดหรือนัดดูทรัพย์ได้เลยครับ`;
   const FAQ_DEFAULT = ["ราคาเท่าไหร่ครับ", "ทรัพย์อยู่ตรงไหนครับ", "ขอนัดดูทรัพย์ได้ไหมครับ"];
+  const QUAL_ASK = "ขอทราบงบประมาณ ทำเลที่สนใจ และช่วงเวลาที่อยากซื้อคร่าว ๆ จะได้แนะนำทรัพย์ที่ตรงใจที่สุดครับ";
   const RADII = [1, 3, 5, 10, 25, 50, 80];
   // อ่านพิกัดจากที่วางมา: ตัวเลข "16.48, 99.51", ลิงก์ Google Maps (หมุด !3d!4d / q= / @), หรือแบบ Apple Maps "16.48° N, 99.51° E"
   function parsePin(t) {
@@ -1091,6 +1121,7 @@
     if (step === 3 && !isBoost()) {
       out.push(...textChecks(wz.message, wz.headline));
       if (wz.goal === "chat" && faqList().length && faqList().every((f) => !f.a)) out.push({ lvl: "tip", t: "ใส่คำตอบอัตโนมัติสัก 1 ข้อ ลูกค้าจะได้คำตอบทันทีแม้ทีมยังไม่ว่าง" });
+      if (wz.goal === "chat" && !/งบ/.test(wz.welcome)) out.push({ lvl: "tip", t: 'กด "＋ ถามคัดลูกค้า" ให้ข้อความทักทายถามงบ/ทำเล/เวลาซื้อ จะรู้เร็วว่าใครพร้อมซื้อ' });
     }
     if (step === 4) {
       if (wz.days >= 1 && wz.days <= 2) out.push({ lvl: "warn", t: `ยิงแค่ ${wz.days} วัน ช่วงแรก Facebook ยังเรียนรู้ ผลจะแกว่ง อาจยังตัดสินไม่ได้ว่าแอดดีไหม` });
@@ -1467,7 +1498,7 @@
       b += `<div class="sec">💬 ข้อความในแชต</div><div class="wz-hint">ลูกค้ากดทักจากแอด จะเห็นข้อความนี้จากเพจทันที</div>
         <label class="f" for="wzWel">ข้อความทักทาย</label>
         <textarea class="inp" id="wzWel" maxlength="280">${esc(wz.welcome)}</textarea>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:8px"><button class="btn ghost sm" id="wzAddName">＋ ใส่ชื่อลูกค้า</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><button class="btn ghost sm" id="wzAddName">＋ ใส่ชื่อลูกค้า</button><button class="btn ghost sm" id="wzAddQual">＋ ถามคัดลูกค้า</button>
         <span style="font-size:13px;color:var(--mute)">${NAME_TAG} = ชื่อในบัญชี Facebook ของลูกค้า</span></div>
         <label class="f">คำถามที่พบบ่อย · ลูกค้ากดถามได้ทันที (ไม่ใส่ก็ได้)</label>
         ${wz.faq.map((f, i) => `<div class="faq"><input class="inp" data-fq="${i}" maxlength="80" placeholder="คำถาม ${i + 1}" value="${esc(f.q)}">
@@ -1615,7 +1646,7 @@
     wz.seen.add(n);
     if (!wz.info && !wz.loading && !wz.err) setTimeout(() => wzLoad("pages"));
     const head = `<div class="wz-top"><div class="snav" id="snav">${navHtml()}</div>
-      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">${BOT_SVG(false)}${wz.guide ? "ปิดผู้ช่วย" : "ผู้ช่วย"}</button></div></div>
+      <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">${BOT_SVG(false)}${wz.guide ? "ปิดผู้ช่วย" : "ผู้ช่วย"}</button><button class="gtog" id="wzAi">🤖 ถาม AI</button></div></div>
       <div id="upMini">${miniHtml()}</div>`;
     const body = [stepPage, stepGoal, stepMedia, stepText, stepBudget, stepAudience, stepReview][n]();
     box.innerHTML = head + coachBox(n) + body + botHtml();
@@ -1722,6 +1753,13 @@
     box.querySelectorAll("[data-pv]").forEach((el) => el.onclick = () => { wz.pvTab = Number(el.dataset.pv); renderWizard(); });
     on("wzAgeMin", "onchange", (e) => { wz.ageMin = Number(e.target.value); if (wz.ageMax < wz.ageMin) wz.ageMax = wz.ageMin; renderWizard(); });
     on("wzAgeMax", "onchange", (e) => { wz.ageMax = Number(e.target.value); if (wz.ageMin > wz.ageMax) wz.ageMin = wz.ageMax; renderWizard(); });
+    on("wzAddQual", "onclick", () => {
+      if (wz.welcome.includes(QUAL_ASK)) return toast("มีคำถามคัดลูกค้าแล้ว");
+      const t = `${wz.welcome.trim()} ${QUAL_ASK}`.trim();
+      if (t.length > 280) return toast("ข้อความทักทายยาวเกิน 280 ตัวอักษร ลองย่อข้อความเดิมก่อน", 3500);
+      wz.welcome = t; renderWizard();
+    });
+    on("wzAi", "onclick", () => aiOpen(true));
     on("wzAddName", "onclick", () => {
       const t = $("wzWel"), at = t.selectionStart ?? t.value.length;
       t.value = t.value.slice(0, at) + NAME_TAG + t.value.slice(t.selectionEnd ?? at); wz.welcome = t.value;
@@ -1777,7 +1815,109 @@
   }
 
   // ---------- ข้อมูลตัวอย่าง (โหมดดูตัวอย่าง) ----------
+  // ---------- ผู้ช่วย AI (Claude) ----------
+  const AI = { msgs: [], busy: false, status: null, draft: false };
+  const AI_CHIPS = {
+    base: ["ช่วยดูแอดตอนนี้แล้วแนะนำหน่อย", "แอดไหนควรหยุดหรือเพิ่มงบ", "งบวันละเท่าไหร่ดี", "แอดเก่าตัวไหนควรยิงซ้ำ"],
+    draft: ["ช่วยตรวจแอดที่กำลังทำให้หน่อย", "ช่วยเขียนข้อความโฆษณาให้หน่อย", "งบกับจำนวนวันเท่านี้โอเคไหม", "กลุ่มคนแบบนี้เหมาะไหม"],
+  };
+  const aiFmt = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,6}\s*/gm, "").replace(/^\s*[-*]\s+/gm, "• ").replace(/\n/g, "<br>");
+  function aiFabSync() { $("aiFab").classList.toggle("hide", !st.data || st.tab === "new"); }
+  async function aiOpen(fromWizard = false) {
+    AI.draft = fromWizard || st.tab === "new";
+    $("aiPanel").classList.remove("hide"); document.body.classList.add("ai-open");
+    aiRender();
+    if (!AI.status) { try { AI.status = await api("/api/ai/status"); } catch (e) { AI.status = { enabled: false, err: e.message }; } aiRender(); }
+    setTimeout(() => { if (!$("aiInp").disabled) $("aiInp").focus(); }, 60);
+  }
+  function aiClose() { $("aiPanel").classList.add("hide"); document.body.classList.remove("ai-open"); }
+  function aiRender() {
+    const s = AI.status, off = !!(s && !s.enabled), u = s?.usage;
+    $("aiUse").textContent = u ? `วันนี้ถามไป ${u.today}/${u.daily}` : "";
+    const intro = `<div class="ai-m a">สวัสดีครับ 👋 ผมดูผลแอดจริงของบัญชีได้ ช่วยแนะนำงบ กลุ่มคน แอดที่ควรหยุด/ยิงซ้ำ และช่วยเขียนข้อความโฆษณา${AI.draft ? " — ตอนนี้เห็นแอดที่กำลังกรอกอยู่ด้วย" : ""} ถามได้เลยครับ</div>`;
+    const offBox = off ? `<div class="note warn">${s.err ? esc(s.err) : "ผู้ช่วย AI ยังไม่เปิด — เจ้าของต้องใส่ <b>NADS_CLAUDE_KEY</b> ใน Supabase ก่อน (ดูวิธีในคู่มือ)"}</div>` : "";
+    $("aiMsgs").innerHTML = intro + AI.msgs.map((m) => `<div class="ai-m ${m.role === "user" ? "u" : "a"}${m.err ? " err" : ""}">${aiFmt(m.content)}</div>`).join("")
+      + (AI.busy ? '<div class="ai-m a dots"><i></i><i></i><i></i></div>' : "") + offBox;
+    $("aiChips").innerHTML = AI.msgs.length || off ? "" : (AI.draft ? AI_CHIPS.draft : AI_CHIPS.base).map((c) => `<button class="ai-chip" data-aq="${esc(c)}">${esc(c)}</button>`).join("");
+    $("aiSend").disabled = AI.busy || off; $("aiInp").disabled = off;
+    const box = $("aiMsgs"); box.scrollTop = box.scrollHeight;
+  }
+  async function aiSend(q) {
+    q = String(q ?? $("aiInp").value).trim();
+    if (!q || AI.busy) return;
+    const hist = AI.msgs.filter((m) => !m.err).slice(-10).map(({ role, content }) => ({ role, content }));
+    const mine = { role: "user", content: q };
+    AI.msgs.push(mine); $("aiInp").value = ""; AI.busy = true; aiRender();
+    try {
+      const r = await api("/api/ai/chat", { body: { question: q, messages: hist, draft: AI.draft ? wzDraft() : "" } });
+      AI.msgs.push({ role: "assistant", content: r.reply });
+      if (AI.status && r.usage) AI.status.usage = r.usage;
+    } catch (e) { mine.err = true; AI.msgs.push({ role: "assistant", content: "⚠️ " + e.message, err: true }); }
+    finally { AI.busy = false; aiRender(); }
+  }
+  // สรุปแอดที่กำลังกรอก ให้ AI เห็น
+  function wzDraft() {
+    const list = allCr(), A = list[0], u = upOf(A), out = [];
+    out.push(`เพจ: ${pageOf()?.name || "-"} · เป้าหมาย: ${GOAL_INFO[wz.goal]?.t || wz.goal}`);
+    out.push(`สื่อ: ${A.src === "post" ? (A.post ? "โพสต์ในเพจ — " + firstLine(A.post.message) : "ยังไม่เลือกโพสต์") : u ? (u.kind === "video" ? "วิดีโอ" : "รูป") + (A.src === "library" ? " (วิดีโอเดิมในบัญชี)" : "") : "ยังไม่ใส่"}${list.length > 1 ? ` · ทดสอบ ${list.length} แบบ` : ""}`);
+    list.forEach((c, i) => { if (c.message || c.headline) out.push(`ข้อความ${list.length > 1 ? " แบบ " + TAGS[i] : ""}: ${c.message || "-"}${c.headline ? " | หัวข้อ: " + c.headline : ""}`); });
+    if (wz.goal === "chat") {
+      out.push(`ทักทายในแชต: ${wz.welcome}`);
+      const f = faqList(); if (f.length) out.push("คำถามที่พบบ่อย: " + f.map((x) => x.q + (x.a ? " → " + x.a : "")).join(" / "));
+    }
+    out.push(`งบ: ${wz.daily} บาท/วัน × ${wz.days ? wz.days + " วัน" : "ไม่กำหนดวันจบ"}`);
+    out.push(`พื้นที่: ${areaSum()}${wz.geoExc.length ? " (ยกเว้น " + wz.geoExc.map(geoName).join(", ") + ")" : ""} · อายุ ${ageText()} · เพศ ${{ all: "ทั้งหมด", male: "ชาย", female: "หญิง" }[wz.gender] || wz.gender}`);
+    if (wz.interests.length) out.push("ความสนใจ: " + wz.interests.map((x) => x.name).join(", "));
+    if (wz.excludes.length) out.push("ไม่รวมคนที่สนใจ: " + wz.excludes.map((x) => x.name).join(", "));
+    out.push(`ตำแหน่ง: ${wz.placeMode === "auto" ? "อัตโนมัติ" : wz.platforms.join(", ")} · ชื่อแอด: ${wz.name || "-"} · อยู่ขั้น: ${STEP_NAMES[wz.step] || "-"}`);
+    return out.join("\n").slice(0, 3800);
+  }
+  $("aiFab").onclick = () => aiOpen(false);
+  $("aiClose").onclick = aiClose;
+  $("aiClear").onclick = () => { AI.msgs = []; aiRender(); };
+  $("aiSend").onclick = () => aiSend();
+  $("aiPanel").addEventListener("click", (e) => {
+    if (e.target.id === "aiPanel") return aiClose();
+    const c = e.target.closest("[data-aq]"); if (c) aiSend(c.dataset.aq);
+  });
+  $("aiInp").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); aiSend(); } });
+
+  // ---------- แอดเก่าที่ดีที่สุด + ยิงซ้ำ ----------
+  async function loadPastBest() {
+    st.best = null; renderPastBest();
+    try { st.best = (await api("/api/best-ads")).items; } catch (e) { st.best = { err: e.message }; }
+    renderPastBest();
+  }
+  function renderPastBest() {
+    const el = $("pastBest"); if (!el) return;
+    if (st.best === undefined) return void loadPastBest();
+    if (st.best === null) { el.innerHTML = '<div class="empty">กำลังดูแอดย้อนหลัง 90 วัน…</div>'; return; }
+    if (st.best.err) { el.innerHTML = `<div class="empty">${esc(st.best.err)}</div>`; return; }
+    if (!st.best.length) { el.innerHTML = '<div class="empty">ยังไม่มีแอดที่ใช้เงินเกิน ฿100 และมีผลใน 90 วันที่ผ่านมา</div>'; return; }
+    const canAds = can("ads");
+    el.innerHTML = '<div class="help" style="margin:0 0 4px">เรียงจากต้นทุนต่อผลต่ำสุด · ยิงซ้ำ = ใช้สื่อ/ข้อความเดิม แล้วตั้งงบ/กลุ่มคนใหม่</div>'
+      + st.best.map((b, i) => `<div class="mini"><i class="dot g-good"></i><div class="n"><b>${esc(b.ad_name)}</b><span>${esc(b.result_label)} ${int(b.results)} · ${baht(b.cpr)}/${esc(b.result_label)} · ใช้ ${baht(b.spend, 0)}</span></div>
+        <div class="x">${!canAds ? "" : b.rerun ? `<button class="btn sm" data-rerun="${i}">ยิงซ้ำ</button>` : '<span style="font-size:12px;font-weight:400;color:var(--mute)">ดันโพสต์เดิม</span>'}</div></div>`).join("");
+    el.querySelectorAll("[data-rerun]").forEach((x) => x.onclick = () => rerunAd(st.best[Number(x.dataset.rerun)]));
+  }
+  function rerunAd(b) {
+    const r = b?.rerun; if (!r) return;
+    wzReset();
+    Object.assign(wz, { goal: r.goal, name: r.name, message: r.message, headline: r.headline, link: r.link || "", form_id: r.form_id || "", step: 2 });
+    const u = { name: b.ad_name, kind: r.media.kind, phase: "ready", media: r.media, thumb: r.thumb, preview: r.media.kind === "image" ? (r.thumb || "") : null, dur: 0 };
+    if (r.media.kind === "video") { wz.src = "library"; wz.libUp = u; } else { wz.src = "upload"; wz.up = u; }
+    wz.seen = new Set([0, 1, 2]);
+    goTab("new");
+    toast("ใส่สื่อและข้อความจากแอดเดิมแล้ว ตรวจเพจ แล้วตั้งงบ/กลุ่มคนต่อได้เลย", 4500);
+  }
+
   function demoApi(path, opts) {
+    if (path === "/api/ai/status") return Promise.resolve({ enabled: true, model: "ตัวอย่าง", usage: { today: AI.msgs.filter((m) => m.role === "user").length, month: 0, daily: 60, monthly: 2500 } });
+    if (path === "/api/ai/chat") return new Promise((ok) => setTimeout(() => ok({ reply: '(คำตอบตัวอย่าง) แอด "ที่ดินติดถนน 2 ไร่" ใช้ไป ฿210 ยังไม่มีคนทัก แนะนำ:\n• หยุดไว้ก่อน แล้วลองวิดีโอที่เปิดด้วยมุมหน้าที่ดินติดถนนใน 3 วินาทีแรก\n• ย้ายงบไปแอด "บ้านเดี่ยว นครชุม" ที่ต้นทุนดีกว่า (~฿46/ทักแชต)\n\nในระบบจริง ผู้ช่วยจะอ่านตัวเลขแอดจริงของคุณ', usage: { today: AI.msgs.filter((m) => m.role === "user").length, month: 1, daily: 60, monthly: 2500 } }), 900));
+    if (path === "/api/best-ads") return Promise.resolve({ items: [
+      { ad_id: "1", ad_name: "บ้านเดี่ยว นครชุม 1.89 ล้าน", status: "หยุดอยู่", spend: 1840, results: 41, result_label: "ทักแชต", cpr: 44.9, impressions: 52000,
+        rerun: { goal: "chat", media: { kind: "video", video_id: "9100" }, message: "บ้านเดี่ยว 2 ชั้น นครชุม ราคาจบ 1.89 ล้าน ทักเลย", headline: "ราคาจบ 1.89 ล้าน", name: "บ้านเดี่ยว นครชุม 1.89 ล้าน (ยิงซ้ำ)", thumb: null } },
+      { ad_id: "4", ad_name: "รับฝากขายบ้าน กำแพงเพชร", status: "กำลังวิ่ง", spend: 960, results: 12, result_label: "ลีด", cpr: 80, impressions: 23000, rerun: null }] });
     if (path.startsWith("/api/overview")) {
       const k = { today: 1, yesterday: 1.1, last_7d: 6.8 }[st.range];
       const ad = (id, name, camp, eff, spend, res, label, grade, gl, imp) => ({ ad_id: id, ad_name: name, campaign_name: camp, status: eff === "ACTIVE" ? "ACTIVE" : "PAUSED",
