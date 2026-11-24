@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#DC2626">
+<meta name="theme-color" content="#2563EB">
 <meta name="color-scheme" content="light">
 <title>N Ads Alert</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ===== N Ads Alert · ธีมสว่าง ขาว-แดง (แบรนด์ N propertyNetwork) ===== */
+  /* ===== N Ads Alert · ธีมสว่าง ขาว-ฟ้า ===== */
   :root{
-    --pri:#DC2626;--pri-d:#B91C1C;--navy:#7F1D1D;--pri-l:#FEF2F2;--pri-l2:#FECACA;
+    --pri:#2563EB;--pri-d:#1D4ED8;--navy:#1E3A8A;--pri-l:#EFF6FF;--pri-l2:#BFDBFE;
     --ink:#111827;--mute:#4B5563;--line:#E5E7EB;--bg:#F5F5F7;--card:#FFFFFF;--card2:#F9FAFB;
-    --green:#15803D;--green-l:#DCFCE7;--amber:#B45309;--amber-l:#FEF3C7;--red:#B91C1C;--red-l:#FEE2E2;--grey:#9CA3AF;
-    --solid:#DC2626;--hdr:linear-gradient(135deg,#991B1B 0%,#DC2626 58%,#EF4444 100%);--shadow:0 1px 2px rgba(17,24,39,.05),0 4px 14px rgba(17,24,39,.06);--glow:0 6px 18px rgba(220,38,38,.28);
+    --green:#15803D;--green-l:#DCFCE7;--amber:#B45309;--amber-l:#FEF3C7;--red:#DC2626;--red-l:#FEE2E2;--grey:#9CA3AF;
+    --solid:#2563EB;--hdr:linear-gradient(135deg,#1E40AF 0%,#2563EB 55%,#0EA5E9 100%);--shadow:0 1px 2px rgba(17,24,39,.05),0 4px 14px rgba(17,24,39,.06);--glow:0 6px 18px rgba(37,99,235,.28);
     --r:18px;--side:0px;color-scheme:light;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -274,7 +274,7 @@
   .steps{margin:8px 0 0;padding-left:20px;color:var(--ink);font-size:15px} .steps li{margin:4px 0}
   /* ===== v2 · อ่านง่าย + ผู้ช่วย AI เด่น ===== */
   html,body{line-height:1.55}
-  header{box-shadow:0 6px 18px rgba(185,28,28,.22)}
+  header{box-shadow:0 6px 18px rgba(30,64,175,.22)}
   .card,.stat,.seg,.sum,.total,.faq,details.adv{border:1px solid var(--line)}
   .card.bal{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--pri)}
   .bal .lbl{font-size:15px}
@@ -300,12 +300,12 @@
 
   /* ไอคอนผู้ช่วย AI */
   .aiav{display:block;width:100%;height:100%}
-  .ai-pill{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:99px;padding:4px 14px 4px 4px;background:var(--pri);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(220,38,38,.3);white-space:nowrap}
+  .ai-pill{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:99px;padding:4px 14px 4px 4px;background:var(--pri);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,.3);white-space:nowrap}
   .ai-pill .aiav{width:28px;height:28px;border-radius:50%;border:1.5px solid #fff}
   .coach .ai-pill{margin-top:10px}
 
   /* ปุ่มลอย "ผู้ช่วย AI" + กล่องทักทาย */
-  .ai-fab{right:max(16px,calc(50% - 264px));bottom:calc(92px + env(safe-area-inset-bottom));padding:5px 20px 5px 5px;gap:10px;background:linear-gradient(135deg,#B91C1C,#DC2626 55%,#EF4444);font-size:16px;box-shadow:0 10px 26px rgba(220,38,38,.38);text-align:left;line-height:1.2}
+  .ai-fab{right:max(16px,calc(50% - 264px));bottom:calc(92px + env(safe-area-inset-bottom));padding:5px 20px 5px 5px;gap:10px;background:linear-gradient(135deg,#1E40AF,#2563EB 55%,#0EA5E9);font-size:16px;box-shadow:0 10px 26px rgba(37,99,235,.38);text-align:left;line-height:1.2}
   .ai-fab .av{position:relative;width:48px;height:48px;border-radius:50%;border:2.5px solid #fff;flex:none}
   .ai-fab .av::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid rgba(255,255,255,.75);animation:aipulse 2.2s ease-out infinite}
   .ai-fab .tx b{display:block;font-size:16px;font-weight:600} .ai-fab .tx small{display:block;font-size:12.5px;font-weight:400;opacity:.92}
@@ -322,7 +322,7 @@
 
   /* หน้าต่างแชต */
   .ai-box{height:min(92vh,820px)}
-  .ai-hd{background:linear-gradient(135deg,#B91C1C,#DC2626 60%,#EF4444);color:#fff;border-bottom:0;padding:14px 14px 14px 16px;gap:10px}
+  .ai-hd{background:linear-gradient(135deg,#1E40AF,#2563EB 60%,#0EA5E9);color:#fff;border-bottom:0;padding:14px 14px 14px 16px;gap:10px}
   .ai-hd .av{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;flex:none}
   .ai-hd .tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
   .ai-hd b{font-size:17px;font-weight:600} .ai-hd .u{flex:none;font-size:13px;color:rgba(255,255,255,.9)}
@@ -484,8 +484,8 @@
       </div>
     </div>
   </main>
-  <button id="aiFab" class="ai-fab hide" aria-label="เปิดแชตผู้ช่วยยิงแอด AI"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg></span><span class="tx"><b>ผู้ช่วยยิงแอด AI</b><small>ถามเรื่องแอดได้เลย</small></span></button>
-  <div id="aiTease" class="ai-tease hide" role="button" tabindex="0" aria-label="เปิดแชตผู้ช่วย AI"><div class="hd"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg>ผู้ช่วยยิงแอด AI</div><div id="aiTeaseTx"></div><span class="go">คุยเลย →</span><button class="x" id="aiTeaseX" aria-label="ปิดข้อความ">×</button></div>
+  <button id="aiFab" class="ai-fab hide" aria-label="เปิดแชตผู้ช่วยยิงแอด AI"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg></span><span class="tx"><b>ผู้ช่วยยิงแอด AI</b><small>ถามเรื่องแอดได้เลย</small></span></button>
+  <div id="aiTease" class="ai-tease hide" role="button" tabindex="0" aria-label="เปิดแชตผู้ช่วย AI"><div class="hd"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg>ผู้ช่วยยิงแอด AI</div><div id="aiTeaseTx"></div><span class="go">คุยเลย →</span><button class="x" id="aiTeaseX" aria-label="ปิดข้อความ">×</button></div>
   <nav id="nav">
     <button data-t="home" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
     <button data-t="new"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>ยิงแอด</button>
@@ -497,7 +497,7 @@
 <div id="wzBar" class="wz-bar hide"><div class="in" id="wzBarIn"></div></div>
 <div id="modal" class="modal hide"><div class="sheet" id="sheet"></div></div>
 <div id="aiPanel" class="ai-panel hide" role="dialog" aria-label="ผู้ช่วยยิงแอด AI"><div class="ai-box">
-  <div class="ai-hd"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg></span><div class="tt"><b>ผู้ช่วยยิงแอด AI</b><span class="u" id="aiUse">ดูข้อมูลแอดจริงของบัญชี</span></div><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">✕ ปิด</button></div>
+  <div class="ai-hd"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg></span><div class="tt"><b>ผู้ช่วยยิงแอด AI</b><span class="u" id="aiUse">ดูข้อมูลแอดจริงของบัญชี</span></div><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">✕ ปิด</button></div>
   <div class="ai-msgs" id="aiMsgs"></div><div class="ai-chips" id="aiChips"></div>
   <div class="ai-in"><textarea id="aiInp" rows="1" maxlength="2000" placeholder="ถามเรื่องแอดได้เลย เช่น งบเท่าไหร่ดี"></textarea><button class="btn sm" id="aiSend">ส่ง</button></div>
 </div></div>
@@ -1913,7 +1913,7 @@
 
   // ---------- ข้อมูลตัวอย่าง (โหมดดูตัวอย่าง) ----------
   // ---------- ผู้ช่วย AI (Claude) ----------
-  const AI_SVG = '<svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#DC2626"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#DC2626"/><circle cx="31.2" cy="20" r="1.4" fill="#F87171"/></svg>';
+  const AI_SVG = '<svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg>';
   const AI = { msgs: [], busy: false, status: null, draft: false, suggest: "", teased: false };
   const sess = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} } };
   const DESK = matchMedia("(min-width:1024px)");
