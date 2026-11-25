@@ -497,6 +497,37 @@
   .arow .am{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:4px;font-size:13px;color:var(--mute)}
   .arow .btn{flex:none;padding:10px 16px;border-radius:20px;font-size:14px}
 
+  .arow .ai.open{display:flex;align-items:center;gap:12px;flex:1 1 200px;min-width:0;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer;border-radius:12px}
+  .arow .ai.open:hover b{color:var(--pri)}
+  .arow .ai.open .aw{flex:1;min-width:0}
+  .arow .ai.open .aw b{display:-webkit-box}
+  .arow .am .go{color:var(--pri);font-weight:700}
+  .adx-hd{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+  .adx-hd .th.lg{width:76px;height:76px;flex-basis:76px}
+  .adx-t{flex:1;min-width:0} .adx-t h3{margin:0 0 6px;font-size:18px;line-height:1.35}
+  .adx-t .am{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:var(--mute);align-items:center}
+  .adx-seg{margin-bottom:12px}
+  .verdict{border-left:5px solid var(--grey);background:var(--card2);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+  .verdict b{display:block;font-family:var(--disp);font-size:22px;line-height:1.2} .verdict span{display:block;font-size:14px;color:var(--mute);margin-top:2px}
+  .v-good{border-left-color:var(--green)} .v-good b{color:var(--green)}
+  .v-ok{border-left-color:var(--g-amber)} .v-ok b{color:var(--amber)}
+  .v-bad{border-left-color:var(--red)} .v-bad b{color:var(--red)}
+  .mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+  .mgrid div{background:var(--card2);border-radius:12px;padding:10px 12px;min-width:0}
+  .mgrid span{display:block;font-size:12px;color:var(--mute);line-height:1.3} .mgrid b{display:block;font-family:var(--disp);font-size:20px;margin-top:2px}
+  .mgrid small{display:block;font-size:11.5px;color:var(--mute)}
+  .cmp{background:var(--card2);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+  .cmp .ck{font-size:13px;color:var(--mute);margin-bottom:6px}
+  .cr{display:grid;grid-template-columns:110px 1fr auto;align-items:center;gap:10px;font-size:13px;margin-top:6px}
+  .cr i{display:block;height:10px;border-radius:5px;background:var(--grey)} .cr i.c-good{background:var(--green)} .cr i.c-bad{background:var(--red)}
+  .cr b{font-family:var(--disp);font-size:15px}
+  .why{list-style:none;margin:0 0 12px;padding:0}
+  .why li{position:relative;padding:7px 0 7px 22px;font-size:14.5px;line-height:1.5;border-top:1px solid var(--line)} .why li:first-child{border-top:0}
+  .why li::before{content:"";position:absolute;left:4px;top:14px;width:9px;height:9px;border-radius:50%;background:var(--grey)}
+  .why .w-good::before{background:var(--green)} .why .w-ok::before,.why .w-warn::before{background:var(--g-amber)} .why .w-bad::before{background:var(--red)} .why .w-wait::before{background:var(--grey)}
+  .tips{background:var(--pri-l);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .tips b{font-family:var(--disp)} .tips ul{margin:6px 0 0;padding-left:20px} .tips li{font-size:14.5px;line-height:1.55;margin:2px 0}
+  @media (max-width:420px){ .mgrid{grid-template-columns:repeat(2,minmax(0,1fr))} .cr{grid-template-columns:90px 1fr auto} }
   .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;font-size:13px;margin-top:14px}
   .foot b{font-family:var(--disp);color:var(--pri);font-weight:600}
   /* ปุ่มผู้ช่วยแบบใหญ่ มีตัวการ์ตูนโผล่พ้นปุ่มแล้วชี้ไปที่ข้อความ */
@@ -696,7 +727,7 @@
     const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
     document.body.appendChild(t); setTimeout(() => t.remove(), ms);
   }
-  function sheet(html) { $("sheet").innerHTML = html; $("modal").classList.remove("hide"); }
+  function sheet(html) { $("sheet").innerHTML = html; $("sheet").scrollTop = 0; $("modal").classList.remove("hide"); }
   function closeSheet() { $("modal").classList.add("hide"); }
   $("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeSheet(); });
 
@@ -811,7 +842,7 @@
     const on = a.effective_status === "ACTIVE", bad = ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status);
     const btn = !canAds ? "" : on ? `<button class="btn grey" data-act="pause" data-id="${esc(a.ad_id)}">หยุดแอด</button>`
       : a.status === "PAUSED" ? `<button class="btn" data-act="resume" data-id="${esc(a.ad_id)}">เปิดแอด</button>` : "";
-    return `<div class="arow">${thumbHtml(a)}<div class="ai"><b>${esc(a.ad_name)}</b><div class="am"><span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span><span>ใช้ไป ${baht(a.spend, 0)}</span><span>${a.results > 0 ? `${int(a.results)} ${esc(a.result_label)}` : `ยังไม่มี${esc(a.result_label)}`}</span>${a.cpr !== null ? `<span>${baht(a.cpr)} ต่อ${esc(a.result_label)}</span>` : ""}</div></div>${btn}</div>`;
+    return `<div class="arow"><button class="ai open" data-open="${esc(a.ad_id)}" aria-label="ดูบทวิเคราะห์แอด ${esc(a.ad_name)}">${thumbHtml(a)}<span class="aw"><b>${esc(a.ad_name)}</b><span class="am"><span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span><span>ใช้ไป ${baht(a.spend, 0)}</span><span>${a.results > 0 ? `${int(a.results)} ${esc(a.result_label)}` : `ยังไม่มี${esc(a.result_label)}`}</span>${a.cpr !== null ? `<span>${baht(a.cpr)} ต่อ${esc(a.result_label)}</span>` : ""}<span class="go">ดูบทวิเคราะห์</span></span></span></button>${btn}</div>`;
   }
 
   // ---------- แสดงผล ----------
@@ -897,7 +928,7 @@
         <span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span></div>
         <div class="st"><div><b>${baht(a.spend)}</b><span>ใช้ไป</span></div><div><b>${int(a.results)}</b><span>${esc(a.result_label)}</span></div>
         <div><b>${a.cpr === null ? "-" : baht(a.cpr)}</b><span>ต่อผล</span></div><div><b>${int(a.impressions)}</b><span>เห็น</span></div></div>
-        <div style="display:flex;align-items:center;gap:10px"><span class="grade"><i class="dot g-${a.grade}"></i> ${esc(a.grade_label)}</span><span style="flex:1"></span>${btn ? `<div style="width:150px;display:flex">${btn}</div>` : ""}</div></div>`;
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="grade"><i class="dot g-${a.grade}"></i> ${esc(a.grade_label)}</span><button class="more" data-open="${esc(a.ad_id)}">ดูบทวิเคราะห์</button><span style="flex:1"></span>${btn ? `<div style="width:150px;display:flex">${btn}</div>` : ""}</div></div>`;
     }).join("") : '<div class="card empty">ไม่มีแอดที่วิ่งอยู่หรือหยุดไว้ล่าสุด</div>';
 
     fillSys(settings);
@@ -924,6 +955,7 @@
 
   // ---------- ปุ่มเปิด/หยุดแอด ----------
   $("adList").onclick = $("runList").onclick = (e) => {
+    const o = e.target.closest("[data-open]"); if (o) { openAdDetail(o.dataset.open); return; }
     const b = e.target.closest("button[data-act]"); if (!b) return;
     const ad = st.data.snap.ads.find((a) => a.ad_id === b.dataset.id), pause = b.dataset.act === "pause";
     sheet(`<h3>${pause ? "หยุด" : "เปิด"}แอดนี้?</h3><p>${esc(ad.ad_name)}</p>
@@ -936,6 +968,101 @@
       catch (err) { toast(err.message); $("okB").disabled = false; }
     };
   };
+
+  // ---------- บทวิเคราะห์รายแอด (คิดจากข้อมูลที่ระบบดึงอยู่แล้ว + ต้นทุนเฉลี่ย 30 วันของบัญชี) ----------
+  const GOAL_OF_LABEL = { "ทักแชต": "chat", "ลีด": "lead", "คลิกลิงก์": "traffic", "เข้าเว็บ": "traffic", "คนเห็น": "reach" };
+  const RLAB = { today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วันที่ผ่านมา" };
+  const pct1 = (x) => (Math.round(x * 10) / 10).toLocaleString("en-US");
+  async function ovFor(r) {
+    if (r === st.range && st.data?.snap) return st.data;
+    st.ovc = st.ovc || {};
+    const c = st.ovc[r]; if (c && Date.now() - c.at < 3 * 60e3) return c.d;
+    const d = await api("/api/overview?range=" + r); st.ovc[r] = { at: Date.now(), d }; return d;
+  }
+  async function benchGoals() {
+    if (st.benchG && Date.now() - st.benchG.at < 30 * 60e3) return st.benchG.g;
+    try { const g = (await api("/api/benchmarks")).goals || {}; st.benchG = { at: Date.now(), g }; return g; } catch { return null; }
+  }
+  function analyzeAd(a, bench, range, a7, settings) {
+    const m = { spend: a.spend, reach: a.reach, imp: a.impressions, clicks: a.clicks, res: a.results, label: a.result_label, cpr: a.cpr };
+    m.freq = m.reach > 0 ? m.imp / m.reach : null; m.ctr = m.imp > 0 ? (m.clicks / m.imp) * 100 : null; m.cpm = m.imp > 0 ? (m.spend / m.imp) * 1000 : null;
+    const b = bench?.[GOAL_OF_LABEL[m.label]] ?? null, bcpr = b && b.cpr > 0 ? b.cpr : null;
+    const why = [], tips = []; let main;
+    if (m.spend < 1 && m.imp === 0) return { m, b: bcpr, level: "idle", title: "ยังไม่วิ่งในช่วงนี้", sub: `ช่วง${RLAB[range]} แอดนี้ยังไม่ได้ใช้เงิน (อาจหยุดอยู่ หรือเพิ่งเริ่ม)`, why, tips };
+    // 1) ผลลัพธ์เทียบต้นทุนเฉลี่ยบัญชี
+    if (m.res > 0) {
+      if (bcpr) {
+        const r = m.cpr / bcpr, d = Math.round(Math.abs(1 - r) * 100);
+        main = r <= 0.8 ? "good" : r <= 1.2 ? "ok" : "bad";
+        why.push({ l: main, t: main === "good" ? `ต้นทุน ${baht(m.cpr)} ต่อ${m.label} ถูกกว่าค่าเฉลี่ยบัญชี ${d}% (${baht(bcpr)})` : main === "ok" ? `ต้นทุน ${baht(m.cpr)} ต่อ${m.label} ใกล้ค่าเฉลี่ยบัญชี (${baht(bcpr)})` : `ต้นทุน ${baht(m.cpr)} ต่อ${m.label} แพงกว่าค่าเฉลี่ยบัญชี ${d}% (${baht(bcpr)})` });
+      } else { main = a.grade === "bad" ? "bad" : a.grade === "good" ? "good" : "ok"; why.push({ l: main, t: `ได้${m.label} ${int(m.res)} ครั้ง ต้นทุน ${baht(m.cpr)} ต่อครั้ง (ยังไม่มีค่าเฉลี่ยบัญชีไว้เทียบ)` }); }
+    } else {
+      const lim = bcpr ? Math.max(bcpr * 1.5, 50) : (settings?.no_result_spend_thb || 150);
+      main = m.spend < lim ? "wait" : "bad";
+      why.push({ l: main, t: main === "wait" ? `ใช้ไป ${baht(m.spend, 0)} ยังไม่มี${m.label}${bcpr ? ` ปกติบัญชีได้ 1 ${m.label} ทุกราว ${baht(bcpr, 0)}` : ""} ยังเร็วไปที่จะตัดสิน` : `ใช้ไป ${baht(m.spend, 0)} แล้วยังไม่มี${m.label}${bcpr ? ` (ปกติบัญชีได้ 1 ${m.label} ทุกราว ${baht(bcpr, 0)})` : ""}` });
+    }
+    // 2) คนเห็นซ้ำ
+    let freqHigh = false;
+    if (m.freq !== null) {
+      const lim = range === "last_7d" ? 3.5 : 2.5; freqHigh = m.freq > lim;
+      why.push({ l: freqHigh ? "warn" : "ok2", t: freqHigh ? `คนเดิมเห็นซ้ำเฉลี่ย ${pct1(m.freq)} ครั้ง/คน ถี่เกินไป คนอาจเริ่มเบื่อ` : `เข้าถึง ${int(m.reach)} คน เห็นซ้ำเฉลี่ย ${pct1(m.freq)} ครั้ง/คน ยังไม่ถี่เกิน` });
+    }
+    // 3) อัตราการกด
+    let ctrLow = false;
+    if (m.imp >= 1000 && m.ctr !== null) {
+      ctrLow = m.ctr < 0.8;
+      why.push({ l: m.ctr >= 2 ? "good" : ctrLow ? "warn" : "ok2", t: m.ctr >= 2 ? `คนกดดู ${pct1(m.ctr)}% ของครั้งที่เห็น ถือว่าสนใจเยอะ` : ctrLow ? `คนกดดูแค่ ${pct1(m.ctr)}% ของครั้งที่เห็น เห็นแล้วไม่ค่อยหยุดดู` : `คนกดดู ${pct1(m.ctr)}% ของครั้งที่เห็น อยู่ระดับกลาง ๆ` });
+    } else if (m.imp > 0) why.push({ l: "ok2", t: `คนเห็นยังน้อย (${int(m.imp)} ครั้ง) ยังสรุปอัตราการกดไม่ได้` });
+    // 4) วันนี้เทียบค่าเฉลี่ย 7 วัน
+    if (range === "today" && a7 && a7.spend > 0) {
+      const avg = a7.spend / 7, rpd = a7.results / 7;
+      why.push({ l: "ok2", t: `วันนี้ใช้ ${baht(m.spend, 0)} (เฉลี่ย 7 วัน วันละ ${baht(avg, 0)})${rpd > 0 ? ` ได้${m.label} ${int(m.res)} (เฉลี่ยวันละ ${pct1(rpd)})` : ""}` });
+    }
+    // สิ่งที่ควรทำ
+    if (main === "bad" && ctrLow) tips.push("คนเห็นแต่ไม่หยุดดู ลองเปลี่ยนรูปหรือ 3 วินาทีแรกของคลิป และเปิดด้วยราคา-ทำเลให้ชัด");
+    else if (main === "bad" && m.label === "ทักแชต") tips.push("คนกดดูแต่ไม่ทัก ลองปรับข้อความทักทายหรือคำถามสำเร็จรูปในแชต และเช็กว่ากลุ่มคน/พื้นที่ตรงกับทรัพย์");
+    else if (main === "bad") tips.push("ลองเปลี่ยนรูป/ข้อความ หรือปรับกลุ่มคนและพื้นที่ ถ้า 2–3 วันยังไม่ดีขึ้นค่อยหยุด");
+    if (freqHigh) tips.push("ขยายพื้นที่หรือเปลี่ยนรูปใหม่ เพราะคนเดิมเห็นซ้ำหลายรอบแล้ว");
+    if (main === "wait") tips.push("แอดใหม่ควรให้วิ่ง 3–7 วันก่อนตัดสิน ช่วงแรกระบบ Meta ยังเรียนรู้อยู่");
+    if (main === "good" && !freqHigh) tips.push("วิ่งดีอยู่ ถ้ายังมีงบลองเพิ่มทีละน้อย (ราว 20–30%) แล้วดูผล 2–3 วัน");
+    const level = main === "bad" ? "bad" : main === "wait" ? "wait" : main === "good" && !freqHigh && !ctrLow ? "good" : "ok";
+    const T = { good: "วิ่งดี", ok: "พอใช้", bad: "ควรปรับ", wait: "รอดูผลก่อน" }[level];
+    const sub = level === "good" ? "ต้นทุนดีกว่าค่าเฉลี่ยของบัญชี" : level === "bad" ? "ต้นทุนสูงหรือยังไม่มีผล ลองปรับตามด้านล่าง" : level === "wait" ? "ใช้เงินยังน้อย ข้อมูลยังไม่พอจะสรุป" : "ไม่แย่ แต่มีจุดที่ปรับให้ดีขึ้นได้";
+    return { m, b: bcpr, level, title: T, sub, why, tips };
+  }
+  async function openAdDetail(id, range) {
+    range = range || "last_7d";
+    const base = st.data.snap.ads.find((x) => x.ad_id === id); if (!base) return;
+    const head = `<div class="adx-hd">${thumbHtml(base, "th lg")}<div class="adx-t"><h3>${esc(base.ad_name)}</h3><div class="am"><span class="pill ${base.effective_status === "ACTIVE" ? "p-on" : "p-off"}">${esc(base.status_label)}</span>${base.campaign_name ? `<span>${esc(base.campaign_name)}</span>` : ""}</div></div></div>
+      <div class="seg adx-seg" id="adxSeg">${["today", "yesterday", "last_7d"].map((r) => `<button data-r="${r}" class="${r === range ? "on" : ""}">${{ today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วัน" }[r]}</button>`).join("")}</div>`;
+    sheet(`<div class="adx">${head}<div id="adxBody"><div class="empty">กำลังวิเคราะห์…</div></div></div>`);
+    $("adxSeg").onclick = (e) => { const b = e.target.closest("button[data-r]"); if (b) openAdDetail(id, b.dataset.r); };
+    try {
+      const [d, bench, d7] = await Promise.all([ovFor(range), benchGoals(), range === "today" ? ovFor("last_7d").catch(() => null) : Promise.resolve(null)]);
+      if (!$("adxBody")) return;
+      const a = d.snap?.ads.find((x) => x.ad_id === id);
+      if (!a) { $("adxBody").innerHTML = `<div class="verdict v-idle"><b>ไม่มีข้อมูลช่วง${RLAB[range]}</b><span>แอดนี้ไม่ได้วิ่งหรือใช้เงินในช่วงนี้ ลองเลือกช่วงอื่น</span></div><div class="row2"><button class="btn grey" id="adxClose">ปิด</button></div>`; $("adxClose").onclick = closeSheet; return; }
+      const r = analyzeAd(a, bench, range, d7?.snap?.ads.find((x) => x.ad_id === id), d.settings), m = r.m;
+      const cell = (k, v, s = "") => `<div><span>${k}</span><b>${v}</b>${s ? `<small>${s}</small>` : ""}</div>`;
+      const mx = r.b && m.cpr ? Math.max(m.cpr, r.b) : 0;
+      $("adxBody").innerHTML = `<div class="verdict v-${r.level}"><b>${r.title}</b><span>${r.sub}</span></div>
+        <div class="mgrid">${cell("ใช้ไป", baht(m.spend, 0))}${cell("คนเห็น", int(m.reach), "คน")}${cell("เห็นทั้งหมด", int(m.imp), "ครั้ง")}
+        ${cell("เห็นซ้ำเฉลี่ย", m.freq === null ? "-" : pct1(m.freq), "ครั้ง/คน")}${cell("คลิก", int(m.clicks), m.ctr === null ? "" : `${pct1(m.ctr)}% ของที่เห็น`)}${cell(esc(m.label), int(m.res), m.cpr === null ? "ยังไม่มี" : `${baht(m.cpr)} ต่อครั้ง`)}
+        ${cell("ค่าโฆษณาต่อ 1,000 ครั้งที่เห็น", m.cpm === null ? "-" : baht(m.cpm, 0))}</div>
+        ${mx ? `<div class="cmp"><div class="ck">ต้นทุนต่อ${esc(m.label)}</div>
+          <div class="cr"><span>แอดนี้</span><i style="width:${Math.max(4, (m.cpr / mx) * 100)}%" class="${m.cpr <= r.b ? "c-good" : "c-bad"}"></i><b>${baht(m.cpr)}</b></div>
+          <div class="cr"><span>เฉลี่ยบัญชี 30 วัน</span><i style="width:${Math.max(4, (r.b / mx) * 100)}%"></i><b>${baht(r.b)}</b></div></div>` : ""}
+        <ul class="why">${r.why.map((w) => `<li class="w-${w.l}">${esc(w.t)}</li>`).join("")}</ul>
+        ${r.tips.length ? `<div class="tips"><b>ทำอะไรต่อ</b><ul>${r.tips.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` : ""}
+        <p class="help">สรุปจากเกณฑ์คร่าว ๆ ทั่วไป (เห็นซ้ำเกิน ${range === "last_7d" ? "3.5" : "2.5"} ครั้ง/คน ถือว่าถี่ · คนกดดูต่ำกว่า 0.8% ถือว่าน้อย) เทียบกับต้นทุนเฉลี่ย 30 วันของบัญชีนี้ ใช้ประกอบการตัดสินใจ ไม่ใช่คำรับประกันผล</p>
+        <div class="row2"><button class="btn grey" id="adxClose">ปิด</button><button class="btn" id="adxAi">ให้ผู้ช่วยวิเคราะห์ละเอียด</button></div>`;
+      $("adxClose").onclick = closeSheet;
+      $("adxAi").onclick = () => {
+        const q = `ช่วยวิเคราะห์แอด "${a.ad_name}" ช่วง${RLAB[range]}: ใช้ไป ${baht(m.spend, 0)}, คนเห็น ${int(m.reach)} คน, เห็นทั้งหมด ${int(m.imp)} ครั้ง${m.freq !== null ? ` (ซ้ำเฉลี่ย ${pct1(m.freq)} ครั้ง/คน)` : ""}, คลิก ${int(m.clicks)}${m.ctr !== null ? ` (${pct1(m.ctr)}%)` : ""}, ${m.label} ${int(m.res)}${m.cpr !== null ? ` ต้นทุน ${baht(m.cpr)}/ครั้ง` : ""}${r.b ? `, ค่าเฉลี่ยบัญชี 30 วัน ${baht(r.b)}/${m.label}` : ""} ตอนนี้วิ่งเป็นยังไง ควรปรับอะไร`;
+        closeSheet(); aiOpen(false).then(() => aiSend(q));
+      };
+    } catch (e) { if ($("adxBody")) $("adxBody").innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+  }
 
   // ---------- ยอดเงิน ----------
   function balanceSheet(mode) {
@@ -2476,7 +2603,8 @@
         rerun: { goal: "chat", media: { kind: "video", video_id: "9100" }, message: "บ้านเดี่ยว 2 ชั้น นครชุม ราคาจบ 1.89 ล้าน ทักเลย", headline: "ราคาจบ 1.89 ล้าน", name: "บ้านเดี่ยว นครชุม 1.89 ล้าน (ยิงซ้ำ)", thumb: null } },
       { ad_id: "4", ad_name: "รับฝากขายบ้าน กำแพงเพชร", status: "กำลังวิ่ง", spend: 960, results: 12, result_label: "ลีด", cpr: 80, impressions: 23000, rerun: null }] });
     if (path.startsWith("/api/overview")) {
-      const k = { today: 1, yesterday: 1.1, last_7d: 6.8 }[st.range];
+      const rg = new URLSearchParams(path.split("?")[1] || "").get("range") || st.range;
+      const k = { today: 1, yesterday: 1.1, last_7d: 6.8 }[rg];
       const dpic = (c1, c2) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><rect width="160" height="160" fill="${c1}"/><rect y="104" width="160" height="56" fill="${c2}"/><path d="M38 104 80 66l42 38v26H38z" fill="#fff" opacity=".9"/><rect x="72" y="108" width="16" height="22" fill="${c2}"/></svg>`);
       const DTH = { 1: dpic("#7FB3D5", "#5D8A4E"), 2: dpic("#A9CCE3", "#8DAA5B"), 3: dpic("#F5CBA7", "#7D6E5D"), 4: dpic("#D6EAF8", "#C4161C") };
       const ad = (id, name, camp, eff, spend, res, label, grade, gl, imp) => ({ ad_id: id, ad_name: name, campaign_name: camp, status: eff === "ACTIVE" ? "ACTIVE" : "PAUSED",
@@ -2493,7 +2621,7 @@
       const chats = ads.filter((a) => a.result_label === "ทักแชต").reduce((a, x) => a + x.results, 0);
       const chatSpend = ads.filter((a) => a.result_label === "ทักแชต" && a.results > 0).reduce((a, x) => a + x.spend, 0);
       return Promise.resolve({
-        snap: { range: st.range, range_label: { today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วันที่ผ่านมา" }[st.range], generated_at: new Date().toISOString(),
+        snap: { range: rg, range_label: { today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วันที่ผ่านมา" }[rg], generated_at: new Date().toISOString(),
           account: { name: "N propertyNetwork (ตัวอย่าง)", currency: "THB", status: 1, status_label: "ปกติ", ok: true },
           balance: { value: 3480, source: "facebook", note: "อ่านจาก Facebook" }, avg_daily: 860, days_left: 3480 / 860,
           totals: { spend, impressions: ads.reduce((a, x) => a + x.impressions, 0), clicks: ads.reduce((a, x) => a + x.clicks, 0),
