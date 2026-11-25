@@ -311,6 +311,34 @@
   .ai-pill{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:99px;padding:4px 14px 4px 4px;background:var(--solid);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,.3);white-space:nowrap}
   .ai-pill .aiav{width:28px;height:28px;border-radius:50%;border:1.5px solid #fff}
   .coach .ai-pill{margin-top:10px}
+  .coach .cw{margin:2px 0 6px}
+  .coach .cx{margin:8px 0 2px;font-size:14px}.coach .cx>b{color:var(--ink)}
+  .coach pre.tpl{white-space:pre-wrap;font:inherit;font-size:14px;background:var(--pri-l);border:1px dashed var(--pri-l2);border-radius:10px;padding:8px 10px;margin:4px 0 6px;color:var(--ink)}
+  .coach .gb{display:grid;gap:6px;margin:8px 0 4px}
+  .coach .gb>div{border-radius:10px;padding:7px 10px;font-size:14px;line-height:1.5}
+  .coach .gb .g{background:color-mix(in srgb,var(--green) 12%,transparent);border:1px solid color-mix(in srgb,var(--green) 35%,transparent)}
+  .coach .gb .b{background:color-mix(in srgb,var(--red) 10%,transparent);border:1px solid color-mix(in srgb,var(--red) 30%,transparent)}
+  .coach .cbtn{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}.coach .cbtn .ai-pill{margin-top:0}
+  .coach details.fg{margin:8px 0 2px;font-size:14px}.coach details.fg summary{cursor:pointer;font-weight:700;color:var(--pri-d)}
+  .coach details.fg ol{margin:6px 0 0;padding-left:20px;line-height:1.6}
+  .note.est .sm,.reach .sm{display:block;font-size:12.5px;color:var(--mute);margin-top:4px;line-height:1.45}
+  .reach{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0 4px;transition:opacity .2s}
+  .reach.busy{opacity:.6}.reach .hd{font-weight:700;font-size:14px}
+  .reach .num{font-size:20px;font-weight:800;margin:2px 0 8px;color:var(--pri-d)}
+  .reach .gauge{position:relative;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--amber) 30%,var(--green) 55%,var(--green) 80%,var(--amber))}
+  .reach .gauge i{position:absolute;top:-5px;width:4px;height:18px;margin-left:-2px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--card)}
+  .reach .gl{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:4px}
+  .opp{display:flex;align-items:center;gap:12px;padding:4px 0 8px}
+  .opp .ring{flex:none;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p) * 1%),var(--line) 0);display:grid;place-content:center;position:relative;text-align:center}
+  .opp .ring::before{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--card)}
+  .opp .ring b,.opp .ring span{position:relative;line-height:1}.opp .ring b{font-size:20px}.opp .ring span{font-size:10px;color:var(--mute)}
+  .opp .t b{display:block;font-size:15px}.opp .t span{font-size:13px;color:var(--mute);line-height:1.45}
+  .rec{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.5}
+  .rec .rb{flex:1;min-width:0}.rec small{display:block;color:var(--mute);font-size:12.5px}
+  .rec .pts{flex:none;font-weight:800;font-size:13px;color:var(--green);background:color-mix(in srgb,var(--green) 12%,transparent);border-radius:99px;padding:2px 8px}
+  label.tgl{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;font-size:14px;line-height:1.5}
+  label.tgl input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--pri)}
+  label.tgl small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
 
   /* ปุ่มลอย "ผู้ช่วย AI" + กล่องทักทาย */
   .ai-fab{right:max(16px,calc(50% - 264px));bottom:calc(92px + env(safe-area-inset-bottom));padding:5px 20px 5px 5px;gap:10px;background:linear-gradient(135deg,#1E40AF,#2563EB 55%,#0EA5E9);font-size:16px;box-shadow:0 10px 26px rgba(37,99,235,.38);text-align:left;line-height:1.2}
@@ -466,6 +494,7 @@
       </div>
       </div>
       <div class="hcol">
+      <h2>🎯 คะแนนจาก Meta</h2><div class="card" id="oppCard"></div>
       <h2><i class="dot g-bad"></i>ควรดู</h2><div class="card" id="watchList"></div>
       <h2><i class="dot g-good"></i>แอดเด่น</h2><div class="card" id="bestList"></div>
       <h2>🏆 แอดเก่าที่ดีที่สุด (90 วัน)</h2><div class="card" id="pastBest"></div>
@@ -627,7 +656,7 @@
     finally { document.body.classList.remove("loading"); }
   }
   async function reload() { try { await load(); render(); } catch (e) { toast(e.message); } }
-  $("refreshBtn").onclick = reload;
+  $("refreshBtn").onclick = () => { st.opp = undefined; reload(); };
   $("rangeSeg").onclick = (e) => {
     const b = e.target.closest("button"); if (!b) return;
     st.range = b.dataset.r;
@@ -701,7 +730,7 @@
     }).join("") : '<div class="card empty">ไม่มีแอดที่วิ่งอยู่หรือหยุดไว้ล่าสุด</div>';
 
     fillSys(settings);
-    aiFabSync(); renderPastBest(); aiTeaseMaybe();
+    aiFabSync(); renderPastBest(); renderOpp(); aiTeaseMaybe();
   }
   // ยังอ่านแอดไม่ได้ (ยังไม่เชื่อม Facebook / รหัสหมดอายุ) → พาไปหน้าตั้งค่า
   function renderNoData() {
@@ -957,7 +986,8 @@
       goal: "chat", welcome: WELCOME, faq: FAQ_DEFAULT.map((q) => ({ q, a: "" })), forms: null, formsFor: null, form_id: "", link: "",
       src: "upload", posts: null, postsFor: null, post: null, up: null, lib: null, libUp: null, cover: null, coverFor: null, thumbs: null, thumbsFor: null, coverBusy: false,
       gender: "all", interests: [], excludes: [], iq: "", ires: [], xq: "", xres: [], placeMode: "auto", platforms: ["facebook", "instagram", "messenger"], ig: undefined, igFor: null,
-      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") === "1", botMin: store.get("nads_bot_min") === "1",
+      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") !== "0", botMin: store.get("nads_bot_min") === "1",
+      multiAds: false, reach: null, reachKey: "", reachBusy: false, msgUndo: null,
       seen: new Set(), geoInc: [], geoExc: [], geoInit: false, geoMode: "inc", pinArm: false, gq: "", gres: [],
       name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, pin: "", ageMin: 25, ageMax: 65, sending: false, result: null });
   }
@@ -1118,7 +1148,7 @@
   const thDateTime = (iso) => { try { return new Date(iso).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return ""; } };
   const fmtLen = (sec) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
   const fmtSize = (a, b) => { const f = (n) => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + " ล้าน" : n >= 1e3 ? Math.round(n / 1e3) + " พัน" : String(n); return a && b ? `ประมาณ ${f(a)}–${f(b)} คน` : ""; };
-  const placeOk = () => wz.placeMode === "auto" || ((wz.platforms.includes("facebook") || wz.platforms.includes("instagram")) && (!wz.platforms.includes("messenger") || wz.platforms.includes("facebook")));
+  const placeOk = () => wz.placeMode === "auto" || AUTO_PL.includes(wz.goal) || ((wz.platforms.includes("facebook") || wz.platforms.includes("instagram")) && (!wz.platforms.includes("messenger") || wz.platforms.includes("facebook")));
   const PLAT_TH = { facebook: "Facebook", instagram: "Instagram", messenger: "Messenger" };
 
   async function wzLoad(what) {
@@ -1196,10 +1226,8 @@
     const body = { page_id: wz.page, goal: wz.goal, source: A.src === "post" ? "post" : "upload", name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
       message: boost ? "" : A.message.trim(), headline: boost ? "" : A.headline.trim(),
       daily_thb: wz.daily, days: wz.days, radius_km: 0, age_min: wz.ageMin, age_max: wz.ageMax,
-      gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: wz.placeMode === "manual" ? wz.platforms : [] };
-    geoInit();
-    const strip = (g) => g.kind === "pin" ? { kind: "pin", lat: g.lat, lng: g.lng, radius_km: g.radius_km, label: g.label } : g.kind === "country" ? { kind: "country", key: "TH" } : { kind: g.kind, key: g.key, name: g.name, ...(g.radius_km ? { radius_km: g.radius_km } : {}) };
-    body.geo = { include: wz.geoInc.map(strip), exclude: wz.geoExc.map(strip) };
+      gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: platformsBody(), multi_ads: !!wz.multiAds };
+    body.geo = geoBody();
     const cov = (c) => { const x = coverOf(c); return x ? (x.kind === "thumb" ? { kind: "thumb", url: x.url } : { kind: "image", image_hash: x.image_hash }) : null; };
     if (A.src === "post") body.post_id = A.post.id; else body.media = upOf(A).media;
     if (cov(A)) body.cover = cov(A);
@@ -1209,10 +1237,65 @@
     if (wz.goal === "traffic") body.link = wz.link.trim();
     return body;
   }
+  // แอดทักแชต/ฟอร์ม: Meta ไม่ให้เลือกตำแหน่งเองแล้ว → อัตโนมัติเสมอ
+  const AUTO_PL = ["chat", "lead"];
+  const autoPlace = () => AUTO_PL.includes(wz.goal);
+  const platformsBody = () => wz.placeMode === "manual" && !autoPlace() ? wz.platforms : [];
+  function geoBody() {
+    geoInit();
+    const strip = (g) => g.kind === "pin" ? { kind: "pin", lat: g.lat, lng: g.lng, radius_km: g.radius_km, label: g.label } : g.kind === "country" ? { kind: "country", key: "TH" } : { kind: g.kind, key: g.key, name: g.name, ...(g.radius_km ? { radius_km: g.radius_km } : {}) };
+    return { include: wz.geoInc.map(strip), exclude: wz.geoExc.map(strip) };
+  }
+  // ---------- ขนาดกลุ่มคนโดยประมาณ (ถาม Facebook) ----------
+  let reachT = 0;
+  const reachBody = () => ({ page_id: wz.page, goal: wz.goal, geo: geoBody(), age_min: wz.ageMin, age_max: wz.ageMax, gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: platformsBody() });
+  function reachTick() {
+    if (wz.step !== 5) return;
+    if (!wz.page || !geoOk() || !placeOk() || wz.ageMin > wz.ageMax) { wz.reach = null; wz.reachKey = ""; wz.reachBusy = false; return paintReach(); }
+    const body = reachBody(), key = JSON.stringify(body);
+    if (key === wz.reachKey) return paintReach();
+    clearTimeout(reachT);
+    reachT = setTimeout(async () => {
+      wz.reachKey = key; wz.reachBusy = true; paintReach();
+      try { const r = await api("/api/reach", { body }); if (wz.reachKey === key) wz.reach = r; }
+      catch (e) { if (wz.reachKey === key) wz.reach = { err: e.message }; }
+      finally { if (wz.reachKey === key) { wz.reachBusy = false; paintReach(); } }
+    }, 700);
+  }
+  function paintReach() { const el = $("reachBox"); if (el) el.innerHTML = reachHtml(); }
+  function reachHtml() {
+    const hd = '<div class="hd">👥 ขนาดกลุ่มคนโดยประมาณ</div>', r = wz.reach;
+    if (!r) return wz.reachBusy ? `<div class="reach">${hd}<div class="sm">กำลังถาม Facebook…</div></div>` : "";
+    if (r.err) return `<div class="reach">${hd}<div class="sm">ยังประมาณไม่ได้: ${esc(r.err)}</div></div>`;
+    if (!r.upper) return `<div class="reach">${hd}<div class="sm">Facebook ยังไม่มีตัวเลขสำหรับกลุ่มนี้</div></div>`;
+    const mid = (r.lower + r.upper) / 2, pos = Math.max(3, Math.min(97, ((Math.log10(mid) - 3) / 4) * 100));
+    return `<div class="reach${wz.reachBusy ? " busy" : ""}">${hd}<div class="num">${int(r.lower)} – ${int(r.upper)} คน</div>
+      <div class="gauge"><i style="left:${pos}%"></i></div><div class="gl"><span>แคบ</span><span>กว้าง</span></div>
+      ${r.upper < 10000 ? '<div class="note warn" style="margin:8px 0 0">กลุ่มค่อนข้างเล็ก แอดอาจแพงและผลมาช้า ลองขยายพื้นที่หรือช่วงอายุ หรือเอาความสนใจออก</div>' : ""}
+      <div class="sm">ตัวเลขประมาณจาก Facebook ตามพื้นที่ อายุ และความสนใจที่เลือก อาจต่างจากจริง</div></div>`;
+  }
+  // ---------- ต้นทุนเฉลี่ย 30 วันของบัญชี (ใช้ประมาณการในขั้นงบ) ----------
+  async function loadBench() {
+    if (wz.benchBusy) return; wz.benchBusy = true;
+    try { wz.bench = (await api("/api/benchmarks")).goals || {}; } catch { wz.bench = null; }
+    finally { wz.benchBusy = false; if (wz.step === 4) renderWizard(); }
+  }
+  function estHtml() {
+    if (wz.bench === undefined) { setTimeout(loadBench); return '<div class="note info">📊 กำลังดูต้นทุนจริงของบัญชี…</div>'; }
+    if (!wz.bench) return "";
+    const g = GOAL_INFO[wz.goal], b = wz.bench[wz.goal];
+    if (!b || !b.cpr) return `<div class="note info">📊 ยังไม่มีข้อมูลแอดเป้าหมาย "${g.t}" ใน 30 วันที่ผ่านมา จึงยังประมาณผลให้ไม่ได้ ยิงแล้วดูผล 3–7 วันก่อนปรับ</div>`;
+    const reach = wz.goal === "reach", per = wz.daily / b.cpr, week = !reach && per * 1.25 < 1.5;
+    const k = week ? 7 : 1, lo = per * k / 1.3, hi = per * k / 0.8;
+    const fm = (n, up) => reach ? int(Math.round(n / 100) * 100) : int(up ? Math.ceil(n) : Math.floor(n));
+    return `<div class="note info est"><b>📊 ประมาณการจากบัญชีของคุณ</b><br>30 วันที่ผ่านมา ต้นทุนเฉลี่ย ${reach ? `${baht(b.cpr * 1000)}/คนเห็น 1,000 คน` : `${baht(b.cpr)}/${esc(b.label)}`} (${int(b.count)} ${reach ? "คน" : "ครั้ง"})
+      <br>งบ ${baht(wz.daily, 0)}/วัน → น่าจะได้ราว <b>${fm(lo)}–${fm(hi, true)} ${esc(b.label)}/${week ? "สัปดาห์" : "วัน"}</b>
+      <br><span class="sm">สมมติฐาน: ต้นทุนใกล้ค่าเฉลี่ยเดิม (บวกลบ 20–30%) · แอดใหม่ 3–7 วันแรกมักแพงกว่า · ทรัพย์ รูป และพื้นที่ต่างกันผลต่างกัน · ไม่รับประกันผล</span></div>`;
+  }
   async function wzPreview() {
     if (allNeeds().length || busyMedia()) return toast("ดูตัวอย่างได้เมื่อกรอกครบและรูป/วิดีโอพร้อม", 3000);
     wz.pvLoading = true; wz.pvErr = ""; renderWizard();
-    try { const r = await api("/api/preview", { body: { ...buildBody(), variant: wz.pvCr } }); wz.previews = r.previews || []; wz.pvTab = 0; if (!wz.previews.length) wz.pvErr = "โหมดตัวอย่างดูพรีวิวจริงไม่ได้ ต้องเข้าระบบจริง"; }
+    try { const r = await api("/api/preview", { body: { ...buildBody(), variant: wz.pvCr } }); wz.previews = r.previews || []; wz.pvTab = 0; if (typeof r.advertiser_ok === "boolean") st.adv = r.advertiser_ok; if (!wz.previews.length) wz.pvErr = "โหมดตัวอย่างดูพรีวิวจริงไม่ได้ ต้องเข้าระบบจริง"; }
     catch (e) { wz.pvErr = e.message; }
     finally { wz.pvLoading = false; renderWizard(); }
   }
@@ -1284,22 +1367,75 @@
   }
   const ICON = { ok: "✅", warn: "⚠️", tip: "💡" };
   const ckList = (arr) => arr.map((c) => `<div class="ck"><i>${ICON[c.lvl]}</i><span>${esc(c.t)}</span></div>`).join("");
-  const COACH = [
-    ["เลือกเพจ", ["ลูกค้าจะเห็นชื่อเพจนี้บนแอด และทักเข้าเพจนี้", "ต้องเป็นเพจที่อนุญาตตอนเชื่อม Facebook"]],
-    ["เลือกเป้าหมาย", ["ขายบ้าน/ที่ดิน → แนะนำ 'ให้คนทักแชต' คุยต่อได้ทันที", "อยากได้เบอร์โทร → 'ฟอร์มเก็บเบอร์' (ต้องมีฟอร์มในเพจก่อน)", "เปิดตัวทรัพย์ อยากให้คนรู้จัก → 'ให้คนเห็นเยอะ'"]],
-    ["รูป/วิดีโอ", ["สิ่งแรกที่คนเห็น — ใช้ภาพจริงของทรัพย์ ชัด สว่าง", "แนวตั้ง 4:5 หรือ 9:16 เต็มจอมือถือกว่า", "เคยอัปวิดีโอแล้ว? เลือก 'วิดีโอเดิม' ไม่ต้องอัปซ้ำ", "วิดีโอ: เลือกภาพปกที่เห็นทรัพย์ชัด ๆ"]],
-    ["ข้อความ", ["บรรทัดแรกสำคัญสุด: ประเภททรัพย์ + ทำเล + ราคา", "ตามด้วย ขนาด จุดเด่น 2–3 ข้อ แล้วชวนให้ทัก", "อยากรู้ว่าแบบไหนดีกว่า? กด 'เพิ่มแบบ B' ด้านล่าง"]],
-    ["งบ", ["งบต่อวันคือค่าเฉลี่ย บางวัน Facebook ใช้เกินได้ แต่รวมทั้งสัปดาห์ไม่เกิน 7 เท่า", "ช่วงแรก Facebook ยังเรียนรู้ ผลจะแกว่ง แนะนำให้เวลาหลายวันก่อนตัดสิน และอย่าปรับบ่อย", "ไม่แน่ใจกี่วัน เลือก 'ไม่กำหนด' แล้วกดหยุดเองในแอป"]],
-    ["กลุ่มคน", ["เริ่มกว้างไว้ก่อน ให้ Facebook หาคนเอง แล้วค่อยปรับจากผลจริง", "กด 'ปักหมุด' แล้วแตะแผนที่ตรงทรัพย์ หรือยืนที่ทรัพย์แล้วกด 'ตำแหน่งฉัน'", "'ไม่รวม' ใช้ตัดพื้นที่ที่ไม่อยากให้เห็น", "ความสนใจไม่ใส่ก็ได้ ใส่มากไปกลุ่มจะแคบ", "'แสดงที่ไหน' ปล่อยอัตโนมัติได้ ถ้าเพจผูก IG ไว้ แอดจะขึ้นใน IG ด้วย"]],
-    ["ตรวจแล้วยิง", ["กด 'ดูหน้าตาบน Facebook / Instagram' ดูก่อนทุกครั้ง", "อ่านรายการ 'เช็กก่อนยิง' ด้านล่าง ข้อที่มี ⚠️ ควรแก้ก่อน", "ยิงแล้ว ระบบจะแจ้งผลและเตือนในไลน์"]],
-  ];
+  // ---------- ผู้ช่วยจับมือทำ: อธิบาย + ตัวอย่างงานอสังหาฯ + ✅/❌ + แม่แบบ ----------
+  const CTA_LINE = { chat: "💬 ทักแชตสอบถาม หรือนัดดูทรัพย์ได้เลย", lead: "📝 กรอกชื่อ-เบอร์ไว้ ทีมงานโทรกลับให้รายละเอียด", traffic: "👉 ดูรูปและรายละเอียดเพิ่มที่ลิงก์", reach: "📍 N propertyNetwork ประเมินตรง ขายไว แบบไม่มโน" };
+  const MSG_TPL = (g) => `🏡 ขาย[ประเภททรัพย์] [ทำเล]\n💰 ราคา [ราคา]\n📐 [ขนาดที่ดิน] · [ห้องนอน/ห้องน้ำ]\n✅ [จุดเด่นข้อ 1]\n✅ [จุดเด่นข้อ 2]\n${CTA_LINE[g] || CTA_LINE.chat}`;
+  const HEAD_TPL = "[ประเภททรัพย์] [ราคา]";
+  const WEL_TPL = `สวัสดีครับคุณ${NAME_TAG} ขอบคุณที่สนใจ[ชื่อทรัพย์]ครับ 🙏\nขอถามสั้น ๆ เพื่อส่งข้อมูลให้ตรงใจ\n1) งบประมาณเท่าไหร่ครับ\n2) ซื้ออยู่เองหรือลงทุน\n3) สะดวกดูทรัพย์วันไหน`;
+  const HOLE = /\[[^\]\n]{1,30}\]/; // ช่องแม่แบบที่ยังไม่ได้เติม
+  const formGuide = () => `<details class="fg"><summary>📝 ยังไม่มีฟอร์ม? วิธีสร้างฟอร์มภาษาไทย</summary><ol>
+    <li>เปิด Ads Manager → <b>+ สร้าง</b> → <b>ข้อมูลลูกค้า</b> → ดำเนินการต่อ</li>
+    <li>หน้าชุดโฆษณา: ช่อง "ตำแหน่งที่เกิดคอนเวอร์ชั่น" กางหัวข้อ "ตำแหน่งเดียว" แล้วเลือก <b>แบบฟอร์มข้อมูลลูกค้า</b> และเช็กว่าเพจถูกต้อง</li>
+    <li>หน้าโฆษณา: กด <b>สร้างแบบฟอร์ม → สร้างแบบฟอร์มของคุณเอง</b></li>
+    <li>กด <b>⚙️ การตั้งค่า</b> มุมขวาบนของฟอร์ม → ภาษา เปลี่ยนเป็น<b>ไทย</b> (ค่าเริ่มต้นเป็นอังกฤษ)</li>
+    <li>ประเภทฟอร์ม เลือก <b>เน้นความตั้งใจ</b> ได้เบอร์จริงกว่า (เปิดยืนยันเบอร์ด้วยรหัส OTP ได้)</li>
+    <li>คำถาม: เพิ่ม<b>เบอร์โทร</b> + คำถามคัด 1–2 ข้อ เช่น "งบประมาณเท่าไหร่" "ซื้ออยู่เองหรือลงทุน"</li>
+    <li>ใส่ลิงก์<b>นโยบายความเป็นส่วนตัว</b> (หน้าบนเว็บ npropertynetwork.com) แล้วกดสร้างฟอร์ม · การสร้างฟอร์มไม่เสียเงิน</li>
+    <li>ฟอร์มจะเก็บไว้ที่เพจ แบบร่างแอดใน Ads Manager กด "ยกเลิกแบบร่าง" ได้ (<b>อย่ากดเผยแพร่</b>) แล้วกลับมากด <b>โหลดใหม่</b></li></ol></details>`;
+  function coachData(step) {
+    const g = wz.goal;
+    if (step === 0) return { h: "เลือกเพจ", what: "เพจที่แอดจะขึ้นชื่อ ลูกค้าเห็นชื่อและรูปเพจนี้บนแอด และกดทักเข้าเพจนี้",
+      ex: ["ขายบ้านของ N Property → เลือกเพจ N Property Network ที่มีคนตอบแชตทุกวัน"],
+      good: "เพจที่มีรูปโปรไฟล์ชัด โพสต์สม่ำเสมอ และตอบแชตไว ลูกค้าเชื่อใจ ทักแล้วได้คำตอบ",
+      bad: "เพจที่ไม่มีใครเฝ้าแชต ลูกค้าทักแล้วเงียบ = เสียค่าแอดฟรี" };
+    if (step === 1) return { h: "เลือกเป้าหมาย", what: "บอก Facebook ว่าอยากได้อะไรจากแอดนี้ Facebook จะไปหาคนที่มีแนวโน้มทำแบบนั้นมาให้ เลือกผิด = ได้ผลผิดอย่าง",
+      ex: ["ขายบ้าน/ทาวน์โฮม → 'ให้คนทักแชต' คนซื้อบ้านอยากถามก่อน คุยต่อและนัดดูได้ทันที",
+        "อยากได้รายชื่อไปโทรตาม เช่น รับฝากขาย → 'ฟอร์มเก็บเบอร์'",
+        "เปิดตัวทรัพย์ใหม่หรือสร้างแบรนด์ → 'ให้คนเห็นเยอะ' ได้คนเห็นมาก แต่ไม่ได้เน้นคนทัก",
+        "มีหน้าเว็บรายละเอียดทรัพย์ → 'ให้คนเข้าเว็บ/ลิงก์'"],
+      good: "อยากได้ลูกค้าคุย → เลือก 'ให้คนทักแชต'",
+      bad: "อยากได้ลูกค้าคุย แต่เลือก 'ให้คนเห็นเยอะ' → คนเห็นเยอะแต่แทบไม่มีใครทัก",
+      extra: g === "lead" ? formGuide() : "" };
+    if (step === 2) return { h: "รูป/วิดีโอ", what: "สิ่งแรกที่คนเห็นตอนเลื่อนฟีด มีเวลาแค่ 1–3 วินาทีให้คนหยุดดู",
+      ex: ["วิดีโอทัวร์บ้านแนวตั้ง 9:16 ยาว 30–60 วินาที เปิดด้วยมุมสวยสุด (หน้าบ้าน/มุมโดรน) พร้อมตัวหนังสือราคาใหญ่ ๆ",
+        "รูปหน้าบ้านตอนแดดดี ถ่ายตรงไม่เอียง + ข้อความบนรูป 'บ้านเดี่ยว [ทำเล] [ราคา]'",
+        "Meta แนะนำให้มีทั้งวิดีโอและรูปในแอดเดียวกัน → ทำเสร็จแล้วกด 'เพิ่มแบบ B' ในขั้นข้อความ ใส่อีกแบบ"],
+      good: "3 วินาทีแรกเห็นตัวบ้านจริงและราคา",
+      bad: "เปิดคลิปด้วยโลโก้ 5 วินาที หรือภาพมืด/เบลอ คนเลื่อนผ่านก่อนเห็นบ้าน" };
+    if (step === 3) return { h: "ข้อความ", what: "ข้อความโฆษณา = คำบรรยายใต้ชื่อเพจ เหนือรูป/วิดีโอ คนส่วนใหญ่อ่านแค่ 2 บรรทัดแรก ใส่ของสำคัญไว้บนสุด",
+      pre: MSG_TPL(g),
+      good: "บรรทัดแรกบอกครบ: ประเภททรัพย์ + ทำเล + ราคา แล้วตามด้วยจุดเด่นและชวนให้ทัก",
+      bad: "'บ้านสวย ราคาดี สนใจทัก' ไม่บอกว่าทรัพย์อะไร ที่ไหน ราคาเท่าไหร่ คนไม่กล้าทัก",
+      tpl: true, aiw: true,
+      extra: g === "chat" ? '<div class="cx"><b>ข้อความทักทายในแชตที่ดี</b> ถามคัดลูกค้า 2–3 ข้อ (งบ · ซื้ออยู่เองหรือลงทุน · วันที่สะดวกดู) ปุ่ม "ใช้แม่แบบนี้" ใส่ให้ด้วย</div>' : "" };
+    if (step === 4) return { h: "งบ", what: "งบต่อวัน = เงินเฉลี่ยที่ยอมให้ Facebook ใช้ต่อวัน ส่วนจำนวนวันคือแอดจะวิ่งนานแค่ไหน",
+      ex: ["เริ่มแอดใหม่: ฿200/วัน × 7 วัน = ราว ฿1,400 แล้วดูต้นทุนต่อผลหลังวันที่ 3–7 ค่อยเพิ่มหรือลด"],
+      good: "ให้แอดวิ่งอย่างน้อย 3–7 วันก่อนตัดสิน",
+      bad: "เปลี่ยนงบทุกวัน Facebook ต้องเริ่มเรียนรู้ใหม่ ผลแกว่งและมักแพงขึ้น" };
+    if (step === 5) return { h: "กลุ่มคน", what: "บอก Facebook ว่าให้แอดขึ้นกับคนแถวไหน อายุเท่าไหร่ ที่เหลือ Facebook จะหาคนที่น่าสนใจทรัพย์ให้เอง",
+      ex: ["บ้านในตัวเมือง → ปักหมุดที่ทรัพย์ รัศมี 10–25 กม.",
+        "ที่ดิน/ทรัพย์ลงทุนที่คนต่างถิ่นซื้อ → เลือกทั้งจังหวัด หรือเพิ่มจังหวัดที่คนมักย้ายกลับมา",
+        "ไม่แน่ใจ → เริ่มกว้างไว้ก่อน ไม่ต้องใส่ความสนใจ แล้วดูจากผลจริง"],
+      good: "ขนาดกลุ่มคนอยู่ช่วงกลางของแถบ ไม่แคบเกิน",
+      bad: "รัศมี 1–3 กม. + ใส่ความสนใจหลายอย่าง กลุ่มเล็กมาก แอดแพงและผลมาช้า" };
+    return { h: "ตรวจแล้วยิง", what: "ดูหน้าตาจริงก่อนยิง เช็กราคา เบอร์ และคำผิด เพราะแก้หลังยิงต้องรอ Facebook ตรวจใหม่",
+      ex: ["กด 'ดูหน้าตาบน Facebook / Instagram' แล้วดูทั้งฟีดและ Reels", "ยิงแล้ว ระบบจะแจ้งผลและเตือนในไลน์"],
+      good: "แก้ทุกข้อที่มี ⚠️ ก่อนกดยิง",
+      bad: "ยิงทั้งที่ราคาพิมพ์ผิด หรือยังมีช่อง [ ] ค้างอยู่ ลูกค้าเห็นแล้วเสียความน่าเชื่อถือ" };
+  }
   function coachBox(step) {
     if (!wz.guide) return "";
-    const [h, lines] = COACH[step], ck = step === LAST ? [] : checksFor(step);
-    return `<div class="coach"><div class="av">${BOT_SVG(false)}</div><div class="tx"><b class="h">ผู้ช่วย · ${h}</b><ul>${lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
+    const c = coachData(step), ck = step === LAST ? [] : checksFor(step), boost = isBoost();
+    return `<div class="coach"><div class="av">${BOT_SVG(false)}</div><div class="tx"><b class="h">ผู้ช่วย · ${esc(c.h)}</b>
+      <div class="cw">${esc(c.what)}</div>
+      ${c.pre && !boost ? `<div class="cx"><b>ตัวอย่างโครงข้อความ</b> (เติมข้อมูลจริงในช่อง [ ])</div><pre class="tpl">${esc(c.pre)}</pre>` : ""}
+      ${c.ex ? `<div class="cx"><b>ตัวอย่าง</b><ul>${c.ex.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
+      <div class="gb"><div class="g">✅ ${esc(c.good)}</div><div class="b">❌ ${esc(c.bad)}</div></div>
+      ${c.extra || ""}
       ${step === 0 ? `<div style="margin-top:6px">${st.demo ? "ตอนนี้อยู่<b>โหมดตัวอย่าง</b> กดยิงได้โดยไม่เสียเงินจริง ฝึกได้เต็มที่" : "อยากฝึกก่อน? ออกจากระบบแล้วกด 'ดูตัวอย่างหน้าจอ' ฝึกได้ไม่เสียเงิน"}</div>` : ""}
       ${ck.length ? `<div style="margin-top:8px">${ckList(ck)}</div>` : ""}
-      <button class="ai-pill" id="wzAiCoach">${AI_SVG}ถาม AI เรื่องขั้นนี้</button></div></div>`;
+      <div class="cbtn">${c.tpl && !boost ? '<button class="btn ghost sm" id="wzTpl">📋 ใช้แม่แบบนี้</button>' : ""}${c.aiw && !boost ? '<button class="btn ghost sm" id="wzAiWrite">✍️ ให้ AI เขียนจากทรัพย์ของฉัน</button>' : ""}
+      <button class="ai-pill" id="wzAiCoach">${AI_SVG}ถาม AI เรื่องขั้นนี้</button></div></div></div>`;
   }
   // ตัวบอทผู้ช่วย (วาดเอง)
   const BOT_SVG = (arm = true) => `<svg viewBox="0 0 64 64" aria-hidden="true">
@@ -1385,6 +1521,7 @@
       if (wz.name.trim().length < 2) out.push("ตั้งชื่อแอด");
       crList().forEach((c, i) => { if (c.src !== "post" && wz.goal !== "reach" && !c.message.trim()) out.push(tg(i) + "เขียนข้อความโฆษณา"); });
       if (wz.goal === "chat" && !faqList().every((f) => f.q)) out.push("คำถามที่พบบ่อย: ใส่คำถามก่อนคำตอบ");
+      if ([wz.name, wz.goal === "chat" ? wz.welcome : "", ...crList().flatMap((c) => [c.message, c.headline])].some((t) => HOLE.test(t || ""))) out.push("เติมข้อมูลจริงในช่อง [ ] ให้ครบ");
     }
     if (s === 4) {
       if (!(wz.daily >= 50 && wz.daily <= 5000)) out.push("งบต่อวัน 50–5,000 บาท");
@@ -1627,6 +1764,8 @@
       <textarea class="inp" id="wzMsg" maxlength="2000" placeholder="เช่น ขายบ้านเดี่ยว 2 ชั้น 3 ห้องนอน ใกล้ตลาด ทักสอบถามได้เลย">${esc(wz.message)}</textarea>
       <label class="f" for="wzHead">หัวข้อสั้น ๆ (ไม่ใส่ก็ได้)</label>
       <input class="inp" id="wzHead" maxlength="60" value="${esc(wz.headline)}" placeholder="เช่น ราคาจบ 1.89 ล้าน">`;
+    if (wz.msgUndo) b += '<button class="btn ghost sm" id="wzUndo" style="margin-top:8px">↩ เอาข้อความเดิมคืน</button>';
+    if (HOLE.test(wz.message) || HOLE.test(wz.headline)) b += '<div class="note warn">ยังมีช่อง [ ] ที่ต้องเปลี่ยนเป็นข้อมูลจริงของทรัพย์ (ห้ามปล่อยไว้ตอนยิง)</div>';
     b += abBox();
     if (wz.goal === "chat") {
       b += `<div class="sec">💬 ข้อความในแชต</div><div class="wz-hint">ลูกค้ากดทักจากแอด จะเห็นข้อความนี้จากเพจทันที</div>
@@ -1643,11 +1782,12 @@
   }
   function stepBudget() {
     const open = wz.days === 0, total = wz.daily * wz.days;
-    const bal = st.data?.snap?.balance?.value;
+    const bal = st.data?.snap?.balance?.value, mxDay = wz.daily * 1.75;
     let note = "";
+    if (bal !== null && bal !== undefined && wz.daily > 0 && bal < mxDay) note += `<div class="note warn">เงินในบัญชี ${baht(bal, 0)} น้อยกว่ายอดที่ Facebook อาจใช้ในวันเดียว (${baht(mxDay)}) แอดอาจหยุดกลางวัน เติมเงินก่อนจะดีกว่า</div>`;
     if (bal !== null && bal !== undefined) {
       const enough = `พอประมาณ ${Math.max(0, Math.floor(bal / wz.daily))} วัน แอดจะหยุดเองเมื่อเงินหมด และระบบจะเตือนในไลน์ก่อน`;
-      note = open ? `<div class="note info">เงินในบัญชีมี ${baht(bal, 0)} ${enough}</div>`
+      note += open ? `<div class="note info">เงินในบัญชีมี ${baht(bal, 0)} ${enough}</div>`
         : total <= bal ? `<div class="note ok">เงินในบัญชีมี ${baht(bal, 0)} พอสำหรับแอดนี้</div>`
         : `<div class="note warn">เงินในบัญชีมี ${baht(bal, 0)} ${enough}</div>`;
     }
@@ -1657,6 +1797,8 @@
     return `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">งบต่อวันเป็นค่าเฉลี่ย บางวัน Facebook อาจใช้เกินได้ถึง 75% แต่รวมทั้งสัปดาห์ไม่เกิน 7 เท่าของงบต่อวัน</div>
       <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
       <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
+      ${wz.daily > 0 ? `<div class="note info">งบ ${baht(wz.daily, 0)}/วัน → บางวันอาจใช้ถึง <b>${baht(mxDay, mxDay % 1 ? 2 : 0)}</b> · ทั้งสัปดาห์ไม่เกิน <b>${baht(wz.daily * 7, 0)}</b></div>` : ""}
+      ${estHtml()}
       <label class="f">ยิงกี่วัน</label><div class="chips">${[1, 3, 5, 7, 14, 0].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v ? `${v} วัน` : "ไม่กำหนด"}</button>`).join("")}</div>
       ${box}${note}
       <label class="f">เริ่มแอดเมื่อไหร่</label><div class="chips">
@@ -1665,11 +1807,14 @@
         ${!startOk() ? '<div class="note warn">เลือกวันเวลาที่ยังไม่ผ่านไป</div>' : `<div class="note info">แอดจะเริ่มวิ่ง ${esc(thDateTime(startIso()))} (หลัง Facebook ตรวจผ่าน)</div>`}` : ""}`;
   }
   function stepAudience() {
-    const [amin, amax] = wz.info?.age_limits || [18, 65];
+    const [amin, amax] = wz.info?.age_limits || [20, 65];
+    if (wz.ageMin < amin) wz.ageMin = amin;
+    if (wz.ageMax < wz.ageMin) wz.ageMax = wz.ageMin;
     geoInit();
     const opts = (sel) => Array.from({ length: amax - amin + 1 }, (_, i) => amin + i).map((a) => `<option value="${a}" ${a === sel ? "selected" : ""}>${a === amax ? a + "+" : a} ปี</option>`).join("");
     const exc = wz.geoMode === "exc";
     let b = `<div class="wz-q">ให้ใครเห็น?</div>
+      <div id="reachBox">${reachHtml()}</div>
       <div class="sec">📍 ตำแหน่ง</div>
       <div class="seg gmode"><button data-gmode="inc" class="${exc ? "" : "on"}">✅ รวม</button><button data-gmode="exc" class="${exc ? "on" : ""}">⛔ ไม่รวม</button></div>
       <input class="inp" id="geoQ" autocomplete="off" placeholder="${exc ? "ค้นหาพื้นที่ที่จะไม่แสดง" : "ค้นหาจังหวัด / อำเภอ เช่น กำแพงเพชร"}" value="${esc(wz.gq)}"><div class="ires" id="geoRes"></div>
@@ -1681,7 +1826,7 @@
       <div class="wz-hint" style="margin-top:8px">ลากหมุดบนแผนที่เพื่อขยับได้ · วงกลม = รัศมีที่แอดจะแสดง</div>
       <label class="f">ช่วงอายุ</label>
       <div class="agerow"><select class="inp" id="wzAgeMin">${opts(wz.ageMin)}</select><span>ถึง</span><select class="inp" id="wzAgeMax">${opts(wz.ageMax)}</select></div>
-      <div class="note info">Facebook จะส่งแอดให้เฉพาะคนอายุ ${ageText()} เท่านั้น</div>
+      <div class="note info">Facebook จะส่งแอดให้เฉพาะคนอายุ ${ageText()} เท่านั้น · ในไทย Meta ไม่แสดงแอดกับคนอายุต่ำกว่า 20 ปี</div>
       <label class="f">เพศ</label><div class="chips">${[["all", "ทุกเพศ"], ["male", "ชาย"], ["female", "หญิง"]].map(([k, t]) => `<button class="chip2 ${wz.gender === k ? "sel" : ""}" data-gender="${k}">${t}</button>`).join("")}</div>
       <label class="f" for="wzIq">ความสนใจ (ไม่ใส่ก็ได้)</label>
       <div>${wz.interests.map((x, i) => `<span class="tag">${esc(x.name)}<button data-rmi="${i}" aria-label="ลบ">×</button></span>`).join("")}</div>
@@ -1692,9 +1837,9 @@
         <div>${wz.excludes.map((x, i) => `<span class="tag">${esc(x.name)}<button data-rmx="${i}" aria-label="ลบ">×</button></span>`).join("")}</div>
         <input class="inp" id="wzXq" autocomplete="off" placeholder="พิมพ์ค้นหา" value="${esc(wz.xq)}"><div class="ires" id="wzXres"></div></details>
       <div class="sec">📍 แสดงแอดที่ไหน</div>
-      <div class="chips"><button class="chip2 ${wz.placeMode === "auto" ? "sel" : ""}" data-place="auto">อัตโนมัติ (แนะนำ)</button><button class="chip2 ${wz.placeMode === "manual" ? "sel" : ""}" data-place="manual">เลือกเอง</button></div>
+      ${autoPlace() ? `<div class="note info">แอด "${GOAL_INFO[wz.goal].t}": Meta ให้เลือกตำแหน่งแสดงอัตโนมัติเท่านั้นแล้ว แอดจะขึ้นทั้ง Facebook, Instagram และ Messenger ตามที่ได้ผลดี</div>` : `<div class="chips"><button class="chip2 ${wz.placeMode === "auto" ? "sel" : ""}" data-place="auto">อัตโนมัติ (แนะนำ)</button><button class="chip2 ${wz.placeMode === "manual" ? "sel" : ""}" data-place="manual">เลือกเอง</button></div>
       ${wz.placeMode === "manual" ? `<div class="chips">${Object.entries(PLAT_TH).map(([k, t]) => `<button class="chip2 ${wz.platforms.includes(k) ? "sel" : ""}" data-plat="${k}">${wz.platforms.includes(k) ? "✓ " : ""}${t}</button>`).join("")}</div>
-        ${!placeOk() ? '<div class="note warn">ต้องเลือก Facebook หรือ Instagram อย่างน้อย 1 อย่าง (Messenger ต้องคู่กับ Facebook)</div>' : ""}` : '<div class="wz-hint" style="margin:6px 0 0">Facebook เลือกตำแหน่งให้เอง ทั้ง Facebook, Instagram และ Messenger</div>'}
+        ${!placeOk() ? '<div class="note warn">ต้องเลือก Facebook หรือ Instagram อย่างน้อย 1 อย่าง (Messenger ต้องคู่กับ Facebook)</div>' : ""}` : '<div class="wz-hint" style="margin:6px 0 0">Facebook เลือกตำแหน่งให้เอง ทั้ง Facebook, Instagram และ Messenger</div>'}`}
       ${igNote()}`;
     return b;
   }
@@ -1724,7 +1869,9 @@
     const u = upOf(A), cv = coverOf(A);
     const thumb = cv ? (cv.kind === "image" ? cv.preview : cv.url) : u ? (u.kind === "image" ? u.preview : u.thumb) : wz.post?.picture;
     const mediaLbl = list.length > 1 ? `${list.length} แบบ (${TAGS.slice(0, list.length).join(", ")}) ทดสอบในงบเดียวกัน` : A.src === "library" ? "วิดีโอเดิมในบัญชีโฆษณา" : A.src === "upload" ? (u?.kind === "video" ? "วิดีโอที่อัปโหลด" : "รูปที่อัปโหลด") : isBoost() ? "ดันโพสต์เดิม" : A.post?.video ? "วิดีโอจากโพสต์" : "รูปจากโพสต์";
-    const placeTxt = wz.placeMode === "auto" ? "อัตโนมัติ (Facebook เลือกให้)" : wz.platforms.map((k) => PLAT_TH[k]).join(" + ");
+    const placeTxt = wz.placeMode === "auto" || autoPlace() ? "อัตโนมัติ (Facebook เลือกให้)" : wz.platforms.map((k) => PLAT_TH[k]).join(" + ");
+    if (st.adv === undefined) { st.adv = null; api("/api/advertiser").then((r) => { st.adv = !!r.ok; }).catch(() => { st.adv = undefined; }).finally(() => { if (wz.step === LAST) renderWizard(); }); }
+    const advTxt = st.adv === true ? "✅ ยืนยันตัวตนแล้ว (ระบบใส่ให้เอง)" : st.adv === false ? "⚠️ ยังหาไม่เจอ" : "กำลังเช็ก…";
     const form = (wz.forms || []).find((f) => f.id === wz.form_id);
     const text = isBoost() ? A.post?.message : (A.message.trim() || A.post?.message || "");
     const needs = allNeeds();
@@ -1750,11 +1897,18 @@
         <div><span>เพศ</span><b>${{ all: "ทุกเพศ", male: "ชาย", female: "หญิง" }[wz.gender]}</b></div>
         <div><span>ความสนใจ</span><b style="text-align:right">${wz.interests.length ? esc(wz.interests.map((x) => x.name).join(", ")) : "ไม่จำกัด"}</b></div>
         ${wz.excludes.length ? `<div><span>ไม่แสดงให้</span><b style="text-align:right">${esc(wz.excludes.map((x) => x.name).join(", "))}</b></div>` : ""}
-        <div><span>แสดงที่</span><b style="text-align:right">${esc(placeTxt)}${wz.ig && (wz.placeMode === "auto" || wz.platforms.includes("instagram")) ? `<br><span style="font-weight:400;color:var(--mute)">IG: @${esc(wz.ig.username)}</span>` : ""}</b></div>
+        <div><span>แสดงที่</span><b style="text-align:right">${esc(placeTxt)}${wz.ig && (wz.placeMode === "auto" || autoPlace() || wz.platforms.includes("instagram")) ? `<br><span style="font-weight:400;color:var(--mute)">IG: @${esc(wz.ig.username)}</span>` : ""}</b></div>
         ${wz.goal === "chat" ? `<div><span>ทักทายในแชต</span><b style="white-space:pre-wrap;text-align:right">${esc(wz.welcome.trim() || WELCOME)}</b></div>
         ${faqList().length ? `<div><span>คำถามที่พบบ่อย</span><b style="text-align:right">${faqList().map((f) => esc(f.q) + (f.a ? `<br><span style="font-weight:400;color:var(--mute)">→ ${esc(f.a)}</span>` : "")).join("<br>")}</b></div>` : ""}` : ""}
         <div><span>เริ่ม – จบ</span><b>${startIso() ? esc(thDateTime(startIso())) : "ทันทีหลัง Facebook ตรวจผ่าน"} – ${wz.days ? `อีก ${wz.days} วัน` : "ไม่กำหนด (กดหยุดเองในแอป)"}</b></div>
+        ${wz.goal === "reach" ? '<div><span>ความถี่</span><b>คนเดิมเห็นไม่เกิน 2 ครั้ง / 7 วัน</b></div>' : ""}
+        <div><span>แสดงรวมแอดอื่น</span><b>${wz.multiAds ? "เปิด" : "ปิด"}</b></div>
+        <div><span>ผู้ลงโฆษณา</span><b style="text-align:right">${advTxt}</b></div>
       </div>
+      ${st.adv === false ? '<div class="note warn">ยังหาผู้ลงโฆษณาที่ยืนยันตัวตนแล้ว (หจก.) ไม่เจอ แอดที่ยิงในไทยอาจไม่แสดง — แจ้งผู้ดูแลระบบให้ตั้งค่า NADS_TH_IDENTITY ก่อนยิง</div>' : ""}
+      <div class="sec">⚙️ ตัวเลือกเพิ่ม</div>
+      <label class="tgl"><input type="checkbox" id="wzMulti" ${wz.multiAds ? "checked" : ""}><span><b>แสดงรวมกับแอดของธุรกิจอื่น</b> (โฆษณาจากผู้โฆษณาหลายราย)
+        <small>เปิด = Meta อาจนำแอดเราไปแสดงในหน่วยโฆษณาเดียวกับแอดอื่น (อาจเป็นคู่แข่ง) และอาจย่อหรือครอบตัดรูป · ปิดไว้ = ไม่แสดงรวม (แนะนำ)</small></span></label>
       <div class="sec">✔️ เช็กก่อนยิง</div>
       ${(() => { const ck = allChecks(); return ck.length ? `<div class="card" style="padding:6px 12px">${ckList(ck)}</div>` : '<div class="note ok">✅ ไม่พบจุดที่ควรแก้</div>'; })()}
       <div class="sec">👁 ตัวอย่างแอด</div>
@@ -1894,7 +2048,29 @@
       wz.welcome = t; renderWizard();
     });
     on("wzAi", "onclick", () => aiOpen(true));
-    on("wzAiCoach", "onclick", () => { AI.suggest = `ช่วยดูขั้น "${STEP_NAMES[wz.step]}" ของแอดที่กำลังทำให้หน่อย ควรตั้งยังไง`; aiOpen(true); });
+    on("wzAiCoach", "onclick", () => { AI.suggest = `ช่วยสอนขั้น "${STEP_NAMES[wz.step]}" ของแอดที่กำลังทำ แบบจับมือทำ มีตัวอย่าง ✅/❌ ควรตั้งยังไง`; aiOpen(true); });
+    on("wzTpl", "onclick", () => {
+      wz.msgUndo = { message: wz.message, headline: wz.headline, welcome: wz.welcome };
+      wz.message = MSG_TPL(wz.goal);
+      if (!wz.headline.trim()) wz.headline = HEAD_TPL;
+      if (wz.goal === "chat" && (!wz.welcome.trim() || wz.welcome.trim() === WELCOME.trim())) wz.welcome = WEL_TPL;
+      renderWizard(); toast("ใส่แม่แบบแล้ว — เปลี่ยนช่อง [ ] เป็นข้อมูลจริงของทรัพย์", 3500);
+    });
+    on("wzUndo", "onclick", () => { if (wz.msgUndo) Object.assign(wz, wz.msgUndo); wz.msgUndo = null; renderWizard(); });
+    on("wzAiWrite", "onclick", async () => {
+      await aiOpen(true);
+      const t = $("aiInp");
+      t.value = `ช่วยเขียนข้อความโฆษณา (เป้าหมาย: ${GOAL_INFO[wz.goal].t}) ให้ 2–3 แบบ บรรทัดแรกต้องมีประเภททรัพย์+ทำเล+ราคา และหัวข้อสั้น 1 บรรทัด${wz.goal === "chat" ? " กับข้อความทักทายในแชตที่ถามคัดลูกค้า" : ""}
+ข้อมูลทรัพย์:
+ประเภท: 
+ทำเล: 
+ราคา: 
+ขนาด: 
+จุดเด่น: `;
+      t.dispatchEvent(new Event("input")); t.focus();
+      toast("เติมข้อมูลทรัพย์จริงหลังเครื่องหมาย : แล้วกดส่ง", 3500);
+    });
+    on("wzMulti", "onchange", (e) => { wz.multiAds = e.target.checked; renderWizard(); });
     on("wzAddName", "onclick", () => {
       const t = $("wzWel"), at = t.selectionStart ?? t.value.length;
       t.value = t.value.slice(0, at) + NAME_TAG + t.value.slice(t.selectionEnd ?? at); wz.welcome = t.value;
@@ -1904,7 +2080,7 @@
     box.querySelectorAll("[data-fa]").forEach((el) => el.oninput = () => { wz.faq[Number(el.dataset.fa)].a = el.value; refreshNext(); });
     on("igRe", "onclick", () => { wz.ig = undefined; wz.igFor = null; renderWizard(); });
     if (n === 5) {
-      mountMap(); drawGeoRes();
+      mountMap(); drawGeoRes(); reachTick();
       box.querySelectorAll("[data-gmode]").forEach((el) => el.onclick = () => { wz.geoMode = el.dataset.gmode; renderWizard(); });
       on("geoQ", "oninput", (e) => { wz.gq = e.target.value; geoSearch(wz.gq); });
       box.querySelectorAll("[data-gact]").forEach((el) => el.onclick = () => {
@@ -2047,7 +2223,8 @@
     out.push(`พื้นที่: ${areaSum()}${wz.geoExc.length ? " (ยกเว้น " + wz.geoExc.map(geoName).join(", ") + ")" : ""} · อายุ ${ageText()} · เพศ ${{ all: "ทั้งหมด", male: "ชาย", female: "หญิง" }[wz.gender] || wz.gender}`);
     if (wz.interests.length) out.push("ความสนใจ: " + wz.interests.map((x) => x.name).join(", "));
     if (wz.excludes.length) out.push("ไม่รวมคนที่สนใจ: " + wz.excludes.map((x) => x.name).join(", "));
-    out.push(`ตำแหน่ง: ${wz.placeMode === "auto" ? "อัตโนมัติ" : wz.platforms.join(", ")} · ชื่อแอด: ${wz.name || "-"} · อยู่ขั้น: ${STEP_NAMES[wz.step] || "-"}`);
+    out.push(`ตำแหน่ง: ${wz.placeMode === "auto" || autoPlace() ? "อัตโนมัติ" : wz.platforms.join(", ")} · แสดงรวมแอดอื่น: ${wz.multiAds ? "เปิด" : "ปิด"} · ชื่อแอด: ${wz.name || "-"} · อยู่ขั้น: ${STEP_NAMES[wz.step] || "-"}`);
+    if (wz.reach?.upper) out.push(`ขนาดกลุ่มคนโดยประมาณ (Facebook): ${int(wz.reach.lower)}–${int(wz.reach.upper)} คน`);
     return out.join("\n").slice(0, 3800);
   }
   { const av = $("aiFab").querySelector(".av"); av.classList.add("bot-av"); av.innerHTML = BOT_SVG(true); document.querySelector(".ai-hd .av").innerHTML = BOT_SVG(false); }
@@ -2068,6 +2245,26 @@
     st.best = null; renderPastBest();
     try { st.best = (await api("/api/best-ads")).items; } catch (e) { st.best = { err: e.message }; }
     renderPastBest();
+  }
+  // ---------- คะแนนโอกาส + คำแนะนำของ Meta (ดูอย่างเดียว) ----------
+  async function loadOpp() {
+    st.opp = null; renderOpp();
+    try { st.opp = await api("/api/opportunity"); } catch (e) { st.opp = { err: e.message }; }
+    renderOpp();
+  }
+  function renderOpp() {
+    const el = $("oppCard"); if (!el) return;
+    if (st.opp === undefined) return void loadOpp();
+    if (st.opp === null) { el.innerHTML = '<div class="empty">กำลังดูคะแนนจาก Meta…</div>'; return; }
+    if (st.opp.err) { el.innerHTML = `<div class="empty">${esc(st.opp.err)}</div>`; return; }
+    const score = st.opp.score, recs = st.opp.recs || [];
+    if (score === null && !recs.length) { el.innerHTML = '<div class="empty">Meta ยังไม่มีคะแนนหรือคำแนะนำให้บัญชีนี้</div>'; return; }
+    const col = score === null ? "var(--mute)" : score >= 80 ? "var(--green)" : score >= 50 ? "var(--amber)" : "var(--red)";
+    const link = recs.find((r) => r.url)?.url;
+    el.innerHTML = `<div class="opp"><div class="ring" style="--p:${score ?? 0};--c:${col}"><b>${score ?? "-"}</b><span>/100</span></div>
+      <div class="t"><b>คะแนนโอกาส</b><span>ยิ่งสูง = ตั้งค่าตามที่ Meta แนะนำมากขึ้น ไม่ต้องไล่ให้ถึง 100</span></div></div>
+      ${recs.slice(0, 3).map((r) => `<div class="rec"><div class="rb">${esc(r.body || r.type)}${r.lift ? `<small>${esc(r.lift)}</small>` : ""}</div>${r.points ? `<span class="pts">+${r.points}</span>` : ""}</div>`).join("")}
+      <div class="help" style="margin:8px 0 0">${recs.length ? "คำแนะนำจาก Meta · แอปไม่กดใช้ให้อัตโนมัติ เลือกทำเฉพาะข้อที่เหมาะกับทรัพย์และงบ" : "ตอนนี้ไม่มีคำแนะนำเพิ่ม"}${link ? ` · <a href="${esc(link)}" target="_blank" rel="noopener">ดูใน Ads Manager</a>` : ""}</div>`;
   }
   function renderPastBest() {
     const el = $("pastBest"); if (!el) return;
@@ -2144,10 +2341,21 @@
     if (path.startsWith("/api/page-info")) return Promise.resolve({ instagram: { id: "1", username: "n.property.network" } });
     if (path.startsWith("/api/geo/search")) return Promise.resolve({ items: [{ kind: "region", key: "2681", name: "จังหวัดกำแพงเพชร (ตัวอย่าง)", region: "", region_id: "" }, { kind: "city", key: "1675383", name: "อำเภอเมืองกำแพงเพชร (ตัวอย่าง)", region: "จังหวัดกำแพงเพชร", region_id: "2681" }] });
     if (path.startsWith("/api/targeting/search")) return Promise.resolve({ items: [{ id: "6003014261718", name: "อสังหาริมทรัพย์", size_min: 1e6, size_max: 2e6, path: "ความสนใจ › ธุรกิจ" }, { id: "6003020834693", name: "การซื้อบ้าน", size_min: 3e5, size_max: 5e5, path: "ความสนใจ › บ้านและสวน" }] });
-    if (path === "/api/preview") return Promise.resolve({ previews: [] });
+    if (path === "/api/preview") return Promise.resolve({ previews: [], advertiser_ok: true });
+    if (path === "/api/advertiser") return Promise.resolve({ ok: true });
+    if (path === "/api/reach") {
+      const g = (opts.body?.geo?.include || []), km = g.reduce((a, x) => a + (x.kind === "pin" ? x.radius_km * x.radius_km * 90 : x.kind === "country" ? 5e6 : 6e4), 0);
+      const span = Math.max(0.3, ((opts.body?.age_max || 65) - (opts.body?.age_min || 20)) / 45) * (opts.body?.interests?.length ? 0.35 : 1);
+      const lo = Math.round(Math.max(1000, km * span) / 100) * 100;
+      return new Promise((r) => setTimeout(() => r({ lower: lo, upper: Math.round(lo * 1.18 / 100) * 100, ready: true }), 350));
+    }
+    if (path === "/api/benchmarks") return Promise.resolve({ days: 30, goals: { chat: { spend: 4500, count: 42, cpr: 107.14, label: "ทักแชต" }, lead: { spend: 960, count: 12, cpr: 80, label: "ลีด" }, reach: { spend: 900, count: 61000, cpr: 0.0148, label: "คนเห็น" } } });
+    if (path === "/api/opportunity") return Promise.resolve({ score: 90, recs: [
+      { type: "BUDGET", body: "เพิ่มงบชุดโฆษณา 1 ชุดที่งบจำกัดผลลัพธ์ (ตัวอย่าง)", lift: "ผลลัพธ์มากขึ้นจากงบเดิม", points: 9, url: "https://adsmanager.facebook.com/" },
+      { type: "MEDIA", body: "ใส่ทั้งวิดีโอและรูปในชุดโฆษณาเดียวกัน (ตัวอย่าง)", lift: "", points: 1, url: "" }] });
     if (path === "/api/create-ad") return new Promise((r) => setTimeout(() => r({ ok: true, ad_id: "demo" }), 900));
     if (path === "/api/pages") return Promise.resolve({ pages: [{ id: "1", name: "N Property Network (ตัวอย่าง)", picture: null }, { id: "2", name: "เพจที่สอง (ตัวอย่าง)", picture: null }],
-      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", center: [16.473, 99.523], city_radius: [17, 80], max_geo: 20, presets: [1, 3, 5, 10, 25, 50, 80], radius_range: [1, 80], age_limits: [18, 65], max_faq: 3, max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
+      default_page: "1", center_name: "ตัวเมืองกำแพงเพชร", center: [16.473, 99.523], city_radius: [17, 80], max_geo: 20, presets: [1, 3, 5, 10, 25, 50, 80], radius_range: [1, 80], age_limits: [20, 65], max_faq: 3, max_upload_mb: 50, max_video_mb: 4096, direct_video_mb: 45 });
     if (path.startsWith("/api/forms")) return Promise.resolve({ forms: [{ id: "55", name: "ฟอร์มฝากขายบ้าน (ตัวอย่าง)" }] });
     if (path === "/api/team") {
       const ago = (h) => new Date(Date.now() - h * 3600e3).toISOString();
