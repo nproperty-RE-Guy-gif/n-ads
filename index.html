@@ -506,6 +506,7 @@
   .adx-hd .th.lg{width:76px;height:76px;flex-basis:76px}
   .adx-t{flex:1;min-width:0} .adx-t h3{margin:0 0 6px;font-size:18px;line-height:1.35}
   .adx-t .am{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:var(--mute);align-items:center}
+  .gw{color:var(--amber);font-weight:600}
   .adx-seg{margin-bottom:12px}
   .verdict{border-left:5px solid var(--grey);background:var(--card2);border-radius:12px;padding:12px 14px;margin-bottom:12px}
   .verdict b{display:block;font-family:var(--disp);font-size:22px;line-height:1.2} .verdict span{display:block;font-size:14px;color:var(--mute);margin-top:2px}
@@ -842,7 +843,7 @@
     const on = a.effective_status === "ACTIVE", bad = ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status);
     const btn = !canAds ? "" : on ? `<button class="btn grey" data-act="pause" data-id="${esc(a.ad_id)}">หยุดแอด</button>`
       : a.status === "PAUSED" ? `<button class="btn" data-act="resume" data-id="${esc(a.ad_id)}">เปิดแอด</button>` : "";
-    return `<div class="arow"><button class="ai open" data-open="${esc(a.ad_id)}" aria-label="ดูบทวิเคราะห์แอด ${esc(a.ad_name)}">${thumbHtml(a)}<span class="aw"><b>${esc(a.ad_name)}</b><span class="am"><span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span><span>ใช้ไป ${baht(a.spend, 0)}</span><span>${a.results > 0 ? `${int(a.results)} ${esc(a.result_label)}` : `ยังไม่มี${esc(a.result_label)}`}</span>${a.cpr !== null ? `<span>${baht(a.cpr)} ต่อ${esc(a.result_label)}</span>` : ""}<span class="go">ดูบทวิเคราะห์</span></span></span></button>${btn}</div>`;
+    return `<div class="arow"><button class="ai open" data-open="${esc(a.ad_id)}" aria-label="ดูบทวิเคราะห์แอด ${esc(a.ad_name)}">${thumbHtml(a)}<span class="aw"><b>${esc(a.ad_name)}</b><span class="am"><span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span><span>ใช้ไป ${baht(a.spend, 0)}</span><span>${a.results > 0 ? `${int(a.results)} ${esc(a.result_label)}` : `ยังไม่มี${esc(a.result_label)}`}</span>${a.cpr !== null ? `<span>${baht(a.cpr)} ต่อ${esc(a.result_label)}</span>` : ""}${a.goal_warn ? `<span class="gw">⚠️ เป้าหมายไม่ใช่ทักแชต</span>` : ""}<span class="go">ดูบทวิเคราะห์</span></span></span></button>${btn}</div>`;
   }
 
   // ---------- แสดงผล ----------
@@ -928,7 +929,7 @@
         <span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span></div>
         <div class="st"><div><b>${baht(a.spend)}</b><span>ใช้ไป</span></div><div><b>${int(a.results)}</b><span>${esc(a.result_label)}</span></div>
         <div><b>${a.cpr === null ? "-" : baht(a.cpr)}</b><span>ต่อผล</span></div><div><b>${int(a.impressions)}</b><span>เห็น</span></div></div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="grade"><i class="dot g-${a.grade}"></i> ${esc(a.grade_label)}</span><button class="more" data-open="${esc(a.ad_id)}">ดูบทวิเคราะห์</button><span style="flex:1"></span>${btn ? `<div style="width:150px;display:flex">${btn}</div>` : ""}</div></div>`;
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="grade"><i class="dot g-${a.grade}"></i> ${esc(a.grade_label)}</span>${a.goal_warn ? `<span class="gw">⚠️ เป้าหมายไม่ใช่ทักแชต</span>` : ""}<button class="more" data-open="${esc(a.ad_id)}">ดูบทวิเคราะห์</button><span style="flex:1"></span>${btn ? `<div style="width:150px;display:flex">${btn}</div>` : ""}</div></div>`;
     }).join("") : '<div class="card empty">ไม่มีแอดที่วิ่งอยู่หรือหยุดไว้ล่าสุด</div>';
 
     fillSys(settings);
@@ -972,6 +973,7 @@
   // ---------- บทวิเคราะห์รายแอด (คิดจากข้อมูลที่ระบบดึงอยู่แล้ว + ต้นทุนเฉลี่ย 30 วันของบัญชี) ----------
   const GOAL_OF_LABEL = { "ทักแชต": "chat", "ลีด": "lead", "คลิกลิงก์": "traffic", "เข้าเว็บ": "traffic", "คนเห็น": "reach" };
   const RLAB = { today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วันที่ผ่านมา" };
+  const RIN = { today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "ช่วง 7 วันที่ผ่านมา" };
   const pct1 = (x) => (Math.round(x * 10) / 10).toLocaleString("en-US");
   async function ovFor(r) {
     if (r === st.range && st.data?.snap) return st.data;
@@ -988,7 +990,7 @@
     m.freq = m.reach > 0 ? m.imp / m.reach : null; m.ctr = m.imp > 0 ? (m.clicks / m.imp) * 100 : null; m.cpm = m.imp > 0 ? (m.spend / m.imp) * 1000 : null;
     const b = bench?.[GOAL_OF_LABEL[m.label]] ?? null, bcpr = b && b.cpr > 0 ? b.cpr : null;
     const why = [], tips = []; let main;
-    if (m.spend < 1 && m.imp === 0) return { m, b: bcpr, level: "idle", title: "ยังไม่วิ่งในช่วงนี้", sub: `ช่วง${RLAB[range]} แอดนี้ยังไม่ได้ใช้เงิน (อาจหยุดอยู่ หรือเพิ่งเริ่ม)`, why, tips };
+    if (m.spend < 1 && m.imp === 0) return { m, b: bcpr, level: "idle", title: "ยังไม่วิ่งในช่วงนี้", sub: `${RIN[range]} แอดนี้ยังไม่ได้ใช้เงิน (อาจหยุดอยู่ หรือเพิ่งเริ่ม)`, why, tips };
     // 1) ผลลัพธ์เทียบต้นทุนเฉลี่ยบัญชี
     if (m.res > 0) {
       if (bcpr) {
@@ -1026,15 +1028,20 @@
     if (main === "wait") tips.push("แอดใหม่ควรให้วิ่ง 3–7 วันก่อนตัดสิน ช่วงแรกระบบ Meta ยังเรียนรู้อยู่");
     if (main === "good" && !freqHigh) tips.push("วิ่งดีอยู่ ถ้ายังมีงบลองเพิ่มทีละน้อย (ราว 20–30%) แล้วดูผล 2–3 วัน");
     if (main === "ok" && !tips.length) tips.push("ต้นทุนพอ ๆ กับค่าเฉลี่ย ลองทำแบบ B (รูปหรือข้อความใหม่) มาแข่งกับตัวนี้ แล้วเก็บตัวที่ต้นทุนถูกกว่า");
-    const level = main === "bad" ? "bad" : main === "wait" ? "wait" : main === "good" && !freqHigh && !ctrLow ? "good" : "ok";
+    // 5) ตั้งเป้าหมายไม่ตรงกับการหาคนทัก (เช่น "การซื้อผ่านแชต")
+    if (a.goal_warn) {
+      why.unshift({ l: "warn", t: a.goal_warn });
+      tips.unshift(`ยิงแอดใหม่ เลือกเป้าหมาย "ทักแชต" ใช้รูปและข้อความเดิม พอแอดใหม่ผ่านการตรวจแล้วค่อยปิดตัวนี้`);
+    }
+    const level = main === "bad" ? "bad" : main === "wait" ? "wait" : main === "good" && !freqHigh && !ctrLow && !a.goal_warn ? "good" : "ok";
     const T = { good: "วิ่งดี", ok: "พอใช้", bad: "ควรปรับ", wait: "รอดูผลก่อน" }[level];
-    const sub = level === "good" ? "ต้นทุนดีกว่าค่าเฉลี่ยของบัญชี" : level === "bad" ? "ต้นทุนสูงหรือยังไม่มีผล ลองปรับตามด้านล่าง" : level === "wait" ? "ใช้เงินยังน้อย ข้อมูลยังไม่พอจะสรุป" : "ไม่แย่ แต่มีจุดที่ปรับให้ดีขึ้นได้";
+    const sub = a.goal_warn && level !== "good" ? "ตั้งเป้าหมายแอดไม่ตรงกับการหาคนทัก ดูข้อแรกด้านล่าง" : level === "good" ? "ต้นทุนดีกว่าค่าเฉลี่ยของบัญชี" : level === "bad" ? "ต้นทุนสูงหรือยังไม่มีผล ลองปรับตามด้านล่าง" : level === "wait" ? "ใช้เงินยังน้อย ข้อมูลยังไม่พอจะสรุป" : "ไม่แย่ แต่มีจุดที่ปรับให้ดีขึ้นได้";
     return { m, b: bcpr, level, title: T, sub, why, tips };
   }
   async function openAdDetail(id, range) {
     range = range || "last_7d";
     const base = st.data.snap.ads.find((x) => x.ad_id === id); if (!base) return;
-    const head = `<div class="adx-hd">${thumbHtml(base, "th lg")}<div class="adx-t"><h3>${esc(base.ad_name)}</h3><div class="am"><span class="pill ${base.effective_status === "ACTIVE" ? "p-on" : "p-off"}">${esc(base.status_label)}</span>${base.campaign_name ? `<span>${esc(base.campaign_name)}</span>` : ""}</div></div></div>
+    const head = `<div class="adx-hd">${thumbHtml(base, "th lg")}<div class="adx-t"><h3>${esc(base.ad_name)}</h3><div class="am"><span class="pill ${base.effective_status === "ACTIVE" ? "p-on" : "p-off"}">${esc(base.status_label)}</span>${base.goal_label ? `<span class="${base.goal_warn ? "gw" : ""}">${base.goal_warn ? "⚠️ " : ""}เป้าหมาย: ${esc(base.goal_label)}</span>` : ""}${base.campaign_name ? `<span>${esc(base.campaign_name)}</span>` : ""}</div></div></div>
       <div class="seg adx-seg" id="adxSeg">${["today", "yesterday", "last_7d"].map((r) => `<button data-r="${r}" class="${r === range ? "on" : ""}">${{ today: "วันนี้", yesterday: "เมื่อวาน", last_7d: "7 วัน" }[r]}</button>`).join("")}</div>`;
     sheet(`<div class="adx">${head}<div id="adxBody"><div class="empty">กำลังวิเคราะห์…</div></div></div>`);
     $("adxSeg").onclick = (e) => { const b = e.target.closest("button[data-r]"); if (b) openAdDetail(id, b.dataset.r); };
@@ -1042,7 +1049,7 @@
       const [d, bench, d7] = await Promise.all([ovFor(range), benchGoals(), range === "today" ? ovFor("last_7d").catch(() => null) : Promise.resolve(null)]);
       if (!$("adxBody")) return;
       const a = d.snap?.ads.find((x) => x.ad_id === id);
-      if (!a) { $("adxBody").innerHTML = `<div class="verdict v-idle"><b>ไม่มีข้อมูลช่วง${RLAB[range]}</b><span>แอดนี้ไม่ได้วิ่งหรือใช้เงินในช่วงนี้ ลองเลือกช่วงอื่น</span></div><div class="row2"><button class="btn grey" id="adxClose">ปิด</button></div>`; $("adxClose").onclick = closeSheet; return; }
+      if (!a) { $("adxBody").innerHTML = `<div class="verdict v-idle"><b>ไม่มีข้อมูล${RIN[range]}</b><span>แอดนี้ไม่ได้วิ่งหรือใช้เงินในช่วงนี้ ลองเลือกช่วงอื่น</span></div><div class="row2"><button class="btn grey" id="adxClose">ปิด</button></div>`; $("adxClose").onclick = closeSheet; return; }
       const r = analyzeAd(a, bench, range, d7?.snap?.ads.find((x) => x.ad_id === id), d.settings), m = r.m;
       const cell = (k, v, s = "") => `<div><span>${k}</span><b>${v}</b>${s ? `<small>${s}</small>` : ""}</div>`;
       const mx = r.b && m.cpr ? Math.max(m.cpr, r.b) : 0;
@@ -1059,7 +1066,7 @@
         <div class="row2"><button class="btn grey" id="adxClose">ปิด</button><button class="btn" id="adxAi">ให้ผู้ช่วยวิเคราะห์ละเอียด</button></div>`;
       $("adxClose").onclick = closeSheet;
       $("adxAi").onclick = () => {
-        const q = `ช่วยวิเคราะห์แอด "${a.ad_name}" ช่วง${RLAB[range]}: ใช้ไป ${baht(m.spend, 0)}, คนเห็น ${int(m.reach)} คน, เห็นทั้งหมด ${int(m.imp)} ครั้ง${m.freq !== null ? ` (ซ้ำเฉลี่ย ${pct1(m.freq)} ครั้ง/คน)` : ""}, คลิก ${int(m.clicks)}${m.ctr !== null ? ` (${pct1(m.ctr)}%)` : ""}, ${m.label} ${int(m.res)}${m.cpr !== null ? ` ต้นทุน ${baht(m.cpr)}/ครั้ง` : ""}${r.b ? `, ค่าเฉลี่ยบัญชี 30 วัน ${baht(r.b)}/${m.label}` : ""} ตอนนี้วิ่งเป็นยังไง ควรปรับอะไร`;
+        const q = `ช่วยวิเคราะห์แอด "${a.ad_name}" (${RLAB[range]}) เป้าหมายที่ตั้งในชุดโฆษณา: ${a.goal_label || "ไม่ทราบ"}${a.goal_warn ? " (ไม่ใช่เป้าหมายทักแชต)" : ""} · ใช้ไป ${baht(m.spend, 0)}, คนเห็น ${int(m.reach)} คน, เห็นทั้งหมด ${int(m.imp)} ครั้ง${m.freq !== null ? ` (ซ้ำเฉลี่ย ${pct1(m.freq)} ครั้ง/คน)` : ""}, คลิก ${int(m.clicks)}${m.ctr !== null ? ` (${pct1(m.ctr)}%)` : ""}, ${m.label} ${int(m.res)}${m.cpr !== null ? ` ต้นทุน ${baht(m.cpr)}/ครั้ง` : ""}${r.b ? `, ค่าเฉลี่ยบัญชี 30 วัน ${baht(r.b)}/${m.label}` : ""} ตอนนี้วิ่งเป็นยังไง ควรปรับอะไร`;
         closeSheet(); aiOpen(false).then(() => aiSend(q));
       };
     } catch (e) { if ($("adxBody")) $("adxBody").innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
@@ -2610,7 +2617,8 @@
       const DTH = { 1: dpic("#7FB3D5", "#5D8A4E"), 2: dpic("#A9CCE3", "#8DAA5B"), 3: dpic("#F5CBA7", "#7D6E5D"), 4: dpic("#D6EAF8", "#C4161C") };
       const ad = (id, name, camp, eff, spend, res, label, grade, gl, imp) => ({ ad_id: id, ad_name: name, campaign_name: camp, status: eff === "ACTIVE" ? "ACTIVE" : "PAUSED",
         effective_status: eff, status_label: { ACTIVE: "กำลังวิ่ง", PAUSED: "หยุดอยู่", DISAPPROVED: "ไม่ผ่านอนุมัติ" }[eff], spend: spend * k, impressions: imp * k, reach: imp * k * 0.7,
-        clicks: imp * k * 0.012, results: Math.round(res * k), result_label: label, cpr: res ? spend / res : null, grade, grade_label: gl, thumb: DTH[id] ?? null });
+        clicks: imp * k * 0.012, results: Math.round(res * k), result_label: label, cpr: res ? spend / res : null, grade, grade_label: gl, thumb: DTH[id] ?? null,
+        goal: label === "ลีด" ? "LEAD_GENERATION" : "CONVERSATIONS", goal_label: label === "ลีด" ? "เก็บเบอร์ (ฟอร์ม)" : "ทักแชต", goal_warn: null });
       const ads = [
         ad("1", "บ้านเดี่ยว นครชุม 1.89 ล้าน", "ทักแชต-บ้าน", "ACTIVE", 320, 7, "ทักแชต", "good", "คุ้ม", 9400),
         ad("2", "ที่ดินติดถนน 2 ไร่ คลองขลุง", "ทักแชต-ที่ดิน", "ACTIVE", 210, 0, "ทักแชต", "bad", "ใช้เงินแต่ยังไม่มีผล", 5200),
@@ -2618,6 +2626,7 @@
         ad("4", "รับฝากขายบ้าน กำแพงเพชร", "ลีด", "ACTIVE", 150, 3, "ลีด", "ok", "พอใช้", 3800),
         ad("5", "อาคารพาณิชย์ 3 ชั้น", "ทักแชต-บ้าน", "PAUSED", 0, 0, "ทักแชต", "idle", "ยังไม่ใช้เงิน", 0),
       ];
+      Object.assign(ads[1], { goal: "OFFSITE_CONVERSIONS", goal_label: "การซื้อผ่านแชต", goal_warn: 'เป้าหมายนี้ให้ Facebook หาคนที่จะ "ซื้อ" ในแชต ถ้าไม่ได้ส่งยอดซื้อกลับไปให้ Facebook ระบบจะไม่รู้ว่าใครซื้อ (ใน Ads Manager ผลลัพธ์มักเป็น 0) แอดขายทรัพย์ควรตั้งเป้าหมายเป็น "ทักแชต"' });
       const spend = ads.reduce((a, x) => a + x.spend, 0);
       const chats = ads.filter((a) => a.result_label === "ทักแชต").reduce((a, x) => a + x.results, 0);
       const chatSpend = ads.filter((a) => a.result_label === "ทักแชต" && a.results > 0).reduce((a, x) => a + x.spend, 0);
