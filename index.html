@@ -3,30 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2563EB">
+<meta name="theme-color" content="#242A35">
 <meta name="color-scheme" content="light">
 <title>N Ads Alert</title>
-<script>try{if(localStorage.getItem("nads_theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}</script>
+<script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ===== N Ads Alert · ธีมสว่าง ขาว-ฟ้า ===== */
+  /* ===== N Ads Alert · แบบหน้าปัดรถ (มืดเป็นค่าเริ่มต้น) + โหมดสว่างแดง-ขาว ===== */
   :root{
-    --pri:#2563EB;--pri-d:#1D4ED8;--navy:#1E3A8A;--pri-l:#EFF6FF;--pri-l2:#BFDBFE;
-    --ink:#111827;--mute:#4B5563;--line:#E5E7EB;--bg:#F5F5F7;--card:#FFFFFF;--card2:#F9FAFB;
-    --green:#15803D;--green-l:#DCFCE7;--amber:#B45309;--amber-l:#FEF3C7;--red:#DC2626;--red-l:#FEE2E2;--grey:#9CA3AF;
-    --solid:#2563EB;--hdr:linear-gradient(135deg,#1E40AF 0%,#2563EB 55%,#0EA5E9 100%);--shadow:0 1px 2px rgba(17,24,39,.05),0 4px 14px rgba(17,24,39,.06);--glow:0 6px 18px rgba(37,99,235,.28);
-    --r:18px;--side:0px;color-scheme:light;
+    --pri:#C4161C;--pri-d:#A31217;--navy:#1E1E24;--pri-l:#FDECEC;--pri-l2:#F5C2C4;
+    --ink:#1E1E24;--mute:#5E6470;--line:#DADDE2;--bg:#EEF0F2;--card:#FFFFFF;--card2:#F5F6F8;
+    --green:#17803D;--green-l:#E6F4EC;--amber:#B45309;--amber-l:#FEF3C7;--red:#C4161C;--red-l:#FDECEC;--grey:#8A909B;
+    --solid:#C4161C;--hdr:#FFFFFF;--shadow:0 0 0 1px #E1E4E8;--glow:none;
+    --g-track:#E1E4E8;--g-amber:#E08A00;--g-green:#17803D;--g-needle:#1E1E24;--g-hub:#1E1E24;
+    --disp:"Chakra Petch",Anuphan,system-ui,sans-serif;
+    --r:16px;--side:0px;color-scheme:light;
   }
-  /* โหมดกลางคืน */
   :root[data-theme="dark"]{
-    --pri:#60A5FA;--pri-d:#93C5FD;--navy:#BFDBFE;--pri-l:rgba(96,165,250,.14);--pri-l2:rgba(96,165,250,.32);
-    --ink:#E5E7EB;--mute:#9CA3AF;--line:#273248;--bg:#0B1220;--card:#131C2C;--card2:#1A2437;
-    --green:#4ADE80;--green-l:rgba(74,222,128,.14);--amber:#FBBF24;--amber-l:rgba(251,191,36,.14);--red:#F87171;--red-l:rgba(248,113,113,.15);--grey:#6B7280;
-    --solid:#2563EB;--hdr:linear-gradient(135deg,#1E3A8A 0%,#1D4ED8 55%,#0369A1 100%);--shadow:0 1px 2px rgba(0,0,0,.45);--glow:0 6px 18px rgba(0,0,0,.45);color-scheme:dark;
+    --pri:#FF7B80;--pri-d:#FFA3A6;--navy:#EEF1F5;--pri-l:rgba(239,59,65,.16);--pri-l2:rgba(239,59,65,.38);
+    --ink:#EEF1F5;--mute:#A3ACBB;--line:#353C4A;--bg:#1B1F27;--card:#242A35;--card2:#2E3442;
+    --green:#3DD68C;--green-l:rgba(61,214,140,.14);--amber:#FFB547;--amber-l:rgba(255,181,71,.14);--red:#FF6B70;--red-l:rgba(239,59,65,.16);--grey:#8A93A3;
+    --solid:#D9252B;--hdr:#242A35;--shadow:0 0 0 1px #353C4A;--glow:none;
+    --g-track:#353C4A;--g-amber:#FFB547;--g-green:#3DD68C;--g-needle:#FFFFFF;--g-hub:#EEF1F5;color-scheme:dark;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Prompt,system-ui,sans-serif;font-size:16px;line-height:1.5}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Anuphan,system-ui,sans-serif;font-size:16px;line-height:1.5}
   button,input,select{font:inherit;color:inherit}
   svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
   .hide{display:none!important}
@@ -308,7 +310,7 @@
 
   /* ไอคอนผู้ช่วย AI */
   .aiav{display:block;width:100%;height:100%}
-  .ai-pill{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:99px;padding:4px 14px 4px 4px;background:var(--solid);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,.3);white-space:nowrap}
+  .ai-pill{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:99px;padding:4px 14px 4px 4px;background:var(--solid);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(217,37,43,.3);white-space:nowrap}
   .ai-pill .aiav{width:28px;height:28px;border-radius:50%;border:1.5px solid #fff}
   .coach .ai-pill{margin-top:10px}
   .coach .cw{margin:2px 0 6px}
@@ -341,7 +343,7 @@
   label.tgl small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
 
   /* ปุ่มลอย "ผู้ช่วย AI" + กล่องทักทาย */
-  .ai-fab{right:max(16px,calc(50% - 264px));bottom:calc(92px + env(safe-area-inset-bottom));padding:5px 20px 5px 5px;gap:10px;background:linear-gradient(135deg,#1E40AF,#2563EB 55%,#0EA5E9);font-size:16px;box-shadow:0 10px 26px rgba(37,99,235,.38);text-align:left;line-height:1.2}
+  .ai-fab{right:max(16px,calc(50% - 264px));bottom:calc(92px + env(safe-area-inset-bottom));padding:5px 20px 5px 5px;gap:10px;background:var(--solid);font-size:16px;box-shadow:0 8px 22px rgba(0,0,0,.32);text-align:left;line-height:1.2}
   .ai-fab .av{position:relative;width:48px;height:48px;border-radius:50%;border:2.5px solid #fff;flex:none}
   .ai-fab .av::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid rgba(255,255,255,.75);animation:aipulse 2.2s ease-out infinite}
   .ai-fab .tx b{display:block;font-size:16px;font-weight:600} .ai-fab .tx small{display:block;font-size:12.5px;font-weight:400;opacity:.92}
@@ -377,7 +379,7 @@
 
   /* หน้าต่างแชต */
   .ai-box{height:min(92vh,820px)}
-  .ai-hd{background:linear-gradient(135deg,#1E40AF,#2563EB 60%,#0EA5E9);color:#fff;border-bottom:0;padding:14px 14px 14px 16px;gap:10px}
+  .ai-hd{background:var(--solid);color:#fff;border-bottom:0;padding:14px 14px 14px 16px;gap:10px}
   .ai-hd .av{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;flex:none}
   .ai-hd .tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
   .ai-hd b{font-size:17px;font-weight:600} .ai-hd .u{flex:none;font-size:13px;color:rgba(255,255,255,.9)}
@@ -397,7 +399,7 @@
   [data-theme="dark"] label.f{color:#D1D5DB}
   [data-theme="dark"] .needs button span{color:#FCD34D}
   [data-theme="dark"] .ai-tease{box-shadow:0 14px 34px rgba(0,0,0,.5)}
-  [data-theme="dark"] .card.bal{border-top-color:#3B82F6}
+  
   .thm-login{position:fixed;top:14px;right:14px;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
 
   /* ===== คอม: เมนูซ้าย จัดเต็มจอ แชตเป็นแผงด้านขวา ===== */
@@ -433,6 +435,86 @@
     body.ai-open header,body.ai-open main{margin-right:440px}
     body.ai-open .wz-bar{right:440px}
     body.ai-open .bot{right:472px}
+  }
+
+  /* ===== แบบ B: หน้าปัดรถ (ทับสไตล์เดิม) ===== */
+  header{background:var(--hdr);color:var(--ink);border-radius:0;border-bottom:1px solid var(--line);box-shadow:none}
+  header h1{font-family:var(--disp);font-weight:600}
+  .icon-btn{background:var(--card2);color:var(--ink)}
+  .logo{background:var(--solid);font-family:var(--disp);box-shadow:none;border-radius:16px}
+  .login h1,h2,.stat .v,.big{font-family:var(--disp)}
+  h2{font-size:17px;font-weight:600}
+  .seg button.on{background:var(--ink);color:var(--bg)}
+  .btn{box-shadow:none}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .bigbtn{background:var(--solid)}
+  .more{margin-left:auto;border:0;background:none;color:var(--pri);font:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:40px;padding:0 4px}
+
+  .greet{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:2px 2px 14px}
+  .greet h2{margin:0;font-size:24px;line-height:1.25}
+  .greet p{margin:2px 0 0;color:var(--mute);font-size:15px}
+  .newad{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 20px;border:0;border-radius:24px;background:var(--solid);color:#fff;font:inherit;font-size:16px;font-weight:700;cursor:pointer}
+  .newad .i{width:20px;height:20px}
+
+  .cluster{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px 10px 18px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px 4px;margin-bottom:12px}
+  .cluster .readout{order:-1;flex:1 1 100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .cluster .gauge{flex:1 1 140px;max-width:300px;min-width:0;text-align:center}
+  .gauge svg{display:block;width:100%;height:auto}
+  .gl b{display:block;font-family:var(--disp);font-size:16px;font-weight:600}
+  .gl span{display:block;font-size:12px;color:var(--mute);line-height:1.4;margin-top:2px;padding:0 4px}
+  .readout .lbl{font-size:14px;color:var(--mute)}
+  .readout .big{font-size:48px;font-weight:700;line-height:1.05;letter-spacing:-.5px;margin:0}
+  .readout .days{font-size:15px;font-weight:600;margin-top:4px}
+  .readout .avg{font-size:13px;color:var(--mute)}
+  .readout .row2{margin-top:8px;width:100%;max-width:380px}
+  .readout .btn{border-radius:24px;min-height:46px;padding:0 14px}
+  svg .gtr{fill:none;stroke:var(--g-track);stroke-width:14;stroke-linecap:round}
+  svg .gvl{fill:none;stroke-width:14;stroke-linecap:round}
+  svg .gwn{fill:none;stroke:#EF3B41;stroke-width:4;stroke-linecap:round}
+  svg .gmk,svg .gnd{stroke:var(--g-needle);stroke-width:3;stroke-linecap:round}
+  svg .gtk{fill:var(--mute);font-family:var(--disp);font-size:15px;text-anchor:middle}
+  svg .ghb{fill:var(--g-hub)}
+  svg .gbg{fill:var(--ink);font-family:var(--disp);font-weight:600;font-size:32px;text-anchor:middle}
+  svg .gsm{fill:var(--mute);font-size:14px;text-anchor:middle}
+
+  .tells{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+  .tell{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;background:var(--card);box-shadow:var(--shadow);border-radius:20px;font-size:14px}
+  .tell .i{width:18px;height:18px;stroke-width:2.2}
+  .tell.ok .i{color:var(--green)} .tell.warn .i{color:var(--amber)} .tell.bad,.tell.bad .i{color:var(--red)} .tell.mute{color:var(--mute)}
+
+  .stats{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 6px;gap:16px 0;margin-bottom:4px}
+  .stats .stat{background:none;box-shadow:none;border-radius:0;padding:2px 14px;border-left:1px solid var(--line)}
+  .stats .stat:first-child{border-left:3px solid var(--g-amber)}
+  .stats .stat .v{font-size:28px;font-weight:600}
+
+  .arow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:12px 0;border-top:1px solid var(--line)}
+  .arow:first-child{border-top:0;padding-top:2px}
+  .th{width:64px;height:64px;flex:0 0 64px;border-radius:12px;object-fit:cover;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--mute)}
+  .th.sm{width:52px;height:52px;flex-basis:52px;border-radius:10px}
+  .th.ph .i{width:26px;height:26px}
+  .arow .ai{flex:1 1 140px;min-width:0}
+  .arow .ai b{font-weight:600;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .arow .am{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:4px;font-size:13px;color:var(--mute)}
+  .arow .btn{flex:none;padding:10px 16px;border-radius:20px;font-size:14px}
+
+  .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;font-size:13px;margin-top:14px}
+  .foot b{font-family:var(--disp);color:var(--pri);font-weight:600}
+  .ai-fab .av.bot-av{width:52px;height:52px;margin:0;animation:none;filter:none}
+  @media (max-width:599px){ .ai-fab{padding:5px;gap:0} .ai-fab .tx{display:none} }
+
+  @media (min-width:600px){ .stats{grid-template-columns:repeat(4,minmax(0,1fr))} }
+  @media (min-width:1024px){
+    nav::before{content:"N Ads";font-family:var(--disp);color:var(--ink)}
+    #tab-home{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:0 24px;max-width:1240px}
+    #tab-home .greet,#tab-home .cluster,#tab-home .tells,#tab-home .stats{grid-column:1/-1}
+    .greet h2{font-size:30px}
+    .cluster{padding:24px;gap:24px;flex-wrap:nowrap}
+    .cluster .readout{order:0;flex:1 1 300px}
+    .cluster .gauge{flex:1 1 280px;max-width:320px}
+    .readout .big{font-size:64px}
+    .stats .stat .v{font-size:34px}
+    .th{width:84px;height:84px;flex-basis:84px}
+    .ai-fab .av.bot-av{width:60px;height:60px;margin:0}
   }
 </style>
 </head>
@@ -473,31 +555,41 @@
 
     <!-- หน้าหลัก -->
     <div id="tab-home">
-      <div class="hcol">
-      <button class="bigbtn" id="newAdBtn"><span class="pl"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px;stroke-width:2.2"><path d="M12 5v14M5 12h14"/></svg></span><span>ยิงแอดใหม่<small>เลือกเพจ → เป้าหมาย → รูป/วิดีโอ → ยิง</small></span></button>
-      <div class="card bal">
-        <div class="lbl">เงินคงเหลือในบัญชีโฆษณา</div>
-        <div class="big" id="balBig">-</div>
-        <span class="chip" id="balSrc">-</span>
-        <div class="days" id="balDays">-</div>
-        <div class="bar"><i id="balBar" style="width:0"></i></div>
-        <div class="row2">
-          <button class="btn" id="topupBtn">บันทึกการเติมเงิน</button>
-          <button class="btn ghost" id="setBalBtn">แก้ยอดให้ตรง</button>
-        </div>
+      <div class="greet">
+        <div class="gt"><h2 id="greetH">สวัสดี</h2><p id="greetSub">-</p></div>
+        <button class="newad" id="newAdBtn"><svg class="i" viewBox="0 0 24 24" style="stroke-width:2.4"><path d="M12 5v14M5 12h14"/></svg>ยิงแอดใหม่</button>
       </div>
-      <div class="grid">
+      <section class="cluster" aria-label="หน้าปัดเงินและการใช้จ่าย">
+        <div class="gauge" id="gDays"></div>
+        <div class="readout">
+          <div class="lbl">เงินในบัญชีโฆษณา</div>
+          <div class="big" id="balBig">-</div>
+          <span class="chip" id="balSrc">-</span>
+          <div class="days" id="balDays">-</div>
+          <div class="avg" id="balAvg"></div>
+          <div class="row2" id="balBtns">
+            <button class="btn" id="topupBtn">บันทึกการเติมเงิน</button>
+            <button class="btn ghost" id="setBalBtn">แก้ยอดให้ตรง</button>
+          </div>
+        </div>
+        <div class="gauge" id="gSpend"></div>
+      </section>
+      <ul class="tells" id="tells" aria-label="สถานะระบบ"></ul>
+      <div class="grid stats">
         <div class="stat"><div class="k">ใช้เงินไป</div><div class="v" id="sSpend">-</div><div class="s" id="sRange">-</div></div>
         <div class="stat"><div class="k" id="sResK">ผลลัพธ์</div><div class="v" id="sRes">-</div><div class="s" id="sRes2">&nbsp;</div></div>
         <div class="stat"><div class="k" id="sCprK">ต้นทุนต่อผล</div><div class="v" id="sCpr">-</div><div class="s">ยิ่งต่ำยิ่งดี</div></div>
         <div class="stat"><div class="k">คนเห็นแอด (ครั้ง)</div><div class="v" id="sImp">-</div><div class="s" id="sClk">-</div></div>
       </div>
+      <div class="hcol">
+        <h2>แอดที่กำลังวิ่ง<span style="flex:1"></span><button class="more" id="runMore">ดูแอดทั้งหมด</button></h2>
+        <div class="card" id="runList"></div>
+        <h2>แอดเก่าที่ได้ผลดี (90 วัน)</h2><div class="card" id="pastBest"></div>
       </div>
       <div class="hcol">
-      <h2>🎯 คะแนนจาก Meta</h2><div class="card" id="oppCard"></div>
-      <h2><i class="dot g-bad"></i>ควรดู</h2><div class="card" id="watchList"></div>
-      <h2><i class="dot g-good"></i>แอดเด่น</h2><div class="card" id="bestList"></div>
-      <h2>🏆 แอดเก่าที่ดีที่สุด (90 วัน)</h2><div class="card" id="pastBest"></div>
+        <h2>คะแนนจาก Meta</h2><div class="card" id="oppCard"></div>
+        <div id="watchWrap"><h2><i class="dot g-bad"></i>ควรดู</h2><div class="card" id="watchList"></div></div>
+        <div id="bestWrap"><h2><i class="dot g-good"></i>แอดเด่น</h2><div class="card" id="bestList"></div></div>
       </div>
       <div class="foot" id="quota">-</div>
     </div>
@@ -551,7 +643,7 @@
       </div>
     </div>
   </main>
-  <button id="aiFab" class="ai-fab hide" aria-label="เปิดแชตผู้ช่วยยิงแอด AI"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg></span><span class="tx"><b>ผู้ช่วยยิงแอด AI</b><small>ถามเรื่องแอดได้เลย</small></span></button>
+  <button id="aiFab" class="ai-fab hide" aria-label="เปิดแชตผู้ช่วยยิงแอด AI"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#D9252B"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#D9252B"/><circle cx="31.2" cy="20" r="1.4" fill="#FFB547"/></svg></span><span class="tx"><b>ผู้ช่วยยิงแอด</b><small>ถามเรื่องแอดได้เลย</small></span></button>
   <div id="aiTease" class="ai-tease hide" role="button" tabindex="0" aria-label="เปิดแชตผู้ช่วย AI"><div class="hd">ผู้ช่วยยิงแอด AI</div><div class="msg" id="aiTeaseTx"></div><div class="ctx hide" id="aiTeaseCtx"></div><span class="go">คุยกับผมเลย →</span><button class="x" id="aiTeaseX" aria-label="ปิดข้อความ">×</button></div>
   <nav id="nav">
     <button data-t="home" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
@@ -564,7 +656,7 @@
 <div id="wzBar" class="wz-bar hide"><div class="in" id="wzBarIn"></div></div>
 <div id="modal" class="modal hide"><div class="sheet" id="sheet"></div></div>
 <div id="aiPanel" class="ai-panel hide" role="dialog" aria-label="ผู้ช่วยยิงแอด AI"><div class="ai-box">
-  <div class="ai-hd"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg></span><div class="tt"><b>ผู้ช่วยยิงแอด AI</b><span class="u" id="aiUse">ดูข้อมูลแอดจริงของบัญชี</span></div><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">✕ ปิด</button></div>
+  <div class="ai-hd"><span class="av"><svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#D9252B"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#D9252B"/><circle cx="31.2" cy="20" r="1.4" fill="#FFB547"/></svg></span><div class="tt"><b>ผู้ช่วยยิงแอด AI</b><span class="u" id="aiUse">ดูข้อมูลแอดจริงของบัญชี</span></div><button id="aiClear">ล้างแชต</button><button id="aiClose" aria-label="ปิด">✕ ปิด</button></div>
   <div class="ai-msgs" id="aiMsgs"></div><div class="ai-chips" id="aiChips"></div>
   <div class="ai-in"><textarea id="aiInp" rows="1" maxlength="2000" placeholder="ถามเรื่องแอดได้เลย เช่น งบเท่าไหร่ดี"></textarea><button class="btn sm" id="aiSend">ส่ง</button></div>
 </div></div>
@@ -671,6 +763,41 @@
   }
   $("nav").onclick = (e) => { const b = e.target.closest("button"); if (b) goTab(b.dataset.t); };
   $("newAdBtn").onclick = () => goTab("new");
+  $("runMore").onclick = () => goTab("ads");
+
+  // ---------- หน้าปัด + ตัวช่วยแสดงผล ----------
+  const TH_DAY = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."], TH_MON = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  const thDay = (ms) => { const x = new Date(ms); return `${TH_DAY[x.getDay()]} ${x.getDate()} ${TH_MON[x.getMonth()]}`; };
+  const GA = (f) => 150 + 240 * Math.max(0, Math.min(1, f));
+  const GP = (deg, r) => { const a = deg * Math.PI / 180; return [(130 + r * Math.cos(a)).toFixed(2), (130 + r * Math.sin(a)).toFixed(2)]; };
+  const garc = (f0, f1, r) => { const a0 = GA(f0), a1 = GA(f1); if (a1 - a0 < 0.5) return ""; const [x0, y0] = GP(a0, r), [x1, y1] = GP(a1, r); return `M ${x0} ${y0} A ${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`; };
+  function gaugeSvg(o) { // o: f (0–1 หรือ null), color, warn [f0,f1], mark (0–1), ticks [{f,t}], big, small, aria
+    const lab = (o.ticks || []).map((k) => { const [x, y] = GP(GA(k.f), 72), up = k.f === 0 || k.f === 1 ? 8 : 0; return `<text x="${x}" y="${(+y + 5 - up).toFixed(2)}" class="gtk">${esc(k.t)}</text>`; }).join("");
+    const bl = String(o.big).length, bsz = bl <= 4 ? 32 : bl <= 6 ? 26 : 22;
+    const val = o.f > 0 ? garc(0, o.f, 100) : "", warn = o.warn ? garc(o.warn[0], o.warn[1], 114) : "";
+    let mark = "";
+    if (o.mark != null && o.mark > 0) { const [a, b2] = GP(GA(o.mark), 86), [c, e] = GP(GA(o.mark), 112); mark = `<line x1="${a}" y1="${b2}" x2="${c}" y2="${e}" class="gmk"/>`; }
+    const [nx, ny] = GP(GA(o.f ?? 0), 80);
+    return `<svg viewBox="0 0 260 215" role="img" aria-label="${esc(o.aria)}"><path d="${garc(0, 1, 100)}" class="gtr"/>${val ? `<path d="${val}" class="gvl" style="stroke:${o.color}"/>` : ""}${warn ? `<path d="${warn}" class="gwn"/>` : ""}${mark}${lab}${o.f == null ? "" : `<line x1="130" y1="130" x2="${nx}" y2="${ny}" class="gnd"/>`}<circle cx="130" cy="130" r="9" class="ghb"/><circle cx="130" cy="130" r="4" fill="#D9252B"/><text x="130" y="188" class="gbg" style="font-size:${bsz}px">${esc(o.big)}</text><text x="130" y="207" class="gsm">${esc(o.small)}</text></svg>`;
+  }
+  const TELL_I = {
+    shield: '<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/>',
+    warn: '<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/>',
+    money: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/>',
+    chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  };
+  const tell = (cls, ic, text) => `<li class="tell ${cls}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true">${TELL_I[ic]}</svg><span>${esc(text)}</span></li>`;
+  const HOUSE_I = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>';
+  const thumbOk = (u) => typeof u === "string" && (/^https:\/\/([a-z0-9-]+\.)*(fbcdn\.net|facebook\.com)\//i.test(u) || (st.demo && u.startsWith("data:image/")));
+  const thumbHtml = (a, cls = "th") => thumbOk(a.thumb) ? `<img class="${cls}" src="${esc(a.thumb)}" alt="" loading="lazy">` : `<span class="${cls} ph" aria-hidden="true">${HOUSE_I}</span>`;
+  function adRow(a, canAds) {
+    const on = a.effective_status === "ACTIVE", bad = ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status);
+    const btn = !canAds ? "" : on ? `<button class="btn grey" data-act="pause" data-id="${esc(a.ad_id)}">หยุดแอด</button>`
+      : a.status === "PAUSED" ? `<button class="btn" data-act="resume" data-id="${esc(a.ad_id)}">เปิดแอด</button>` : "";
+    return `<div class="arow">${thumbHtml(a)}<div class="ai"><b>${esc(a.ad_name)}</b><div class="am"><span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span><span>ใช้ไป ${baht(a.spend, 0)}</span><span>${a.results > 0 ? `${int(a.results)} ${esc(a.result_label)}` : `ยังไม่มี${esc(a.result_label)}`}</span>${a.cpr !== null ? `<span>${baht(a.cpr)} ต่อ${esc(a.result_label)}</span>` : ""}</div></div>${btn}</div>`;
+  }
 
   // ---------- แสดงผล ----------
   function render() {
@@ -683,46 +810,75 @@
     const canAds = can("ads"), canMoney = can("money"), owner = can("team");
     document.querySelector('nav button[data-t="new"]').classList.toggle("hide", !canAds);
     $("newAdBtn").classList.toggle("hide", !canAds);
-    $("topupBtn").parentElement.classList.toggle("hide", !canMoney);
+    $("balBtns").classList.toggle("hide", !canMoney);
     if (st.tab === "new" && !canAds) { goTab("home"); return; }
     if (st.tab === "new") renderWizard(); else $("wzBar").classList.add("hide");
     if (st.tab === "set") renderSet();
     $("hSub").textContent = snap.account.name + (snap.account.ok ? "" : " · ⚠️ " + snap.account.status_label);
 
-    // ยอดเงิน
+    // ยอดเงิน + หน้าปัด
     const b = snap.balance, low = b.value !== null && (b.value <= settings.low_balance_thb || (snap.days_left !== null && snap.days_left <= settings.low_days));
+    const t = snap.totals, main = t.by_type[0], dl = snap.days_left, lowD = settings.low_days || 1;
     $("balBig").textContent = b.value === null ? "ไม่ทราบยอด" : baht(b.value, 0);
-    $("balBig").style.color = low ? "var(--red)" : "var(--ink)";
-    $("balSrc").textContent = b.source === "facebook" ? "✓ อ่านจาก Facebook" : b.source === "estimate" ? "≈ ประมาณการ" : "ยังไม่ได้ตั้งยอด";
+    $("balBig").style.color = low ? "var(--red)" : "";
+    $("balSrc").textContent = b.source === "facebook" ? "ยอดจาก Facebook" : b.source === "estimate" ? "ยอดประมาณการ" : "ยังไม่ได้ตั้งยอด";
     $("balSrc").className = "chip " + (b.source === "facebook" ? "green" : low ? "red" : "");
-    const dl = snap.days_left;
-    $("balDays").innerHTML = dl === null ? (b.value === null ? 'กด "แก้ยอดให้ตรง" แล้วใส่ยอดจาก Ads Manager' : "ยังไม่มีข้อมูลค่าใช้จ่ายย้อนหลัง")
-      : `พอใช้อีกประมาณ <b style="color:${low ? "var(--red)" : "var(--green)"}">${dl < 1 ? "ไม่ถึง 1 วัน" : dl.toFixed(1) + " วัน"}</b> <span style="color:var(--mute);font-size:13px">(เฉลี่ย ${baht(snap.avg_daily, 0)}/วัน)</span>`;
-    const pct = dl === null ? 0 : Math.min(100, (dl / 7) * 100);
-    $("balBar").style.width = pct + "%"; $("balBar").style.background = low ? "var(--red)" : pct < 45 ? "var(--amber)" : "var(--green)";
+    $("balDays").textContent = dl === null ? (b.value === null ? 'กด "แก้ยอดให้ตรง" แล้วใส่ยอดจาก Ads Manager' : "ยังไม่มีข้อมูลค่าใช้จ่ายย้อนหลัง")
+      : dl < 1 ? "เงินใกล้หมด เติมก่อนแอดหยุด" : `หมดราว ${thDay(Date.now() + dl * 864e5)} ถ้าใช้เท่าเดิม`;
+    $("balDays").style.color = low ? "var(--red)" : "var(--amber)";
+    $("balAvg").textContent = snap.avg_daily > 0 ? `เฉลี่ยใช้วันละ ${baht(snap.avg_daily, 0)}` : "";
+    const dmax = dl !== null && dl > 10 ? (dl > 30 ? 60 : 30) : 10;
+    $("gDays").innerHTML = gaugeSvg({ f: dl === null ? null : Math.min(1, dl / dmax), color: low ? "var(--red)" : dl !== null && dl < 3 ? "var(--g-amber)" : "var(--g-green)",
+      warn: [0, Math.min(1, lowD / dmax)], ticks: [0, .2, .4, .6, .8, 1].map((f) => ({ f, t: String(Math.round(dmax * f)) })),
+      big: dl === null ? "-" : dl < 1 ? "<1" : dl.toFixed(1), small: "วัน", aria: dl === null ? "ยังคำนวณวันที่เงินพอใช้ไม่ได้" : `เงินพอยิงได้อีกราว ${dl.toFixed(1)} วัน` })
+      + `<div class="gl"><b>เงินพอยิง</b><span>ขีดแดงด้านล่าง คือเหลือไม่ถึง ${lowD} วัน</span></div>`;
+    const mult = snap.range === "last_7d" ? 7 : 1, ref = snap.avg_daily * mult;
+    const raw = Math.max(ref * 1.85, t.spend * 1.15, 100), stp = raw > 5000 ? 1000 : raw > 1000 ? 200 : 100, smax = Math.ceil(raw / stp) * stp;
+    const hhmm = new Date(snap.generated_at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+    $("gSpend").innerHTML = gaugeSvg({ f: t.spend / smax, color: "var(--g-amber)", mark: ref > 0 ? ref / smax : null,
+      ticks: [{ f: 0, t: "0" }, { f: .5, t: int(smax / 2) }, { f: 1, t: int(smax) }], big: baht(t.spend, 0),
+      small: snap.range === "today" ? `ถึง ${hhmm} น.` : snap.range_label, aria: `ใช้ไป ${Math.round(t.spend)} บาท (${snap.range_label})${ref > 0 ? ` ค่าเฉลี่ย ${Math.round(ref)} บาท` : ""}` })
+      + `<div class="gl"><b>${snap.range === "today" ? "ใช้วันนี้" : "ใช้ " + esc(snap.range_label)}</b><span>${ref > 0 ? `ขีดบนหน้าปัด คือค่าเฉลี่ย${mult > 1 ? " 7 วัน " : "วันละ "}${baht(ref, 0)}` : "ยังไม่มีค่าเฉลี่ยย้อนหลัง"}</span></div>`;
 
     // ตัวเลขสรุป
-    const t = snap.totals, main = t.by_type[0];
     $("sSpend").textContent = baht(t.spend, 0); $("sRange").textContent = snap.range_label;
     $("sResK").textContent = main ? main.label : "ผลลัพธ์"; $("sRes").textContent = main ? int(main.count) : "0";
-    $("sRes2").textContent = t.by_type.slice(1, 3).map((x) => `${x.label} ${int(x.count)}`).join(" · ") || " ";
+    $("sRes2").textContent = t.by_type.slice(1, 3).map((x) => `${x.label} ${int(x.count)}`).join("  ") || " ";
     $("sCprK").textContent = main ? "ต้นทุน/" + main.label : "ต้นทุนต่อผล"; $("sCpr").textContent = main ? baht(main.cpr) : "-";
     $("sImp").textContent = int(t.impressions); $("sClk").textContent = "คลิก " + int(t.clicks);
 
     const spenders = snap.ads.filter((a) => a.spend > 0);
     const watch = snap.ads.filter((a) => a.grade === "bad" || ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status));
     const best = spenders.filter((a) => a.grade === "good");
+    const actives = snap.ads.filter((a) => a.effective_status === "ACTIVE").length;
+    // ทักทาย + ไฟสถานะ
+    const hr = new Date().getHours();
+    $("greetH").textContent = `${hr < 5 ? "สวัสดี" : hr < 9 ? "สวัสดีตอนเช้า" : hr < 12 ? "สวัสดีตอนสาย" : hr < 16 ? "สวัสดีตอนบ่าย" : hr < 19 ? "สวัสดีตอนเย็น" : "สวัสดีตอนค่ำ"} ${d.me?.name ?? ""}`.trim();
+    $("greetSub").textContent = !snap.account.ok ? `บัญชีโฆษณา: ${snap.account.status_label}` : watch.length ? `มี ${watch.length} แอดที่ควรดู` : actives ? `แอดวิ่งปกติ ${actives} ตัว ไม่มีตัวไหนต้องห่วง` : "ตอนนี้ไม่มีแอดที่กำลังวิ่ง";
+    const fb = d.fb || {};
+    $("tells").innerHTML = [
+      snap.account.ok ? tell("ok", "shield", "บัญชีโฆษณาปกติ") : tell("bad", "warn", "บัญชี: " + snap.account.status_label),
+      !fb.connected ? tell("bad", "link", "ยังไม่เชื่อม Facebook") : fb.days_left !== null && fb.days_left !== undefined && fb.days_left <= 7 ? tell("warn", "link", `รหัส Facebook เหลือ ${Math.max(0, fb.days_left)} วัน`) : tell("ok", "link", "เชื่อม Facebook อยู่"),
+      low ? tell("bad", "money", "เงินใกล้หมด") : "",
+      watch.length ? tell("warn", "warn", `${watch.length} แอดควรดู`) : tell("ok", "check", "ไม่มีแอดที่ต้องห่วง"),
+      tell("mute", "chat", `แจ้งเตือน LINE เดือนนี้ ${quota.used} จาก ${quota.limit}`),
+    ].join("");
+
     const mini = (a, right) => `<div class="mini"><i class="dot g-${a.grade}"></i><div class="n"><b>${esc(a.ad_name)}</b><span>${esc(a.grade_label || a.status_label)}</span></div><div class="x">${right}</div></div>`;
-    $("watchList").innerHTML = watch.length ? watch.map((a) => mini(a, a.cpr ? baht(a.cpr) + "/" + esc(a.result_label) : baht(a.spend))).join("") : '<div class="empty">ไม่มีแอดที่ต้องห่วง 👍</div>';
-    $("bestList").innerHTML = best.length ? best.map((a) => mini(a, baht(a.cpr) + "/" + esc(a.result_label))).join("") : '<div class="empty">ยังไม่มีแอดเด่นในช่วงนี้</div>';
-    $("quota").textContent = `LINE ใช้แจ้งเตือนเดือนนี้ ${quota.used}/${quota.limit} ข้อความ · อัปเดต ${new Date(snap.generated_at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}`;
+    $("watchWrap").classList.toggle("hide", !watch.length); $("bestWrap").classList.toggle("hide", !best.length);
+    $("watchList").innerHTML = watch.map((a) => mini(a, a.cpr ? baht(a.cpr) + "/" + esc(a.result_label) : baht(a.spend))).join("");
+    $("bestList").innerHTML = best.map((a) => mini(a, baht(a.cpr) + "/" + esc(a.result_label))).join("");
+    const runs = snap.ads.filter((a) => a.effective_status === "ACTIVE" || a.spend > 0).slice(0, 4);
+    $("runList").innerHTML = runs.length ? runs.map((a) => adRow(a, canAds)).join("") : '<div class="empty">ตอนนี้ไม่มีแอดที่กำลังวิ่ง กด "ยิงแอดใหม่" เพื่อเริ่ม</div>';
+    $("runMore").classList.toggle("hide", snap.ads.length <= runs.length);
+    $("quota").innerHTML = `<span>อัปเดต ${hhmm} น.</span><b>ประเมินตรงขายไวแบบไม่มโน</b>`;
 
     // รายการแอด
     $("adList").innerHTML = snap.ads.length ? snap.ads.map((a) => {
       const on = a.effective_status === "ACTIVE", bad = ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status);
       const btn = !canAds ? "" : on ? `<button class="btn ghost" data-act="pause" data-id="${esc(a.ad_id)}">⏸ หยุดแอดนี้</button>`
         : a.status === "PAUSED" ? `<button class="btn" data-act="resume" data-id="${esc(a.ad_id)}">▶ เปิดแอดนี้</button>` : "";
-      return `<div class="card ad"><div class="top"><div class="name">${esc(a.ad_name)}<div class="camp">${esc(a.campaign_name)}</div></div>
+      return `<div class="card ad"><div class="top">${thumbHtml(a, "th sm")}<div class="name">${esc(a.ad_name)}<div class="camp">${esc(a.campaign_name)}</div></div>
         <span class="pill ${on ? "p-on" : bad ? "p-bad" : "p-off"}">${esc(a.status_label)}</span></div>
         <div class="st"><div><b>${baht(a.spend)}</b><span>ใช้ไป</span></div><div><b>${int(a.results)}</b><span>${esc(a.result_label)}</span></div>
         <div><b>${a.cpr === null ? "-" : baht(a.cpr)}</b><span>ต่อผล</span></div><div><b>${int(a.impressions)}</b><span>เห็น</span></div></div>
@@ -752,7 +908,7 @@
   }
 
   // ---------- ปุ่มเปิด/หยุดแอด ----------
-  $("adList").onclick = (e) => {
+  $("adList").onclick = $("runList").onclick = (e) => {
     const b = e.target.closest("button[data-act]"); if (!b) return;
     const ad = st.data.snap.ads.find((a) => a.ad_id === b.dataset.id), pause = b.dataset.act === "pause";
     sheet(`<h3>${pause ? "หยุด" : "เปิด"}แอดนี้?</h3><p>${esc(ad.ad_name)}</p>
@@ -1438,15 +1594,8 @@
       <button class="ai-pill" id="wzAiCoach">${AI_SVG}ถาม AI เรื่องขั้นนี้</button></div></div></div>`;
   }
   // ตัวบอทผู้ช่วย (วาดเอง)
-  const BOT_SVG = (arm = true) => `<svg viewBox="0 0 64 64" aria-hidden="true">
-    <line x1="32" y1="4" x2="32" y2="13" stroke="#1E3A8A" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="5" r="4.2" fill="#DC2626"/>
-    <rect x="4" y="25" width="6" height="13" rx="3" fill="#DC2626"/><rect x="54" y="25" width="6" height="13" rx="3" fill="#DC2626"/>
-    <rect x="8" y="12" width="48" height="38" rx="14" fill="#FFFFFF" stroke="#1E3A8A" stroke-width="3"/>
-    <rect x="14.5" y="19" width="35" height="22" rx="9" fill="#1E3A8A"/>
-    <ellipse class="eye" cx="25" cy="29" rx="3.6" ry="4.6" fill="#7DD3FC"/><ellipse class="eye" cx="39" cy="29" rx="3.6" ry="4.6" fill="#7DD3FC"/>
-    <path d="M26.5 35 q5.5 4.5 11 0" stroke="#7DD3FC" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    <rect x="20" y="51" width="24" height="11" rx="5" fill="#1E3A8A"/><text x="32" y="60" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF" font-family="sans-serif">N</text>
-    ${arm ? '<g class="arm"><rect x="54" y="40" width="6" height="14" rx="3" fill="#1E3A8A" transform="rotate(-35 57 47)"/><circle cx="61" cy="40" r="3.6" fill="#DC2626"/></g>' : ""}</svg>`;
+  // ตราผู้ช่วย: ตัว N ของแบรนด์ในกล่องแชต (แทนหุ่นยนต์)
+  const BOT_SVG = () => `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="48" rx="14" fill="#D9252B"/><path d="M16 50 L16 61 L29 50 Z" fill="#D9252B"/><text x="32" y="41" text-anchor="middle" font-family="'Chakra Petch',sans-serif" font-weight="700" font-size="33" fill="#FFFFFF">N</text></svg>`;
   // ขั้นต่อไปที่ควรกด (ใช้ชี้จุด + ข้อความในบอท)
   function nextAction() {
     const s = wz.step, u = curUp();
@@ -2132,15 +2281,15 @@
   function applyTheme(t, say = false) {
     const dark = t === "dark";
     if (dark) document.documentElement.dataset.theme = "dark"; else delete document.documentElement.dataset.theme;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#1E3A8A" : "#2563EB");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#242A35" : "#FFFFFF");
     document.querySelector('meta[name="color-scheme"]')?.setAttribute("content", dark ? "dark" : "light");
     ["themeBtn", "themeBtn2"].forEach((id) => { const b = $(id); if (b) { b.innerHTML = THEME_ICON[dark ? "dark" : "light"]; b.title = dark ? "เปลี่ยนเป็นโหมดกลางวัน" : "เปลี่ยนเป็นโหมดกลางคืน"; } });
     if (say) toast(dark ? "🌙 โหมดกลางคืน" : "☀️ โหมดกลางวัน", 1500);
   }
   const toggleTheme = () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; store.set("nads_theme", t); applyTheme(t, true); };
   $("themeBtn").onclick = toggleTheme; $("themeBtn2").onclick = toggleTheme;
-  applyTheme(store.get("nads_theme") === "dark" ? "dark" : "light");
-  const AI_SVG = '<svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2563EB"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#2563EB"/><circle cx="31.2" cy="20" r="1.4" fill="#38BDF8"/></svg>';
+  applyTheme(store.get("nads_theme") === "light" ? "light" : "dark");
+  const AI_SVG = '<svg class="aiav" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#D9252B"/><path d="M13 15.5h22a3.5 3.5 0 0 1 3.5 3.5v10.5a3.5 3.5 0 0 1-3.5 3.5H24l-6.5 5.2V33H13a3.5 3.5 0 0 1-3.5-3.5V19a3.5 3.5 0 0 1 3.5-3.5z" fill="#fff"/><path d="M24 18.4l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#D9252B"/><circle cx="31.2" cy="20" r="1.4" fill="#FFB547"/></svg>';
   const AI = { msgs: [], busy: false, status: null, draft: false, suggest: "", teased: false };
   const sess = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} } };
   const DESK = matchMedia("(min-width:1024px)");
@@ -2298,9 +2447,11 @@
       { ad_id: "4", ad_name: "รับฝากขายบ้าน กำแพงเพชร", status: "กำลังวิ่ง", spend: 960, results: 12, result_label: "ลีด", cpr: 80, impressions: 23000, rerun: null }] });
     if (path.startsWith("/api/overview")) {
       const k = { today: 1, yesterday: 1.1, last_7d: 6.8 }[st.range];
+      const dpic = (c1, c2) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><rect width="160" height="160" fill="${c1}"/><rect y="104" width="160" height="56" fill="${c2}"/><path d="M38 104 80 66l42 38v26H38z" fill="#fff" opacity=".9"/><rect x="72" y="108" width="16" height="22" fill="${c2}"/></svg>`);
+      const DTH = { 1: dpic("#7FB3D5", "#5D8A4E"), 2: dpic("#A9CCE3", "#8DAA5B"), 3: dpic("#F5CBA7", "#7D6E5D"), 4: dpic("#D6EAF8", "#C4161C") };
       const ad = (id, name, camp, eff, spend, res, label, grade, gl, imp) => ({ ad_id: id, ad_name: name, campaign_name: camp, status: eff === "ACTIVE" ? "ACTIVE" : "PAUSED",
         effective_status: eff, status_label: { ACTIVE: "กำลังวิ่ง", PAUSED: "หยุดอยู่", DISAPPROVED: "ไม่ผ่านอนุมัติ" }[eff], spend: spend * k, impressions: imp * k, reach: imp * k * 0.7,
-        clicks: imp * k * 0.012, results: Math.round(res * k), result_label: label, cpr: res ? spend / res : null, grade, grade_label: gl });
+        clicks: imp * k * 0.012, results: Math.round(res * k), result_label: label, cpr: res ? spend / res : null, grade, grade_label: gl, thumb: DTH[id] ?? null });
       const ads = [
         ad("1", "บ้านเดี่ยว นครชุม 1.89 ล้าน", "ทักแชต-บ้าน", "ACTIVE", 320, 7, "ทักแชต", "good", "คุ้ม", 9400),
         ad("2", "ที่ดินติดถนน 2 ไร่ คลองขลุง", "ทักแชต-ที่ดิน", "ACTIVE", 210, 0, "ทักแชต", "bad", "ใช้เงินแต่ยังไม่มีผล", 5200),
