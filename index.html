@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1101">
+<meta name="nads-ver" content="20261126-1110">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -693,6 +693,16 @@
   .reach.side{margin:0 0 12px;border-color:var(--pri-l2)}
   .reach.side .num{margin:0 0 4px}
   @media (min-width:1640px){ #reachBox{display:none} body.ai-open #reachBox{display:block} }
+  /* ช่องพิมพ์งบเอง: มี ฿ หน้า + บาท/วัน ท้าย ให้รู้ว่าพิมพ์จำนวนเงินได้ */
+  .money-l{margin-top:12px}
+  .money{position:relative;font-size:calc(17px * var(--fz))}
+  .money .inp{padding-left:1.9em;padding-right:5.4em;font-weight:600}
+  .money .inp::placeholder{font-weight:400}
+  .money .pre,.money .suf{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--mute)}
+  .money .pre{left:.85em;font-weight:700;color:var(--pri)}
+  .money .suf{right:.9em;font-size:.85em}
+  .money .inp::-webkit-outer-spin-button,.money .inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .money .inp{-moz-appearance:textfield;appearance:textfield}
 </style>
 </head>
 <body>
@@ -2293,7 +2303,9 @@
       : `<div class="total"><div class="k">รวมประมาณ</div><div class="v">${baht(total, 0)}</div><div class="k">${wz.daily.toLocaleString("en-US")} บาท × ${wz.days} วัน</div></div>`;
     return `<div class="wz-q">ใช้งบเท่าไหร่?</div><div class="wz-hint">งบต่อวันเป็นค่าเฉลี่ย บางวัน Facebook อาจใช้เกินได้ถึง 75% แต่รวมทั้งสัปดาห์ไม่เกิน 7 เท่าของงบต่อวัน</div>
       <label class="f">งบต่อวัน</label><div class="chips">${[100, 200, 300, 500].map((v) => `<button class="chip2 ${wz.daily === v ? "sel" : ""}" data-daily="${v}">${v} บาท</button>`).join("")}</div>
-      <input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" value="${wz.daily}" style="margin-top:6px">
+      <label class="f money-l" for="wzDaily">✏️ หรือพิมพ์จำนวนเงินเอง</label>
+      <div class="money"><span class="pre" aria-hidden="true">฿</span><input class="inp" id="wzDaily" type="number" inputmode="numeric" min="50" max="5000" step="1" placeholder="เช่น 250" value="${wz.daily}"><span class="suf" aria-hidden="true">บาท/วัน</span></div>
+      <div class="upnote">ใส่ได้ 50–5,000 บาท/วัน · แตะช่องแล้วพิมพ์ตัวเลขได้เลย</div>
       ${wz.daily > 0 ? `<div class="note info">งบ ${baht(wz.daily, 0)}/วัน → บางวันอาจใช้ถึง <b>${baht(mxDay, mxDay % 1 ? 2 : 0)}</b> · ทั้งสัปดาห์ไม่เกิน <b>${baht(wz.daily * 7, 0)}</b></div>` : ""}
       ${estHtml()}
       <label class="f">ยิงกี่วัน</label><div class="chips">${[1, 3, 5, 7, 14, 0].map((v) => `<button class="chip2 ${wz.days === v ? "sel" : ""}" data-days="${v}">${v ? `${v} วัน` : "ไม่กำหนด"}</button>`).join("")}</div>
@@ -2474,6 +2486,7 @@
     on("wzMsg", "oninput", (e) => { wz.message = e.target.value; refreshNext(); });
     on("wzHead", "oninput", (e) => { wz.headline = e.target.value; });
     on("wzDaily", "onchange", (e) => { wz.daily = Math.round(Number(e.target.value) || 0); renderWizard(); });
+    on("wzDaily", "oninput", (e) => { wz.daily = Math.round(Number(e.target.value) || 0); document.querySelectorAll("[data-daily]").forEach((b) => b.classList.toggle("sel", Number(b.dataset.daily) === wz.daily)); updSum(); });
     box.querySelectorAll("[data-page]").forEach((el) => el.onclick = () => {
       if (wz.page !== el.dataset.page) Object.assign(wz, { page: el.dataset.page, posts: null, postsFor: null, post: null, forms: null, formsFor: null, form_id: "", ig: undefined, igFor: null });
       renderWizard();
