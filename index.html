@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1143">
+<meta name="nads-ver" content="20261126-1153">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -715,6 +715,39 @@
   .xpl .wb ul,.xpl .wb ol{margin:6px 0;padding-left:20px} .xpl .wb li{margin:3px 0}
   .xpl .src{display:block;margin-top:6px;color:var(--mute);font-size:calc(12px * var(--fz))}
   @media (prefers-reduced-motion: reduce){.xpl>summary::after{transition:none}}
+  /* ช่องช่วยคิดแคปชั่น */
+  .caph{margin:10px 0 4px;border:1px dashed var(--pri-l2);border-radius:14px;background:var(--pri-l)}
+  .caph>summary{cursor:pointer;list-style:none;padding:11px 14px;font-weight:700;color:var(--pri-d);display:flex;align-items:center;gap:8px}
+  .caph>summary::-webkit-details-marker{display:none}
+  .caph>summary::after{content:"▾";margin-left:auto;transition:transform .2s}
+  .caph[open]>summary::after{transform:rotate(180deg)}
+  .caph>summary:focus-visible{outline:2px solid var(--pri);outline-offset:2px;border-radius:14px}
+  .caph>.wb{padding:0 14px 14px}
+  .capg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,calc(220px * var(--fz))),1fr));gap:8px 12px;margin-top:8px}
+  .cf{display:block;margin-top:8px} .cf>span{display:block;font-size:calc(14px * var(--fz));color:var(--mute);margin-bottom:4px}
+  .cf .inp{padding:10px 12px}
+  .capr{display:grid;gap:10px;margin-top:12px}
+  .capc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .capk{font-weight:700;font-size:calc(14px * var(--fz));color:var(--pri-d);margin-bottom:4px}
+  .capc pre{white-space:pre-wrap;font:inherit;font-size:calc(15px * var(--fz));line-height:1.6;margin:0 0 8px}
+  .caphd{display:flex;flex-wrap:wrap;gap:8px;align-items:center} .caphd>span{font-size:calc(14px * var(--fz));color:var(--mute)}
+  /* ภาพบอกตำแหน่งหัวข้อ */
+  .hpic>summary{margin-top:8px} .hpic>summary::before{display:none}
+  .hmock{max-width:420px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg);margin:2px 0 10px}
+  .hm-top{display:flex;gap:9px;align-items:center;padding:10px 12px}
+  .hm-top .pav{width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--solid);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+  .hm-top .pav img{width:100%;height:100%;object-fit:cover}
+  .hm-top b{display:block;line-height:1.3} .hm-top small{color:var(--mute);font-size:calc(12px * var(--fz))}
+  .hm-cap{position:relative;margin:0 10px 10px;padding:6px 8px 6px 30px;border:2px dashed var(--mute);border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hm-media{height:150px;background:var(--line);display:grid;place-items:center;color:var(--mute)}
+  .hm-media img{width:100%;height:100%;object-fit:cover;display:block}
+  .hm-foot{position:relative;display:flex;align-items:center;gap:10px;margin:8px;padding:8px 10px 8px 30px;border:2.5px solid var(--pri);border-radius:10px;background:var(--pri-l)}
+  .hm-foot>div{flex:1;min-width:0} .hm-foot small{display:block;color:var(--mute);font-size:calc(12px * var(--fz))}
+  .hm-foot b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(16px * var(--fz))}
+  .hm-foot .cta{flex:none;background:var(--line);color:var(--ink);border-radius:8px;padding:6px 10px;font-weight:600;font-size:calc(13px * var(--fz))}
+  .tg{position:absolute;left:7px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:11px;color:#fff;background:var(--mute)}
+  .hm-foot .tg{background:var(--pri)}
+  .hm-leg{margin:0 0 6px;padding-left:22px} .hm-leg li{margin:3px 0}
 </style>
 </head>
 <body>
@@ -1754,9 +1787,10 @@
     finally { wz.benchBusy = false; if (wz.step === 4) renderWizard(); else updSum(); }
   }
   // ---------- คำอธิบายแบบกดเปิด (dropdown) ใต้กล่องข้อความที่อาจไม่เข้าใจ ----------
-  const WHY_OPEN = new Set();
-  const why = (key, body) => `<details class="xpl" data-why="${key}" ${WHY_OPEN.has(key) ? "open" : ""}><summary>ไม่เข้าใจ? แตะดูคำอธิบาย</summary><div class="wb">${body}</div></details>`;
-  document.addEventListener("toggle", (e) => { const d = e.target; if (d && d.matches && d.matches("details[data-why]")) { if (d.open) WHY_OPEN.add(d.dataset.why); else WHY_OPEN.delete(d.dataset.why); } }, true);
+  const WHY_OPEN = new Set(), WHY_SEEN = new Set();
+  const drop = (key, sum, body, cls = "xpl", def = false) => `<details class="${cls}" data-why="${key}" ${WHY_OPEN.has(key) || (def && !WHY_SEEN.has(key)) ? "open" : ""}><summary>${sum}</summary><div class="wb">${body}</div></details>`;
+  const why = (key, body) => drop(key, "ไม่เข้าใจ? แตะดูคำอธิบาย", body);
+  document.addEventListener("toggle", (e) => { const d = e.target; if (d && d.matches && d.matches("details[data-why]")) { WHY_SEEN.add(d.dataset.why); if (d.open) WHY_OPEN.add(d.dataset.why); else WHY_OPEN.delete(d.dataset.why); } }, true);
   const SRC = (t) => `<small class="src">ที่มา: ${t}</small>`;
   function estHtml() {
     if (wz.bench === undefined) { setTimeout(loadBench); return '<div class="note info">📊 กำลังดูต้นทุนจริงของบัญชี…</div>'; }
@@ -1885,7 +1919,7 @@
         "Meta แนะนำให้มีทั้งวิดีโอและรูปในแอดเดียวกัน → ทำเสร็จแล้วกด 'เพิ่มแบบ B' ในขั้นข้อความ ใส่อีกแบบ"],
       good: "3 วินาทีแรกเห็นตัวบ้านจริงและราคา",
       bad: "เปิดคลิปด้วยโลโก้ 5 วินาที หรือภาพมืด/เบลอ คนเลื่อนผ่านก่อนเห็นบ้าน" };
-    if (step === 3) return { h: "ข้อความ", what: "ข้อความโฆษณา = คำบรรยายใต้ชื่อเพจ เหนือรูป/วิดีโอ คนส่วนใหญ่อ่านแค่ 2 บรรทัดแรก ใส่ของสำคัญไว้บนสุด",
+    if (step === 3) return { h: "ข้อความ", what: "แคปชั่น (ข้อความโฆษณา) = คำบรรยายใต้ชื่อเพจ เหนือรูป/วิดีโอ คนส่วนใหญ่อ่านแค่ 2 บรรทัดแรก ใส่ของสำคัญไว้บนสุด",
       pre: MSG_TPL(g),
       good: "บรรทัดแรกบอกครบ: ประเภททรัพย์ + ทำเล + ราคา แล้วตามด้วยจุดเด่นและชวนให้ทัก",
       bad: "'บ้านสวย ราคาดี สนใจทัก' ไม่บอกว่าทรัพย์อะไร ที่ไหน ราคาเท่าไหร่ คนไม่กล้าทัก",
@@ -1911,7 +1945,7 @@
     const c = coachData(step), ck = step === LAST ? [] : checksFor(step), boost = isBoost();
     return `<div class="coach"><div class="av">${BOT_SVG(false)}</div><div class="tx"><b class="h">ผู้ช่วย · ${esc(c.h)}</b>
       <div class="cw">${esc(c.what)}</div>
-      ${c.pre && !boost ? `<div class="cx"><b>ตัวอย่างโครงข้อความ</b> (เติมข้อมูลจริงในช่อง [ ])</div><pre class="tpl">${esc(c.pre)}</pre>` : ""}
+      ${c.pre && !boost ? `<div class="cx"><b>ตัวอย่างโครงแคปชั่น</b> (เติมข้อมูลจริงในช่อง [ ])</div><pre class="tpl">${esc(c.pre)}</pre>` : ""}
       ${c.ex ? `<div class="cx"><b>ตัวอย่าง</b><ul>${c.ex.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
       <div class="gb"><div class="g">✅ ${esc(c.good)}</div><div class="b">❌ ${esc(c.bad)}</div></div>
       ${c.extra || ""}
@@ -1957,7 +1991,7 @@
     }
     if (s === 3) {
       if (wz.name.trim().length < 2) return ["#wzName", "ตั้ง<b>ชื่อแอด</b>ไว้ดูเอง เช่น ชื่อทรัพย์ + ราคา"];
-      if (!isBoost() && wz.src !== "post" && wz.goal !== "reach" && !wz.message.trim()) return ["#wzMsg", "เขียน<b>ข้อความ</b>: ประเภททรัพย์ ทำเล ราคา จุดเด่น"];
+      if (!isBoost() && wz.src !== "post" && wz.goal !== "reach" && !wz.message.trim()) return ["#wzMsg", "เขียน<b>แคปชั่น</b>: ประเภททรัพย์ ทำเล ราคา จุดเด่น"];
       return ["#wzNext", "อ่านทวน<b>คำผิด</b>อีกที แล้วกด <b>ถัดไป</b>"];
     }
     if (s === 4) return ["#wzNext", "เลือก<b>งบต่อวัน</b>กับจำนวนวัน ไม่แน่ใจเลือก <b>ไม่กำหนด</b> ได้"];
@@ -2011,7 +2045,7 @@
     }
     if (s === 3) {
       if (wz.name.trim().length < 2) out.push("ตั้งชื่อแอด");
-      crList().forEach((c, i) => { if (c.src !== "post" && wz.goal !== "reach" && !c.message.trim()) out.push(tg(i) + "เขียนข้อความโฆษณา"); });
+      crList().forEach((c, i) => { if (c.src !== "post" && wz.goal !== "reach" && !c.message.trim()) out.push(tg(i) + "เขียนแคปชั่น"); });
       if (wz.goal === "chat" && !faqList().every((f) => f.q)) out.push("คำถามที่พบบ่อย: ใส่คำถามก่อนคำตอบ");
       if ([wz.name, wz.goal === "chat" ? wz.welcome : "", ...crList().flatMap((c) => [c.message, c.headline])].some((t) => HOLE.test(t || ""))) out.push("เติมข้อมูลจริงในช่อง [ ] ให้ครบ");
     }
@@ -2079,7 +2113,7 @@
     const pic = thumb ? `<img src="${esc(thumb)}" alt="">` : vid ? `<video src="${esc(u.preview)}" muted playsinline preload="metadata"></video>` : '<span class="ph">รูป/วิดีโอจะแสดงตรงนี้</span>';
     return `<h3>สรุปแอดนี้</h3>${nx}${wz.step === 5 ? reachHtml(true) : ""}${rows}${est}
       <div class="fbp" aria-label="ตัวอย่างแอดคร่าว ๆ"><div class="fbh"><span class="pav">${pg?.picture ? `<img src="${esc(pg.picture)}" alt="">` : esc((pg?.name || "N").slice(0, 1))}</span><div><b>${esc(pg?.name || "ชื่อเพจ")}</b><small>ได้รับการสนับสนุน</small></div></div>
-      <div class="fbt">${text ? esc(text) : '<span class="ph">ข้อความโฆษณาจะแสดงตรงนี้</span>'}</div>
+      <div class="fbt">${text ? esc(text) : '<span class="ph">แคปชั่นจะแสดงตรงนี้</span>'}</div>
       <div class="fbm">${pic}</div>
       ${cta ? `<div class="fbf"><div><small>${esc(host)}</small><b>${esc(A.headline.trim() || "")}</b></div><span class="cta">${cta}</span></div>` : ""}</div>
       <div class="fbn">${multi ? `แสดงแบบ ${TAGS[wz.ci]} ที่กำลังแก้ · ` : ""}ตัวอย่างคร่าว ๆ หน้าตาจริงจาก Facebook ดูได้ในขั้น "ตรวจแล้วยิง"</div>`;
@@ -2290,15 +2324,74 @@
       <div class="wz-hint">${n > 1 ? `ตอนนี้มี ${n} แบบ (${TAGS.slice(0, n).join(", ")}) ใช้งบก้อนเดียวกัน` : "ทำอีก 1–2 แบบ เช่น เปลี่ยนวิดีโอ หรือเปลี่ยนข้อความ"} — Facebook จะทดลองส่งทุกแบบ แล้วเทงบให้แบบที่ได้ผลดีกว่าเอง</div>
       ${n < 3 ? `<button class="btn ghost sm" id="wzAddCr">＋ เพิ่มแบบ ${TAGS[n]}</button>` : ""}`;
   }
+  // ---------- ช่องช่วยคิดแคปชั่น (ใช้เฉพาะข้อมูลที่กรอก ไม่แต่งข้อมูลทรัพย์เอง) ----------
+  const CAP_DEALS = ["ขาย", "ให้เช่า", "ขายหรือเช่า"];
+  const CAP_CTA = { chat: "💬 ทักแชตสอบถาม หรือนัดดูทรัพย์ได้เลยครับ", lead: "📝 กรอกเบอร์ไว้ เดี๋ยวทีมงานโทรกลับครับ", traffic: "👉 กดดูรายละเอียดเพิ่มเติมได้เลยครับ", reach: "💬 สนใจทักแชตเพจได้เลยครับ" };
+  const capOf = () => wz.cap || (wz.cap = { deal: "ขาย", type: "", loc: "", price: "", size: "", pts: "", out: null });
+  function capMake(c) {
+    const t = c.type.trim().replace(/^(ขายหรือเช่า|ขาย|ให้เช่า|เช่า)\s*/, ""), l = c.loc.trim(), s = c.size.trim(), p0 = c.price.trim();
+    const pr = p0 ? (/^(ราคา|฿)/.test(p0) ? p0 : `ราคา ${p0}`) : "";
+    const pts = c.pts.split(/\n|·/).map((x) => x.trim().replace(/^[-•✅*]\s*/, "")).filter(Boolean).slice(0, 5);
+    const cta = CAP_CTA[wz.goal] || CAP_CTA.chat, deal = c.deal || "ขาย", what = `${deal}${t}`;
+    const first = [what, l, pr].filter(Boolean).join(" ");
+    const caps = [
+      { k: "แบบรายการ (อ่านง่าย)", t: [`🏡 ${[what, l].filter(Boolean).join(" ")}`, pr && `💰 ${pr}`, s && `📐 ${s}`, ...pts.map((x) => `✅ ${x}`), cta].filter(Boolean).join("\n") },
+      { k: "แบบเล่า (ชวนคุย)", t: [first, s, pts.length ? `ใครกำลังมองหา${t}${l ? ` แถว${l.split(/\s+/)[0]}` : ""} ทรัพย์นี้มีจุดเด่นคือ` : "", ...pts.map((x) => `• ${x}`), cta].filter(Boolean).join("\n") },
+      { k: "แบบสั้น (2 บรรทัด)", t: [[first, s, pts[0]].filter(Boolean).join(" · "), cta].join("\n") },
+    ];
+    const heads = [...new Set([pr, [t, l.split(/\s+/)[0]].filter(Boolean).join(" "), wz.goal === "chat" ? "ทักนัดดูทรัพย์ได้เลย" : ""].filter(Boolean).map((h) => h.slice(0, 60)))];
+    return { caps, heads };
+  }
+  function capHelper() {
+    const c = capOf(), f = (k, lab, ph) => `<label class="cf"><span>${lab}</span><input class="inp" data-cap="${k}" maxlength="80" placeholder="${ph}" value="${esc(c[k])}"></label>`;
+    const out = c.out ? `<div class="capr">${c.out.caps.map((x, i) => `<div class="capc"><div class="capk">${esc(x.k)}</div><pre>${esc(x.t)}</pre><button class="btn sm" data-capuse="${i}">ใช้แคปชั่นนี้</button></div>`).join("")}
+      ${c.out.heads.length ? `<div class="caphd"><span>หัวข้อที่เข้ากัน แตะเพื่อใช้:</span>${c.out.heads.map((h, i) => `<button class="chip2" data-headuse="${i}">${esc(h)}</button>`).join("")}</div>` : ""}</div>` : "";
+    return drop("cap", "💡 คิดแคปชั่นไม่ออก? กรอกข้อมูลทรัพย์ แล้วให้ช่วยคิด", `
+      <div class="chips">${CAP_DEALS.map((d) => `<button class="chip2 ${c.deal === d ? "sel" : ""}" data-capdeal="${d}">${d}</button>`).join("")}</div>
+      <div class="capg">${f("type", "ประเภททรัพย์ *", "เช่น บ้านเดี่ยว 2 ชั้น")}${f("loc", "ทำเล", "เช่น นครชุม ใกล้ตลาด")}${f("price", "ราคา", "เช่น 1.89 ล้าน")}${f("size", "ขนาด / ห้อง", "เช่น 50 ตร.วา 3 ห้องนอน")}</div>
+      <label class="cf"><span>จุดเด่น (บรรทัดละข้อ)</span><textarea class="inp" data-cap="pts" rows="3" maxlength="400" placeholder="เช่น&#10;ใกล้โรงเรียน&#10;โฉนดพร้อมโอน">${esc(c.pts)}</textarea></label>
+      <div class="cbtn"><button class="btn sm" id="capGo">✨ คิดแคปชั่นให้ 3 แบบ</button><button class="btn ghost sm" id="capAi">🤖 ให้ AI คิดแบบอื่น</button></div>
+      <div class="upnote">ใช้เฉพาะข้อมูลที่กรอก ไม่เติมข้อมูลทรัพย์ให้เอง · ช่องที่ว่างจะไม่ใส่ · เลือกแล้วแก้ต่อในช่องแคปชั่นได้</div>${out}`, "caph", !wz.message.trim());
+  }
+  function capAiPrompt() {
+    const c = capOf(), v = (x) => String(x || "").trim();
+    return `ช่วยคิดแคปชั่นแอด (เป้าหมาย: ${GOAL_INFO[wz.goal].t}) ให้ 3 แบบ บรรทัดแรกต้องมีประเภททรัพย์+ทำเล+ราคา ใช้เฉพาะข้อมูลด้านล่าง ห้ามแต่งข้อมูลทรัพย์เพิ่ม และเสนอหัวข้อสั้น ๆ (ตัวหนาใต้รูป) 3 แบบ
+ข้อมูลทรัพย์:
+ประเภท: ${c.deal}${v(c.type)}
+ทำเล: ${v(c.loc)}
+ราคา: ${v(c.price)}
+ขนาด: ${v(c.size)}
+จุดเด่น: ${v(c.pts).replace(/\n+/g, " · ")}`;
+  }
+  // ---------- ภาพบอกตำแหน่ง "หัวข้อ" ในแอด (ใช้ข้อมูลที่กรอกจริง) ----------
+  function headPic() {
+    const A = pickCr(), u = upOf(A), cv = coverOf(A), pg = pageOf();
+    const thumb = cv ? (cv.kind === "image" ? cv.preview : cv.url) : u ? (u.kind === "image" ? u.preview : u.thumb) : A.post?.picture;
+    const cap = (wz.message.trim() || A.post?.message || "").split("\n").map((x) => x.trim()).find(Boolean) || "แคปชั่นอยู่ตรงนี้";
+    const host = wz.goal === "chat" ? "Messenger" : wz.goal === "lead" ? "แบบฟอร์ม" : wz.goal === "traffic" ? "ลิงก์ปลายทาง" : "";
+    const cta = CTA_TH[wz.goal] || "ดูเพิ่มเติม";
+    return drop("headpic", "🖼️ หัวข้ออยู่ตรงไหนในแอด? แตะดูภาพ", `
+      <div class="hmock" aria-label="ภาพคร่าว ๆ ตำแหน่งแคปชั่นและหัวข้อในแอด">
+        <div class="hm-top"><span class="pav">${pg?.picture ? `<img src="${esc(pg.picture)}" alt="">` : esc((pg?.name || "N").slice(0, 1))}</span><div><b>${esc(pg?.name || "ชื่อเพจ")}</b><small>ได้รับการสนับสนุน</small></div></div>
+        <div class="hm-cap"><i class="tg">1</i><span id="hmCap">${esc(cap)}</span></div>
+        <div class="hm-media">${thumb ? `<img src="${esc(thumb)}" alt="">` : "<span>รูป / วิดีโอ</span>"}</div>
+        <div class="hm-foot"><i class="tg">2</i><div>${host ? `<small>${host}</small>` : ""}<b id="hmHead">${esc(wz.headline.trim() || "ราคาจบ 1.89 ล้าน")}</b></div><span class="cta">${esc(cta)}</span></div>
+      </div>
+      <ol class="hm-leg"><li><b>แคปชั่น</b> ข้อความยาวเหนือรูป เล่ารายละเอียดทรัพย์</li><li><b>หัวข้อ</b> ตัวหนาบรรทัดเดียวใต้รูป ข้างปุ่ม "${esc(cta)}" ไว้ย้ำจุดขายเดียว เช่น ราคา หรือทำเล</li></ol>
+      <div>ไม่ใส่หัวข้อก็ยิงได้ บางตำแหน่ง เช่น สตอรี่หรือ Reels อาจไม่โชว์หัวข้อหรือตัดให้สั้น ข้อมูลสำคัญจึงต้องอยู่ในแคปชั่นด้วยเสมอ</div>
+      <small class="src">ภาพคร่าว ๆ หน้าตาจริงจาก Facebook ดูได้ในขั้น "ตรวจแล้วยิง"</small>`, "xpl hpic", true);
+  }
   function stepText() {
-    let b = `${crTabs()}<div class="wz-q">${wz.cr.length > 1 ? `แบบ ${TAGS[wz.ci]}: ข้อความ` : "ตั้งชื่อและข้อความ"}</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "ข้อความโฆษณาคือข้อความที่คนเห็นเหนือรูป/วิดีโอ"}</div>
+    let b = `${crTabs()}<div class="wz-q">${wz.cr.length > 1 ? `แบบ ${TAGS[wz.ci]}: ข้อความ` : "ตั้งชื่อและข้อความ"}</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "แคปชั่นคือข้อความที่คนเห็นเหนือรูป/วิดีโอ หัวข้อคือตัวหนาใต้รูป"}</div>
       <label class="f" for="wzName">ชื่อแอด (ไว้เรียกในทีม · ไลน์ใช้ชื่อนี้ตอนสรุป/เตือนเรื่องแอด · ลูกค้าไม่เห็น)</label>
       <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">`;
     if (isBoost()) return b;
-    b += `<label class="f" for="wzMsg">ข้อความโฆษณา${wz.src === "post" ? " (เว้นว่าง = ใช้ข้อความโพสต์)" : wz.goal === "reach" ? " (ไม่ใส่ก็ได้)" : ""}</label>
+    b += `<label class="f" for="wzMsg">แคปชั่น (ข้อความโฆษณา)${wz.src === "post" ? " (เว้นว่าง = ใช้ข้อความโพสต์)" : wz.goal === "reach" ? " (ไม่ใส่ก็ได้)" : ""}</label>
       <textarea class="inp" id="wzMsg" maxlength="2000" placeholder="เช่น ขายบ้านเดี่ยว 2 ชั้น 3 ห้องนอน ใกล้ตลาด ทักสอบถามได้เลย">${esc(wz.message)}</textarea>
-      <label class="f" for="wzHead">หัวข้อสั้น ๆ (ไม่ใส่ก็ได้)</label>
-      <input class="inp" id="wzHead" maxlength="60" value="${esc(wz.headline)}" placeholder="เช่น ราคาจบ 1.89 ล้าน">`;
+      ${capHelper()}
+      <label class="f" for="wzHead">หัวข้อ (ตัวหนาใต้รูป · ไม่ใส่ก็ได้)</label>
+      <input class="inp" id="wzHead" maxlength="60" value="${esc(wz.headline)}" placeholder="เช่น ราคาจบ 1.89 ล้าน">
+      ${headPic()}`;
     if (wz.msgUndo) b += '<button class="btn ghost sm" id="wzUndo" style="margin-top:8px">↩ เอาข้อความเดิมคืน</button>';
     if (HOLE.test(wz.message) || HOLE.test(wz.headline)) b += '<div class="note warn">ยังมีช่อง [ ] ที่ต้องเปลี่ยนเป็นข้อมูลจริงของทรัพย์ (ห้ามปล่อยไว้ตอนยิง)</div>';
     b += abBox();
@@ -2528,8 +2621,30 @@
     on("wzLink", "onchange", () => renderWizard());
     on("wzForm", "onchange", (e) => { wz.form_id = e.target.value; refreshNext(); });
     on("wzName", "oninput", (e) => { wz.name = e.target.value; refreshNext(); });
-    on("wzMsg", "oninput", (e) => { wz.message = e.target.value; refreshNext(); });
-    on("wzHead", "oninput", (e) => { wz.headline = e.target.value; });
+    on("wzMsg", "oninput", (e) => { wz.message = e.target.value; refreshNext(); const h = $("hmCap"); if (h) h.textContent = wz.message.split("\n").map((x) => x.trim()).find(Boolean) || "แคปชั่นอยู่ตรงนี้"; });
+    on("wzHead", "oninput", (e) => { wz.headline = e.target.value; const h = $("hmHead"); if (h) h.textContent = wz.headline.trim() || "ราคาจบ 1.89 ล้าน"; updSum(); });
+    box.querySelectorAll("[data-cap]").forEach((el) => el.oninput = () => { capOf()[el.dataset.cap] = el.value; });
+    box.querySelectorAll("[data-capdeal]").forEach((el) => el.onclick = () => { capOf().deal = el.dataset.capdeal; renderWizard(); });
+    on("capGo", "onclick", () => {
+      const c = capOf();
+      if (!c.type.trim() || !(c.loc.trim() || c.price.trim())) return toast("กรอกอย่างน้อย ประเภททรัพย์ + ทำเลหรือราคา", 3000);
+      c.out = capMake(c); renderWizard();
+      setTimeout(() => document.querySelector(".capr")?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
+    });
+    box.querySelectorAll("[data-capuse]").forEach((el) => el.onclick = () => {
+      const x = capOf().out?.caps[Number(el.dataset.capuse)]; if (!x) return;
+      wz.msgUndo = { message: wz.message, headline: wz.headline, welcome: wz.welcome };
+      wz.message = x.t; renderWizard(); $("wzMsg")?.focus(); toast("ใส่แคปชั่นแล้ว แก้ต่อได้ในช่องแคปชั่น", 2500);
+    });
+    box.querySelectorAll("[data-headuse]").forEach((el) => el.onclick = () => {
+      const h = capOf().out?.heads[Number(el.dataset.headuse)]; if (!h) return;
+      wz.headline = h; renderWizard(); toast("ใส่หัวข้อแล้ว", 1500);
+    });
+    on("capAi", "onclick", async () => {
+      const c = capOf(), ready = c.type.trim() && (c.loc.trim() || c.price.trim());
+      await aiOpen(true); const t = $("aiInp"); t.value = capAiPrompt(); t.dispatchEvent(new Event("input"));
+      if (ready) aiSend(); else { t.focus(); toast("เติมข้อมูลทรัพย์หลังเครื่องหมาย : แล้วกดส่ง", 3500); }
+    });
     on("wzDaily", "onchange", (e) => { wz.daily = Math.round(Number(e.target.value) || 0); renderWizard(); });
     on("wzDaily", "oninput", (e) => { wz.daily = Math.round(Number(e.target.value) || 0); document.querySelectorAll("[data-daily]").forEach((b) => b.classList.toggle("sel", Number(b.dataset.daily) === wz.daily)); updSum(); });
     box.querySelectorAll("[data-page]").forEach((el) => el.onclick = () => {
@@ -2736,7 +2851,7 @@
   const DESK = matchMedia("(min-width:1024px)");
   const AI_CHIPS = {
     base: ["ช่วยดูแอดตอนนี้แล้วแนะนำหน่อย", "แอดไหนควรหยุดหรือเพิ่มงบ", "งบวันละเท่าไหร่ดี", "แอดเก่าตัวไหนควรยิงซ้ำ"],
-    draft: ["ช่วยตรวจแอดที่กำลังทำให้หน่อย", "ช่วยเขียนข้อความโฆษณาให้หน่อย", "งบกับจำนวนวันเท่านี้โอเคไหม", "กลุ่มคนแบบนี้เหมาะไหม"],
+    draft: ["ช่วยตรวจแอดที่กำลังทำให้หน่อย", "ช่วยคิดแคปชั่นแอดให้หน่อย", "งบกับจำนวนวันเท่านี้โอเคไหม", "กลุ่มคนแบบนี้เหมาะไหม"],
   };
   const aiFmt = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,6}\s*/gm, "").replace(/^\s*[-*]\s+/gm, "• ").replace(/\n/g, "<br>");
   function aiFabSync() {
