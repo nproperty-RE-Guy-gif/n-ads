@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1120">
+<meta name="nads-ver" content="20261126-1143">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2292,7 +2292,7 @@
   }
   function stepText() {
     let b = `${crTabs()}<div class="wz-q">${wz.cr.length > 1 ? `แบบ ${TAGS[wz.ci]}: ข้อความ` : "ตั้งชื่อและข้อความ"}</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "ข้อความโฆษณาคือข้อความที่คนเห็นเหนือรูป/วิดีโอ"}</div>
-      <label class="f" for="wzName">ชื่อแอด (ขึ้นในไลน์ตอนแจ้งเตือน คนดูแอดไม่เห็น)</label>
+      <label class="f" for="wzName">ชื่อแอด (ไว้เรียกในทีม · ไลน์ใช้ชื่อนี้ตอนสรุป/เตือนเรื่องแอด · ลูกค้าไม่เห็น)</label>
       <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">`;
     if (isBoost()) return b;
     b += `<label class="f" for="wzMsg">ข้อความโฆษณา${wz.src === "post" ? " (เว้นว่าง = ใช้ข้อความโพสต์)" : wz.goal === "reach" ? " (ไม่ใส่ก็ได้)" : ""}</label>
