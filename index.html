@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1345">
+<meta name="nads-ver" content="20261126-1409">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -748,6 +748,7 @@
   .tg{position:absolute;left:7px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:11px;color:#fff;background:var(--mute)}
   .hm-foot .tg{background:var(--pri)}
   .hm-leg{margin:0 0 6px;padding-left:22px} .hm-leg li{margin:3px 0}
+  .caph1{font-size:calc(14px * var(--fz));margin:0 0 6px;padding:4px 8px;border-radius:8px;background:var(--pri-l);display:inline-block}
 </style>
 </head>
 <body>
@@ -2351,23 +2352,42 @@
   }
   function capHelper() {
     const c = capOf(), f = (k, lab, ph) => `<label class="cf"><span>${lab}</span><input class="inp" data-cap="${k}" maxlength="80" placeholder="${ph}" value="${esc(c[k])}"></label>`;
-    const out = c.out ? `<div class="capr">${c.out.noPrice ? '<div class="note warn" style="margin:0">ยังไม่ได้กรอกราคา แคปชั่นแอดควรมีราคาใน 2 บรรทัดแรก ใส่ราคาแล้วกดคิดใหม่ได้</div>' : ""}${c.out.caps.map((x, i) => `<div class="capc"><div class="capk">${esc(x.k)}</div><pre>${esc(x.t)}</pre><button class="btn sm" data-capuse="${i}">ใช้แคปชั่นนี้</button></div>`).join("")}
+    const o = c.out;
+    const out = o ? `<div class="capr">${o.note ? `<div class="note info" style="margin:0">${esc(o.note)}</div>` : ""}
+      ${o.missing ? `<div class="note warn" style="margin:0">ยังขาด: ${esc(o.missing)} — เติมในช่องด้านบนแล้วกดคิดใหม่ได้</div>` : o.noPrice ? '<div class="note warn" style="margin:0">ยังไม่ได้กรอกราคา แคปชั่นแอดควรมีราคาใน 2 บรรทัดแรก ใส่ราคาแล้วกดคิดใหม่ได้</div>' : ""}
+      ${o.caps.map((x, i) => `<div class="capc"><div class="capk">${esc(x.k)}</div>${x.h ? `<div class="caph1">หัวข้อ: <b>${esc(x.h)}</b></div>` : ""}<pre>${esc(x.t)}</pre><button class="btn sm" data-capuse="${i}">${x.h ? "ใช้แคปชั่น + หัวข้อนี้" : "ใช้แคปชั่นนี้"}</button></div>`).join("")}
+      ${o.added ? `<div class="note warn" style="margin:0">⚠️ AI เติมเอง ตรวจก่อนใช้: ${esc(o.added)}</div>` : ""}
       ${c.out.heads.length ? `<div class="caphd"><span>หัวข้อที่เข้ากัน แตะเพื่อใช้:</span>${c.out.heads.map((h, i) => `<button class="chip2" data-headuse="${i}">${esc(h)}</button>`).join("")}</div>` : ""}</div>` : "";
     return drop("cap", "💡 คิดแคปชั่นไม่ออก? กรอกข้อมูลทรัพย์ แล้วให้ช่วยคิด", `
       <div class="chips">${CAP_DEALS.map((d) => `<button class="chip2 ${c.deal === d ? "sel" : ""}" data-capdeal="${d}">${d}</button>`).join("")}</div>
       <div class="capg">${f("type", "ประเภททรัพย์ *", "เช่น บ้านเดี่ยว 2 ชั้น")}${f("loc", "ทำเล", "เช่น นครชุม ใกล้ตลาด")}${f("price", "ราคา", "เช่น 1.89 ล้าน")}${f("size", "ขนาด / ห้อง", "เช่น 50 ตร.วา 3 ห้องนอน")}</div>
       <label class="cf"><span>จุดเด่น (บรรทัดละข้อ)</span><textarea class="inp" data-cap="pts" rows="3" maxlength="400" placeholder="เช่น&#10;ใกล้โรงเรียน&#10;โฉนดพร้อมโอน">${esc(c.pts)}</textarea></label>
-      <div class="cbtn"><button class="btn sm" id="capGo">✨ คิดแคปชั่นให้ 3 แบบ</button><button class="btn ghost sm" id="capAi">🤖 ให้ AI คิดแบบอื่น</button></div>
-      <div class="upnote">ใช้เฉพาะข้อมูลที่กรอก ไม่เติมข้อมูลทรัพย์ให้เอง · ช่องที่ว่างจะไม่ใส่ · เลือกแล้วแก้ต่อในช่องแคปชั่นได้</div>${out}`, "caph", !wz.message.trim());
+      <div class="cbtn"><button class="btn sm" id="capGo" ${c.busy ? "disabled" : ""}>${c.busy ? "⏳ AI กำลังเรียบเรียง…" : c.out?.src === "ai" ? "🔄 ให้ AI คิดใหม่อีกชุด" : "✨ ให้ AI เรียบเรียงแคปชั่น 3 แบบ"}</button><button class="btn ghost sm" id="capAi">💬 คุยต่อในแชต AI</button></div>
+      <div class="upnote">AI เอาข้อมูลที่กรอกมาเล่าใหม่ให้น่าอ่าน ไม่เติมข้อมูลทรัพย์เอง · ใช้โควตา AI 1 ครั้งต่อรอบ · เลือกแล้วแก้ต่อในช่องแคปชั่นได้</div>${out}`, "caph", !wz.message.trim());
   }
-  const CAP_GUIDE = `[หลักเขียนแคปชั่นแอดของ N propertyNetwork — ทำตามทุกครั้งที่เขียนแคปชั่น]
+  const CAP_RULES = `[หลักเขียนแคปชั่นแอดของ N propertyNetwork — ทำตามทุกครั้งที่เขียนแคปชั่น]
 1) เล่าเรื่องแบบสั้น 4–6 บรรทัด ไม่เกินราว 350 ตัวอักษร บรรทัดละประโยคสั้น ภาษาพูด อ่านแล้วเห็นภาพ
 2) โครง: ฮุก (คำถามหรือสถานการณ์ที่คนหาทรัพย์แบบนี้เจอ ต้องมีประเภททรัพย์+ทำเลในบรรทัดแรก) → ตัวทรัพย์ (ราคา+ขนาดภายใน 2 บรรทัดแรก) → จุดเด่น 1–2 ข้อที่ผู้ใช้ให้มา เล่าว่าชีวิตจะสะดวกยังไง → ชวนทัก 1 ประโยคว่าทักแล้วได้อะไร (เช่น ส่งพิกัด/รูปเพิ่ม/นัดดู)
 3) ห้ามแต่งข้อเท็จจริง: ราคา ขนาด ระยะทาง ถนน น้ำไฟ เอกสารสิทธิ์ ผังเมือง ผลตอบแทน และคำอย่าง "เดินทางสะดวก" "ทำเลทอง" ถ้าผู้ใช้ไม่ได้บอก ข้อมูลที่ขาดให้เว้น [ราคา] [ขนาด]
 4) ฮุกเป็นคำถาม/สถานการณ์ทั่วไปได้ แต่ห้ามอ้างเป็นข้อเท็จจริงของทรัพย์
-5) ห้ามคำโอ้อวดที่พิสูจน์ไม่ได้ (ขายไวที่สุด ถูกที่สุด ถูกกว่าราคาประเมิน คุ้มที่สุดในย่าน) ไม่ใส่แฮชแท็ก อีโมจิไม่เกิน 3 ตัว ไม่ใส่เบอร์โทรถ้าเป้าหมายคือทักแชต
-6) ให้ 3 แบบที่ต่างกันที่มุมเล่า (เช่น คนอยากสร้างบ้าน / คนอยากลงทุน / คนดูความคุ้ม) แต่ละแบบมีหัวข้อสั้นไม่เกิน 30 ตัวอักษร
-7) ตอบสั้นตามรูปแบบ: แบบที่ 1 (มุม…) / หัวข้อ: … / แคปชั่น: … ถ้ามีคำที่ผมเติมเองต้องบอกท้ายคำตอบ`;
+5) ห้ามคำโอ้อวดที่พิสูจน์ไม่ได้ (ขายไวที่สุด ถูกที่สุด ถูกกว่าราคาประเมิน คุ้มที่สุดในย่าน) ไม่ใส่แฮชแท็ก อีโมจิไม่เกิน 3 ตัว เป้าหมายทักแชตไม่ต้องใส่เบอร์ เว้นแต่ผู้ใช้ใส่เบอร์มาในข้อมูล (ให้ไว้บรรทัดท้าย หลังชวนทักแชต)
+6) ห้ามลอกข้อความที่ผู้ใช้พิมพ์มาทั้งก้อน ให้หยิบข้อเท็จจริงมาเรียบเรียงใหม่เป็นเรื่องเล่า ข้อเท็จจริงที่น่าสนใจ (เช่น เหลือกี่แปลง ห่างจากที่สำคัญเท่าไหร่) ใช้เป็นฮุกได้
+7) ให้ 3 แบบที่ต่างกันที่มุมเล่า (เช่น คนอยากสร้างบ้าน / คนอยากลงทุน / คนดูความคุ้ม) แต่ละแบบมีหัวข้อสั้นไม่เกิน 30 ตัวอักษร`;
+  const CAP_GUIDE = CAP_RULES + "\n8) ตอบสั้นตามรูปแบบ: แบบที่ 1 (มุม…) / หัวข้อ: … / แคปชั่น: … ถ้ามีคำที่เติมเองต้องบอกท้ายคำตอบ";
+  // ปุ่ม ✨: ให้ AI เรียบเรียงแคปชั่นใหม่ 3 แบบ แสดงในหน้าเลย (ไม่เปิดแชต)
+  async function capAiRun(c) {
+    const prev = c.out?.src === "ai" ? c.out.caps.map((x) => x.t.split("\n")[0]).join(" | ") : "";
+    const q = `${capAiPrompt()}${prev ? `\nขอชุดใหม่ที่ต่างจากชุดก่อน (บรรทัดแรกของชุดก่อน: ${prev})` : ""}
+ครั้งนี้ตอบเป็น JSON อย่างเดียว ไม่มีข้อความอื่น:
+{"caps":[{"angle":"มุมเล่า","headline":"หัวข้อไม่เกิน 30 ตัวอักษร","caption":"แคปชั่น ขึ้นบรรทัดใหม่ด้วย \\n"}],"added":"คำที่เติมเองนอกข้อมูลที่ให้ (ไม่มีให้เว้นว่าง)","missing":"ข้อมูลสำคัญที่ยังขาด เช่น ราคา ขนาด (ไม่มีให้เว้นว่าง)"}`;
+    const r = await api("/api/ai/chat", { body: { question: q, messages: [], draft: CAP_RULES } });
+    if (AI.status && r.usage) AI.status.usage = r.usage;
+    const txt = String(r.reply || "").replace(/```(json)?/g, ""), a = txt.indexOf("{"), b = txt.lastIndexOf("}");
+    let j = null; try { j = JSON.parse(txt.slice(a, b + 1)); } catch {}
+    const caps = (j?.caps || []).slice(0, 3).map((x) => ({ k: String(x.angle || "แบบ AI").slice(0, 40), t: String(x.caption || "").replace(/\\n/g, "\n").trim().slice(0, 2000), h: String(x.headline || "").trim().slice(0, 60) })).filter((x) => x.t);
+    if (!caps.length) return { caps: [{ k: "คำตอบจาก AI", t: txt.trim().slice(0, 2000), h: "" }], heads: [], src: "ai", raw: true };
+    return { caps, heads: [], src: "ai", added: String(j.added || "").trim(), missing: String(j.missing || "").trim() };
+  }
   const isCapQ = (q) => /แคปชั่น|แคปชัน|caption/i.test(q);
   function capAiPrompt() {
     const c = capOf(), v = (x) => String(x || "").trim();
@@ -2640,16 +2660,20 @@
     on("wzHead", "oninput", (e) => { wz.headline = e.target.value; const h = $("hmHead"); if (h) h.textContent = wz.headline.trim() || "ราคาจบ 1.89 ล้าน"; updSum(); });
     box.querySelectorAll("[data-cap]").forEach((el) => el.oninput = () => { capOf()[el.dataset.cap] = el.value; });
     box.querySelectorAll("[data-capdeal]").forEach((el) => el.onclick = () => { capOf().deal = el.dataset.capdeal; renderWizard(); });
-    on("capGo", "onclick", () => {
+    on("capGo", "onclick", async () => {
       const c = capOf();
-      if (!c.type.trim() || !(c.loc.trim() || c.price.trim())) return toast("กรอกอย่างน้อย ประเภททรัพย์ + ทำเลหรือราคา", 3000);
-      c.out = capMake(c); renderWizard();
-      setTimeout(() => document.querySelector(".capr")?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
+      if (c.busy) return;
+      if (!c.type.trim() || !(c.loc.trim() || c.price.trim() || c.pts.trim())) return toast("กรอกอย่างน้อย ประเภททรัพย์ + ทำเล ราคา หรือจุดเด่น", 3000);
+      const show = () => setTimeout(() => document.querySelector(".capr")?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
+      c.busy = true; renderWizard();
+      try { c.out = await capAiRun(c); if (st.demo) c.out.note = "โหมดตัวอย่าง: นี่คือคำตอบตัวอย่าง ไม่ใช่ AI จริง"; }
+      catch (e) { c.out = { ...capMake(c), src: "tpl", note: `AI ใช้ไม่ได้ตอนนี้ (${e.message}) เลยแสดงเป็นแม่แบบแทน` }; }
+      c.busy = false; renderWizard(); show();
     });
     box.querySelectorAll("[data-capuse]").forEach((el) => el.onclick = () => {
       const x = capOf().out?.caps[Number(el.dataset.capuse)]; if (!x) return;
       wz.msgUndo = { message: wz.message, headline: wz.headline, welcome: wz.welcome };
-      wz.message = x.t; renderWizard(); $("wzMsg")?.focus(); toast("ใส่แคปชั่นแล้ว แก้ต่อได้ในช่องแคปชั่น", 2500);
+      wz.message = x.t; if (x.h) wz.headline = x.h; renderWizard(); $("wzMsg")?.focus(); toast(x.h ? "ใส่แคปชั่นและหัวข้อแล้ว แก้ต่อได้" : "ใส่แคปชั่นแล้ว แก้ต่อได้ในช่องแคปชั่น", 2500);
     });
     box.querySelectorAll("[data-headuse]").forEach((el) => el.onclick = () => {
       const h = capOf().out?.heads[Number(el.dataset.headuse)]; if (!h) return;
@@ -3015,6 +3039,12 @@
 
   function demoApi(path, opts) {
     if (path === "/api/ai/status") return Promise.resolve({ enabled: true, model: "ตัวอย่าง", usage: { today: AI.msgs.filter((m) => m.role === "user").length, month: 0, daily: 60, monthly: 2500 } });
+    if (path === "/api/ai/chat" && String(opts?.body?.question || "").includes('"caps"')) return new Promise((ok) => setTimeout(() => ok({ reply: JSON.stringify({
+      caps: [
+        { angle: "คนอยากสร้างบ้าน (ตัวอย่าง)", headline: "ที่ดินหลังบิ๊กซีมินิ เหลือ 3 แปลง", caption: "อยากมีที่ดินสักแปลงใกล้มอราชภัฏ ไว้สร้างบ้านของตัวเองไหมครับ?\nแปลงนี้อยู่หลังบิ๊กซีมินิ ห่างมอราชภัฏแค่ 1 กม.\nทั้งหมด 4 แปลง จองไปแล้ว 1 เหลือ 3 แปลงสุดท้าย\n💬 ทักแชตมา เดี๋ยวส่งพิกัดกับขนาดแต่ละแปลงให้ครับ\nสนใจโทร 088-899-4287" },
+        { angle: "คนอยากลงทุน (ตัวอย่าง)", headline: "ที่ดินใกล้มอราชภัฏ 1 กม.", caption: "มองหาที่ดินใกล้มหาลัยไว้ลงทุนอยู่หรือเปล่าครับ?\nที่ดินเปล่าหลังบิ๊กซีมินิ ห่างมอราชภัฏ 1 กม.\nมี 4 แปลง ตอนนี้เหลือ 3\n💬 ทักแชตถามราคาและขนาดได้เลยครับ\nโทร 088-899-4287" },
+        { angle: "คนดูความคุ้ม (ตัวอย่าง)", headline: "เหลือ 3 แปลง หลังมอราชภัฏ", caption: "จอง 1 แปลงแล้ว เหลืออีก 3 แปลง 👀\nที่ดินเปล่าหลังบิ๊กซีมินิ ใกล้มอราชภัฏ 1 กม.\nอยากรู้ราคาและขนาด ทักแชตมาได้เลยครับ\nโทร 088-899-4287" } ],
+      added: "", missing: "ราคา, ขนาดที่ดิน" }) }), 900));
     if (path === "/api/ai/chat") return new Promise((ok) => setTimeout(() => ok({ reply: '(คำตอบตัวอย่าง) แอด "ที่ดินติดถนน 2 ไร่" ใช้ไป ฿210 ยังไม่มีคนทัก แนะนำ:\n• หยุดไว้ก่อน แล้วลองวิดีโอที่เปิดด้วยมุมหน้าที่ดินติดถนนใน 3 วินาทีแรก\n• ย้ายงบไปแอด "บ้านเดี่ยว นครชุม" ที่ต้นทุนดีกว่า (~฿46/ทักแชต)\n\nในระบบจริง ผู้ช่วยจะอ่านตัวเลขแอดจริงของคุณ', usage: { today: AI.msgs.filter((m) => m.role === "user").length, month: 1, daily: 60, monthly: 2500 } }), 900));
     if (path === "/api/best-ads") return Promise.resolve({ items: [
       { ad_id: "1", ad_name: "บ้านเดี่ยว นครชุม 1.89 ล้าน", status: "หยุดอยู่", spend: 1840, results: 41, result_label: "ทักแชต", cpr: 44.9, impressions: 52000,
