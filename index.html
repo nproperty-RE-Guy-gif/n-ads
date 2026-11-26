@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1550">
+<meta name="nads-ver" content="20261126-1558">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1718,6 +1718,18 @@
   const inFlight = (u) => !!u && ["uploading", "sending", "processing"].includes(u.phase);
   const alive = (up) => wz.up === up || wz.cr.some((c, i) => i !== wz.ci && c.up === up);
   const crList = () => (wz.cr.length ? wz.cr.map((c, i) => (i === wz.ci ? pickCr() : c)) : [pickCr()]);
+  // ไม่ตั้งชื่อแอด = ตั้งให้จากหัวข้อ/บรรทัดแรกของแคปชั่น + วันที่ (ระบบรู้ว่าแอดไหนจากเลข ID อยู่แล้ว ชื่อมีไว้ให้คนอ่าน)
+  function autoName() {
+    const A = crList()[0] || {};
+    const line = [A.headline, A.message, A.post?.message].map((t) => String(t || "")).flatMap((t) => t.split("\n"))
+      .map((x) => x.replace(/#\S+/g, "").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, "").replace(/\s+/g, " ").trim())
+      .find((x) => x.length >= 2) || "";
+    const d = new Date().toLocaleDateString("th-TH", { day: "numeric", month: "short" });
+    const t = line.length > 40 ? line.slice(0, 39) + "…" : line;
+    return `${t || "แอด" + (GOAL_INFO[wz.goal]?.t || "ใหม่")} · ${d}`.slice(0, 80);
+  }
+  const adName = () => wz.name.trim() || autoName();
+  const nameHint = () => { const el = $("wzName"); if (el) el.placeholder = `ไม่ใส่ก็ได้ · จะใช้ "${autoName()}"`; };
   // สื่อที่ยังไม่พร้อม: ยังไม่ได้ใส่ (missing) / กำลังอัป / ผิดพลาด
   function pendingMedia() {
     const seen = new Set(), out = [];
@@ -1816,7 +1828,7 @@
   }
   function buildBody() {
     const list = allCr(), A = list[0], boost = A.src === "post" && wz.goal === "reach";
-    const body = { page_id: wz.page, goal: wz.goal, source: A.src === "post" ? "post" : "upload", name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
+    const body = { page_id: wz.page, goal: wz.goal, source: A.src === "post" ? "post" : "upload", name: adName(), welcome: wz.welcome.trim(), faq: faqList(),
       message: boost ? "" : A.message.trim(), headline: boost ? "" : A.headline.trim(),
       daily_thb: wz.daily, days: wz.days, radius_km: 0, age_min: wz.ageMin, age_max: wz.ageMax,
       gender: wz.gender, interests: wz.interests, excludes: [], platforms: platformsBody(), multi_ads: !!wz.multiAds };
@@ -2087,7 +2099,6 @@
       return ["#wzNext", "เรียบร้อย! เลือก<b>ภาพปก</b>ได้ แล้วกด <b>ถัดไป</b>"];
     }
     if (s === 3) {
-      if (wz.name.trim().length < 2) return ["#wzName", "ตั้ง<b>ชื่อแอด</b>ไว้ดูเอง เช่น ชื่อทรัพย์ + ราคา"];
       if (!isBoost() && wz.src !== "post" && wz.goal !== "reach" && !wz.message.trim()) return ["#wzMsg", "เขียน<b>แคปชั่น</b>: ประเภททรัพย์ ทำเล ราคา จุดเด่น"];
       return ["#wzNext", "อ่านทวน<b>คำผิด</b>อีกที แล้วกด <b>ถัดไป</b>"];
     }
@@ -2141,7 +2152,7 @@
       if (A.src === "post" && A.post && wz.goal !== "reach" && !A.post.picture) out.push("โพสต์นี้ไม่มีรูป/วิดีโอ ใช้กับเป้าหมายนี้ไม่ได้");
     }
     if (s === 3) {
-      if (wz.name.trim().length < 2) out.push("ตั้งชื่อแอด");
+      if (wz.name.trim().length === 1) out.push("ชื่อแอดสั้นไป (เว้นว่างได้ ระบบตั้งให้)");
       crList().forEach((c, i) => { if (c.src !== "post" && wz.goal !== "reach" && !c.message.trim()) out.push(tg(i) + "เขียนแคปชั่น"); });
       if (wz.goal === "chat" && !faqList().every((f) => f.q)) out.push("คำถามที่พบบ่อย: ใส่คำถามก่อนคำตอบ");
       if ([wz.name, wz.goal === "chat" ? wz.welcome : "", ...crList().flatMap((c) => [c.message, c.headline])].some((t) => HOLE.test(t || ""))) out.push("เติมข้อมูลจริงในช่อง [ ] ให้ครบ");
@@ -2188,7 +2199,7 @@
       [0, "เพจ", pg?.name || ""],
       [1, "เป้าหมาย", `${g.ic} ${g.t}`],
       [2, "รูป/วิดีโอ", media],
-      [3, "ข้อความ", wz.name.trim() ? `${wz.name.trim()}${first(text) ? " · " + first(text) : ""}` : first(text)],
+      [3, "ข้อความ", `${adName()}${first(text) && !wz.name.trim() ? "" : first(text) ? " · " + first(text) : ""}`],
       [4, "งบ", `${baht(wz.daily, 0)}/วัน × ${wz.days ? `${wz.days} วัน (รวมราว ${baht(wz.daily * wz.days, 0)})` : "ไม่กำหนดวันจบ"}`],
       [5, "กลุ่มคน", wz.geoInc.length ? `${areaSum()} · อายุ ${ageText()}${wz.reach?.upper ? ` · ประมาณ ${int(wz.reach.lower)}–${int(wz.reach.upper)} คน` : ""}` : ""],
     ].map(([i, k, v]) => {
@@ -2532,8 +2543,8 @@
   }
   function stepText() {
     let b = `${crTabs()}<div class="wz-q">${wz.cr.length > 1 ? `แบบ ${TAGS[wz.ci]}: ข้อความ` : "ตั้งชื่อและข้อความ"}</div><div class="wz-hint">${isBoost() ? "ดันโพสต์เดิม จะใช้ข้อความเดิมของโพสต์" : "แคปชั่นคือข้อความที่คนเห็นเหนือรูป/วิดีโอ หัวข้อคือตัวหนาใต้รูป"}</div>
-      <label class="f" for="wzName">ชื่อแอด (ไว้เรียกในทีม · ไลน์ใช้ชื่อนี้ตอนสรุป/เตือนเรื่องแอด · ลูกค้าไม่เห็น)</label>
-      <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="เช่น บ้านเดี่ยว นครชุม 1.89 ล้าน">`;
+      <label class="f" for="wzName">ชื่อแอด (ไม่ใส่ก็ได้ · ไลน์ใช้ชื่อนี้ตอนสรุป/เตือน · ลูกค้าไม่เห็น)</label>
+      <input class="inp" id="wzName" maxlength="80" value="${esc(wz.name)}" placeholder="${esc(`ไม่ใส่ก็ได้ · จะใช้ "${autoName()}"`)}">`;
     if (isBoost()) return b;
     b += `<label class="f" for="wzMsg">แคปชั่น (ข้อความโฆษณา)${wz.src === "post" ? " (เว้นว่าง = ใช้ข้อความโพสต์)" : wz.goal === "reach" ? " (ไม่ใส่ก็ได้)" : ""}</label>
       <textarea class="inp" id="wzMsg" maxlength="2000" placeholder="เช่น ขายบ้านเดี่ยว 2 ชั้น 3 ห้องนอน ใกล้ตลาด ทักสอบถามได้เลย">${esc(wz.message)}</textarea>
@@ -2746,7 +2757,7 @@
         : `<div class="post" style="cursor:default">${thumb ? `<img src="${esc(thumb)}" alt="">` : `<div class="noimg">${inFlight(u) ? "⏳ กำลังอัป" : (A.src === "post" ? !A.post : !u) ? "📎 ยังไม่ใส่" : "ไม่มีภาพ"}</div>`}<div class="tx">${esc(text || "(ไม่มีข้อความ)")}</div></div>`}
       <div class="sum">
         <div><span>เพจ</span><b>${esc(pageOf()?.name || wz.page)}</b></div>
-        <div><span>ชื่อแอด</span><b>${esc(wz.name)}</b></div>
+        <div><span>ชื่อแอด</span><b>${esc(adName())}${wz.name.trim() ? "" : ' <small style="font-weight:400;color:var(--mute)">(ตั้งให้อัตโนมัติ)</small>'}</b></div>
         <div><span>เป้าหมาย</span><b>${g.ic} ${g.t}</b></div>
         ${wz.goal === "lead" ? `<div><span>ฟอร์ม</span><b>${esc(form?.name || wz.form_id)}</b></div>` : ""}
         ${wz.goal === "traffic" ? `<div><span>ลิงก์</span><b style="word-break:break-all">${esc(wz.link.trim())}</b></div>` : ""}
@@ -2840,8 +2851,8 @@
     on("wzName", "oninput", (e) => { wz.name = e.target.value; refreshNext(); });
     const growMsg = () => { const t = $("wzMsg"); if (!t) return; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight + 4, Math.round(innerHeight * 0.7)) + "px"; };
     growMsg();
-    on("wzMsg", "oninput", (e) => { growMsg(); wz.message = e.target.value; refreshNext(); const h = $("hmCap"); if (h) h.textContent = wz.message.split("\n").map((x) => x.trim()).find(Boolean) || "แคปชั่นอยู่ตรงนี้"; });
-    on("wzHead", "oninput", (e) => { wz.headline = e.target.value; const h = $("hmHead"); if (h) h.textContent = wz.headline.trim() || "ราคาจบ 1.89 ล้าน"; updSum(); });
+    on("wzMsg", "oninput", (e) => { growMsg(); wz.message = e.target.value; nameHint(); refreshNext(); const h = $("hmCap"); if (h) h.textContent = wz.message.split("\n").map((x) => x.trim()).find(Boolean) || "แคปชั่นอยู่ตรงนี้"; });
+    on("wzHead", "oninput", (e) => { wz.headline = e.target.value; nameHint(); const h = $("hmHead"); if (h) h.textContent = wz.headline.trim() || "ราคาจบ 1.89 ล้าน"; updSum(); });
     box.querySelectorAll("[data-cap]").forEach((el) => el.oninput = () => { capOf()[el.dataset.cap] = el.value; });
     box.querySelectorAll("[data-capdeal]").forEach((el) => el.onclick = () => { capOf().deal = el.dataset.capdeal; renderWizard(); });
     on("capGo", "onclick", async () => {
