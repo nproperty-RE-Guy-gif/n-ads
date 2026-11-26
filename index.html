@@ -602,11 +602,26 @@
     .wz-space{height:230px}
   }
   @media (min-width:1640px){
-    .wz-sum{display:block;position:fixed;top:156px;left:calc(var(--side) + 1040px);width:min(440px,calc(100vw - var(--side) - 1072px));max-height:calc(100vh - 156px - 196px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px 14px 14px;z-index:4;scrollbar-width:thin}
+    /* จอกว้าง: ฟอร์มกับแผงสรุปขยายตามความกว้างจอ */
+    :root{--wzF:clamp(728px,calc((100vw - var(--side) - 344px) * .56),1200px);--wzS:clamp(320px,calc(100vw - var(--side) - var(--wzF) - 380px),820px);--wzX:calc(var(--side) + 312px + var(--wzF))}
+    #tab-new{max-width:calc(252px + var(--wzF))}
+    .wz-bar .in{max-width:var(--wzF)}
+    .fbm{height:clamp(210px,30vh,400px)}
+    .wz-sum{display:block;position:fixed;top:156px;left:var(--wzX);width:var(--wzS);max-height:calc(100vh - 156px - 196px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px 14px 14px;z-index:4;scrollbar-width:thin}
     body.ai-open .wz-sum{display:none}
-    body.on-new .ai-fab{left:calc(var(--side) + 1040px);right:auto;bottom:28px}
+    body.on-new .ai-fab{left:var(--wzX);right:auto;bottom:28px}
     body.on-new .bot{display:none}
     .wz-space{height:90px}
+  }
+  @media (min-width:2000px){
+    .wz-sum{padding:20px 18px 16px}
+    .wz-sum h3{font-size:21px} .wz-sum .nx{font-size:16px}
+    .sr{grid-template-columns:28px 96px minmax(0,1fr);padding:9px 8px}
+    .sr i{width:26px;height:26px;font-size:14px}
+    .sr span{font-size:15.5px} .sr b{font-size:17px}
+    .wz-sum .est{font-size:15.5px} .wz-sum .est small{font-size:13.5px}
+    .fbh .pav{width:44px;height:44px} .fbh b{font-size:15.5px} .fbh small{font-size:13px}
+    .fbt{font-size:15.5px} .fbf b{font-size:15.5px} .fbf .cta{font-size:15px;padding:9px 16px} .fbn{font-size:13.5px}
   }
 </style>
 </head>
