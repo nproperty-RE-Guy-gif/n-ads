@@ -563,6 +563,51 @@
     .cluster .gauge{max-width:380px}
     .readout .big{font-size:76px}
   }
+  /* ===== หน้ายิงแอด: ปุ่มผู้ช่วยใหญ่ + คำแนะนำเหนือปุ่ม + สรุปแอดด้านขวา (จอกว้าง) ===== */
+  .wz-space{height:210px}
+  .bot .say{margin-bottom:0;max-width:min(300px,calc(100vw - 32px))}
+  body.on-new .ai-fab{bottom:calc(160px + env(safe-area-inset-bottom))}
+  @media (max-width:1023px){ body.on-new.typing .ai-fab{display:none} }
+  body.on-new .bot{right:max(14px,calc(50% - 266px));bottom:calc(262px + env(safe-area-inset-bottom))}
+  .wz-sum{display:none}
+  .wz-sum h3{margin:0 0 10px;font-family:var(--disp);font-size:17px;font-weight:600}
+  .wz-sum .nx{background:var(--pri-l);border:1px solid var(--pri-l2);border-radius:12px;padding:9px 12px;font-size:14px;line-height:1.5;margin-bottom:10px}
+  .wz-sum .nx b{color:var(--pri)}
+  .sr{display:grid;grid-template-columns:24px 76px minmax(0,1fr);align-items:start;gap:8px;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:inherit;padding:7px 6px;border-radius:10px;cursor:pointer}
+  .sr:hover,.sr.cur{background:var(--pri-l)}
+  .sr:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+  .sr i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--line);color:var(--mute)}
+  .sr.ok i{background:#1E9E5A;color:#fff} .sr.need i{background:#E39B00;color:#fff}
+  .sr span{font-size:13.5px;color:var(--mute);padding-top:2px}
+  .sr b{font-size:14.5px;font-weight:500;overflow-wrap:anywhere;line-height:1.45}
+  .sr b.no{color:var(--mute);font-weight:400}
+  .wz-sum .est{font-size:13.5px;margin:8px 6px 0;line-height:1.5} .wz-sum .est small{display:block;color:var(--mute);font-size:12px}
+  .fbp{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg)}
+  .fbh{display:flex;gap:9px;align-items:center;padding:10px 12px}
+  .fbh .pav{width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--solid);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+  .fbh .pav img{width:100%;height:100%;object-fit:cover}
+  .fbh b{display:block;font-size:13.5px;line-height:1.3} .fbh small{font-size:11.5px;color:var(--mute)}
+  .fbt{padding:0 12px 10px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+  .fbm{height:210px;background:var(--line);display:grid;place-items:center}
+  .fbm img,.fbm video{width:100%;height:100%;object-fit:cover;display:block}
+  .fbf{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}
+  .fbf div{flex:1;min-width:0} .fbf small{display:block;font-size:11.5px;color:var(--mute)} .fbf b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fbf .cta{flex:none;background:var(--line);color:var(--ink);border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600}
+  .fbp .ph{color:var(--mute);font-size:13px}
+  .fbn{font-size:12px;color:var(--mute);margin:8px 4px 0}
+  @media (min-width:1024px){
+    body.on-new .ai-fab{right:32px;left:auto;bottom:104px}
+    body.on-new .bot{right:32px;bottom:250px}
+    .bot .say{max-width:320px;font-size:15px}
+    .wz-space{height:230px}
+  }
+  @media (min-width:1640px){
+    .wz-sum{display:block;position:fixed;top:156px;left:calc(var(--side) + 1040px);width:min(440px,calc(100vw - var(--side) - 1072px));max-height:calc(100vh - 156px - 196px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px 14px 14px;z-index:4;scrollbar-width:thin}
+    body.ai-open .wz-sum{display:none}
+    body.on-new .ai-fab{left:calc(var(--side) + 1040px);right:auto;bottom:28px}
+    body.on-new .bot{display:none}
+    .wz-space{height:90px}
+  }
 </style>
 </head>
 <body>
@@ -642,7 +687,7 @@
     </div>
 
     <!-- ยิงแอดใหม่ (ทีละขั้น) -->
-    <div id="tab-new" class="hide"><div id="wz"></div><div style="height:90px"></div></div>
+    <div id="tab-new" class="hide"><div id="wz"></div><div class="wz-space"></div></div>
 
     <!-- รายการแอด -->
     <div id="tab-ads" class="hide"><div id="adList"></div></div>
@@ -1292,7 +1337,7 @@
       goal: "chat", welcome: WELCOME, faq: FAQ_DEFAULT.map((q) => ({ q, a: "" })), forms: null, formsFor: null, form_id: "", link: "",
       src: "upload", posts: null, postsFor: null, post: null, up: null, lib: null, libUp: null, cover: null, coverFor: null, thumbs: null, thumbsFor: null, coverBusy: false,
       gender: "all", interests: [], excludes: [], iq: "", ires: [], xq: "", xres: [], placeMode: "auto", platforms: ["facebook", "instagram", "messenger"], ig: undefined, igFor: null,
-      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") !== "0", botMin: store.get("nads_bot_min") === "1",
+      startMode: "now", startAt: "", previews: null, pvTab: 0, pvLoading: false, pvErr: "", cr: [], ci: 0, pvCr: 0, guide: store.get("nads_guide") !== "0", botMin: false,
       multiAds: false, reach: null, reachKey: "", reachBusy: false, msgUndo: null,
       seen: new Set(), geoInc: [], geoExc: [], geoInit: false, geoMode: "inc", pinArm: false, gq: "", gres: [],
       name: "", message: "", headline: "", daily: 200, days: 7, radius: 25, pin: "", ageMin: 25, ageMax: 65, sending: false, result: null });
@@ -1584,7 +1629,7 @@
   async function loadBench() {
     if (wz.benchBusy) return; wz.benchBusy = true;
     try { wz.bench = (await api("/api/benchmarks")).goals || {}; } catch { wz.bench = null; }
-    finally { wz.benchBusy = false; if (wz.step === 4) renderWizard(); }
+    finally { wz.benchBusy = false; if (wz.step === 4) renderWizard(); else updSum(); }
   }
   function estHtml() {
     if (wz.bench === undefined) { setTimeout(loadBench); return '<div class="note info">📊 กำลังดูต้นทุนจริงของบัญชี…</div>'; }
@@ -1796,15 +1841,16 @@
   function guideTick(scroll = false) {
     document.querySelectorAll(".hl").forEach((el) => el.classList.remove("hl"));
     const tx = $("botTx");
-    if (!wz.guide) { if (tx) tx.innerHTML = 'ยิงแอดไม่เป็นใช่ไหม? <b>แตะผมสิ</b> เดี๋ยวพาจับมือทำทีละขั้น 👋'; return; }
+    if (!wz.guide) { if (tx) tx.innerHTML = 'ยิงแอดไม่เป็นใช่ไหม? <b>แตะตรงนี้</b> เดี๋ยวพาจับมือทำทีละขั้น 👋'; return; }
     const [sel, text] = nextAction();
     if (tx) tx.innerHTML = text;
     const el = sel && document.querySelector(sel);
     if (el) { el.classList.add("hl"); if (scroll) el.scrollIntoView({ behavior: "smooth", block: "center" }); }
   }
   function botHtml() {
-    const say = wz.botMin ? "" : `<div class="say" id="botSay"><span id="botTx"></span><button class="x" id="botX" aria-label="ซ่อนคำพูด">×</button></div>`;
-    return `<div class="bot ${wz.guide ? "on" : ""}">${say}<button class="face" id="botFace" aria-label="ผู้ช่วยยิงแอด">${BOT_SVG(!wz.guide)}</button></div>`;
+    // ตัวบอทอยู่ที่ปุ่ม "ผู้ช่วยยิงแอด" แล้ว ตรงนี้เหลือแค่คำแนะนำเหนือปุ่ม
+    if (wz.botMin) return "";
+    return `<div class="bot ${wz.guide ? "on" : ""}"><div class="say" id="botSay" role="status"><span id="botTx"></span><button class="x" id="botX" aria-label="ซ่อนคำแนะนำ">×</button></div></div>`;
   }
   // อ่านขนาด/ความยาวไฟล์ เพื่อเตือนภาพแนวนอนหรือคลิปยาว
   function probeDims(up, kind) {
@@ -1862,7 +1908,50 @@
       return `<button class="sn ${cls} ${i === n ? "cur" : ""}" data-go="${i}" aria-label="ไปขั้น ${nm}"><b>${ico}</b><span>${nm}</span></button>`;
     }).join("");
   }
-  function updNav() { const el = $("snav"); if (el) el.innerHTML = navHtml(); }
+  function updNav() { const el = $("snav"); if (el) el.innerHTML = navHtml(); updSum(); }
+  // ---------- สรุปแอดนี้ + ตัวอย่างคร่าว ๆ (จอกว้าง แสดงด้านขวา) ----------
+  const CTA_TH = { chat: "ส่งข้อความ", lead: "ลงทะเบียน", traffic: "ดูเพิ่มเติม" };
+  function updSum() { const el = $("wzSum"); if (el) el.innerHTML = sumInner(); }
+  function sumInner() {
+    const g = GOAL_INFO[wz.goal], pg = pageOf(), A = pickCr(), multi = wz.cr.length > 1;
+    const u = upOf(A), cv = coverOf(A), boost = isBoost();
+    const thumb = cv ? (cv.kind === "image" ? cv.preview : cv.url) : u ? (u.kind === "image" ? u.preview : u.thumb) : A.post?.picture;
+    const text = boost ? (A.post?.message || "") : (A.message.trim() || A.post?.message || "");
+    const first = (t) => String(t || "").split("\n").map((x) => x.trim()).find(Boolean) || "";
+    const media = multi ? `ทดสอบ ${wz.cr.length} แบบ (${TAGS.slice(0, wz.cr.length).join(", ")})`
+      : A.src === "post" ? (A.post ? (boost ? "ดันโพสต์เดิม" : "จากโพสต์ในเพจ") : "")
+      : u ? `${u.kind === "video" ? "วิดีโอ" : "รูป"}${A.src === "library" ? "เดิมในบัญชี" : ""}${inFlight(u) ? " · กำลังอัป" : u.phase === "error" ? " · มีปัญหา" : ""}` : "";
+    const rows = [
+      [0, "เพจ", pg?.name || ""],
+      [1, "เป้าหมาย", `${g.ic} ${g.t}`],
+      [2, "รูป/วิดีโอ", media],
+      [3, "ข้อความ", wz.name.trim() ? `${wz.name.trim()}${first(text) ? " · " + first(text) : ""}` : first(text)],
+      [4, "งบ", `${baht(wz.daily, 0)}/วัน × ${wz.days ? `${wz.days} วัน (รวมราว ${baht(wz.daily * wz.days, 0)})` : "ไม่กำหนดวันจบ"}`],
+      [5, "กลุ่มคน", wz.geoInc.length ? `${areaSum()} · อายุ ${ageText()}${wz.reach?.upper ? ` · ประมาณ ${int(wz.reach.lower)}–${int(wz.reach.upper)} คน` : ""}` : ""],
+    ].map(([i, k, v]) => {
+      const need = stepNeeds(i).length > 0, cls = need ? (wz.seen.has(i) ? "need" : "") : "ok";
+      return `<button class="sr ${cls} ${i === wz.step ? "cur" : ""}" data-go="${i}"><i>${cls === "ok" ? "✓" : cls === "need" ? "!" : i + 1}</i><span>${k}</span>${v ? `<b>${esc(v)}</b>` : '<b class="no">ยังไม่ได้เลือก</b>'}</button>`;
+    }).join("");
+    let est = "";
+    if (wz.bench === undefined) setTimeout(loadBench);
+    else if (wz.bench?.[wz.goal]?.cpr) {
+      const b = wz.bench[wz.goal], reach = wz.goal === "reach", per = wz.daily / b.cpr, week = !reach && per * 1.25 < 1.5, k = week ? 7 : 1;
+      const fm = (x, up) => reach ? int(Math.round(x / 100) * 100) : int(up ? Math.ceil(x) : Math.floor(x));
+      est = `<div class="est">📊 งบนี้น่าจะได้ราว <b>${fm(per * k / 1.3)}–${fm(per * k / 0.8, true)} ${esc(b.label)}/${week ? "สัปดาห์" : "วัน"}</b><small>คิดจากต้นทุนจริงของบัญชี 30 วัน · แอดใหม่ช่วงแรกมักแพงกว่า · ไม่รับประกันผล</small></div>`;
+    }
+    const nx = wz.guide ? `<div class="nx">${nextAction()[1]}</div>` : "";
+    const cta = boost ? "" : CTA_TH[wz.goal] || "";
+    let host = wz.goal === "chat" ? "Messenger" : wz.goal === "lead" ? "แบบฟอร์ม" : "";
+    if (wz.goal === "traffic") { try { host = new URL(wz.link.trim()).hostname; } catch { host = "ลิงก์ปลายทาง"; } }
+    const vid = !thumb && u?.kind === "video" && u.preview;
+    const pic = thumb ? `<img src="${esc(thumb)}" alt="">` : vid ? `<video src="${esc(u.preview)}" muted playsinline preload="metadata"></video>` : '<span class="ph">รูป/วิดีโอจะแสดงตรงนี้</span>';
+    return `<h3>สรุปแอดนี้</h3>${nx}${rows}${est}
+      <div class="fbp" aria-label="ตัวอย่างแอดคร่าว ๆ"><div class="fbh"><span class="pav">${pg?.picture ? `<img src="${esc(pg.picture)}" alt="">` : esc((pg?.name || "N").slice(0, 1))}</span><div><b>${esc(pg?.name || "ชื่อเพจ")}</b><small>ได้รับการสนับสนุน</small></div></div>
+      <div class="fbt">${text ? esc(text) : '<span class="ph">ข้อความโฆษณาจะแสดงตรงนี้</span>'}</div>
+      <div class="fbm">${pic}</div>
+      ${cta ? `<div class="fbf"><div><small>${esc(host)}</small><b>${esc(A.headline.trim() || "")}</b></div><span class="cta">${cta}</span></div>` : ""}</div>
+      <div class="fbn">${multi ? `แสดงแบบ ${TAGS[wz.ci]} ที่กำลังแก้ · ` : ""}ตัวอย่างคร่าว ๆ หน้าตาจริงจาก Facebook ดูได้ในขั้น "ตรวจแล้วยิง"</div>`;
+  }
   function goStep(i) {
     if (i === wz.step) return;
     wz.step = i; wz.err = ""; wz.previews = null; wz.pvErr = ""; if (wz.guide) wz.botMin = false;
@@ -2251,7 +2340,7 @@
       <div class="wz-lbl"><span>ขั้นที่ ${n + 1} จาก ${STEP_NAMES.length} · ${STEP_NAMES[n]}</span><button class="gtog ${wz.guide ? "on" : ""}" id="wzGuide">${BOT_SVG(false)}${wz.guide ? "ปิดผู้ช่วย" : "ผู้ช่วย"}</button><button class="ai-pill" id="wzAi">${AI_SVG}ถามผู้ช่วย AI</button></div></div>
       <div id="upMini">${miniHtml()}</div>`;
     const body = [stepPage, stepGoal, stepMedia, stepText, stepBudget, stepAudience, stepReview][n]();
-    box.innerHTML = head + coachBox(n) + body + botHtml();
+    box.innerHTML = head + coachBox(n) + body + botHtml() + `<aside class="wz-sum" id="wzSum" aria-label="สรุปแอดนี้">${sumInner()}</aside>`;
 
     const back = n > 0 ? '<button class="btn grey" id="wzBack" style="flex:0 0 32%">ย้อนกลับ</button>' : "";
     const next = n < LAST ? `<button class="btn" id="wzNext">ถัดไป</button>`
@@ -2277,7 +2366,8 @@
     const botGo = () => { if (!wz.guide) { setGuide(true); toast("มาเลย! ทำตามที่ผมชี้ทีละขั้นนะ", 3000); } else { if (wz.botMin) { wz.botMin = false; renderWizard(); } guideTick(true); } };
     on("botFace", "onclick", botGo);
     on("botSay", "onclick", (e) => { if (!e.target.closest("#botX")) botGo(); });
-    on("botX", "onclick", () => { wz.botMin = true; store.set("nads_bot_min", "1"); renderWizard(); });
+    on("botX", "onclick", (e) => { e.stopPropagation(); wz.botMin = true; renderWizard(); });
+    on("wzSum", "onclick", (e) => { const b = e.target.closest("[data-go]"); if (b) goStep(Number(b.dataset.go)); });
     on("wzRetry", "onclick", () => { wz.err = ""; if (n === 0) wz.info = null; else if (n === 1) wz.formsFor = null; else if (wz.src === "library") wz.lib = null; else wz.postsFor = null; renderWizard(); });
     on("wzFormReload", "onclick", () => { wz.formsFor = null; renderWizard(); });
     on("wzRecheck", "onclick", () => { const u = wz.up; u.phase = "processing"; renderWizard(); pollVideo(u).catch((e) => { if (alive(u)) { u.phase = "error"; u.msg = e.message; upChanged(); } }); });
@@ -2424,7 +2514,7 @@
     box.onfocusin = (e) => { if (e.target.matches("input:not([type=file]),textarea,select")) document.body.classList.add("typing"); };
     box.onfocusout = () => document.body.classList.remove("typing");
     clearTimeout(botTimer);
-    if ($("botSay")) botTimer = setTimeout(() => { const el = $("botSay"); if (el) { el.remove(); wz.botMin = true; } }, 10000);
+    if ($("botSay") && !matchMedia("(min-width:1024px)").matches) botTimer = setTimeout(() => { const el = $("botSay"); if (el) { el.remove(); wz.botMin = true; } }, 10000);
     guideTick();
   }
   async function wzSubmit() {
@@ -2464,9 +2554,12 @@
   };
   const aiFmt = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,6}\s*/gm, "").replace(/^\s*[-*]\s+/gm, "• ").replace(/\n/g, "<br>");
   function aiFabSync() {
-    const hide = !st.data || !st.data.snap || document.body.classList.contains("ai-open") || st.tab === "new";
+    const onNew = st.tab === "new";
+    document.body.classList.toggle("on-new", onNew);
+    const hide = !st.data || !st.data.snap || document.body.classList.contains("ai-open");
     $("aiFab").classList.toggle("hide", hide);
-    if (hide) aiTeaseHide();
+    const sm = $("aiFab").querySelector(".tx small"); if (sm) sm.textContent = onNew ? "ถามเรื่องแอดนี้ได้เลย" : "ถามเรื่องแอดได้เลย";
+    if (hide || onNew) aiTeaseHide();
   }
   let teaseTimer = 0;
   function aiTeaseHide() { clearTimeout(teaseTimer); $("aiTease").classList.add("hide"); }
@@ -2476,7 +2569,7 @@
     AI.teased = true;
     teaseTimer = setTimeout(() => {
       const snap = st.data?.snap;
-      if (!snap || $("aiFab").classList.contains("hide") || document.body.classList.contains("ai-open")) return;
+      if (!snap || st.tab === "new" || $("aiFab").classList.contains("hide") || document.body.classList.contains("ai-open")) return;
       const bad = snap.ads.filter((a) => a.grade === "bad" || ["DISAPPROVED", "WITH_ISSUES"].includes(a.effective_status)).length;
       let ctx = "", q = "";
       if (snap.days_left !== null && snap.days_left < 1) { ctx = "💡 ตอนนี้เงินแอดเหลือไม่ถึง 1 วัน ให้ผมช่วยวางแผนงบไหม"; q = "เงินใกล้หมด ควรเติมเท่าไหร่ และจัดงบแต่ละแอดยังไงดี"; }
