@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1616">
+<meta name="nads-ver" content="20261126-1623">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1674,8 +1674,23 @@
   }
   // ค้นหาจังหวัด/อำเภอจากระบบ Facebook
   let geoTimer = null;
+  // วางหลายรายการในช่องค้นหา (คั่นด้วย , หรือขึ้นบรรทัด หรือเลข 5 หลักหลายตัว) = เพิ่มทีเดียว
+  function geoListOf(t) {
+    const s = String(t || "").trim();
+    const parts = /^\d{5}(\s+\d{5})+$/.test(s) ? s.split(/\s+/) : s.split(/[\n,;]+/);
+    const uniq = [...new Set(parts.map((x) => x.trim()).filter(Boolean))];
+    return uniq.length > 1 ? uniq : null;
+  }
+  async function bulkQuick(text) {
+    const list = geoListOf(text); if (!list) return;
+    wz.gq = ""; wz.gres = []; wz.bulkOpen = true; wz.bulkTxt = list.join("\n");
+    const ta = $("gbText"); if (ta) ta.value = wz.bulkTxt;
+    await bulkRun();
+    if (wz.bulk && wz.bulk.sel.some((x) => x >= 0)) bulkAdd(); // ที่ตรงเป๊ะเพิ่มเลย ที่เหลือค้างในกล่องให้เลือกเอง
+  }
   function geoSearch(term) {
     clearTimeout(geoTimer);
+    if (geoListOf(term)) { wz.gres = [{ kind: "list" }]; drawGeoRes(); return; }
     if (term.trim().length < 2) { wz.gres = []; drawGeoRes(); return; }
     geoTimer = setTimeout(async () => {
       const t = term.trim(), types = /^\d+$/.test(t) ? "zip" : "region,city"; // ตัวเลข = รหัสไปรษณีย์
@@ -1685,6 +1700,12 @@
   }
   function drawGeoRes() {
     const el = $("geoRes"); if (!el) return;
+    const many = wz.gres?.[0]?.kind === "list" ? geoListOf(wz.gq) : null;
+    if (many) {
+      el.innerHTML = `<button data-glist>📋 เพิ่มทั้งหมด ${many.length} รายการ<small>แตะเพื่อค้นแล้ว${wz.geoMode === "exc" ? "ใส่ช่องไม่รวม" : "เพิ่ม"}ทีเดียว · ตัวที่ซ้ำตัดออกให้ · ถ้ามีชื่อที่ต้องเลือกเอง จะเปิดกล่องให้เลือก</small></button>`;
+      el.querySelector("[data-glist]").onclick = () => bulkQuick(wz.gq);
+      return;
+    }
     el.innerHTML = (wz.gres || []).map((it, i) => `<button data-gres="${i}">${geoIcon(it)} ${esc(it.name)}<small>${esc(gresTxt(it))} · แตะเพื่อ${wz.geoMode === "exc" ? "ไม่รวม" : "เพิ่ม"}</small></button>`).join("");
     el.querySelectorAll("[data-gres]").forEach((b) => b.onclick = () => geoAdd(geoFromRes(wz.gres[Number(b.dataset.gres)])));
   }
@@ -1757,7 +1778,7 @@
     wz.bulk = null; wz.bulkTxt = left.join("\n");
     wz.bulkMsg = { warn: !!(skip.length || left.length), t: `เพิ่มแล้ว ${added.length} พื้นที่${dup ? ` · มีอยู่แล้ว ${dup}` : ""}${skip.length ? ` · ข้าม ${skip.length}: ${skip.slice(0, 3).join(" / ")}` : ""}${left.length ? ` · เหลือในช่องด้านบน ${left.length} รายการ ให้แก้แล้วค้นใหม่` : ""}` };
     if (!left.length) wz.bulkOpen = false;
-    if (added.length) { toast(`เพิ่ม ${added.length} พื้นที่แล้ว`, 2500); wz.geoFit = true; }
+    if (added.length || dup) { toast(`เพิ่ม ${added.length} พื้นที่แล้ว${dup ? ` · มีอยู่แล้ว ${dup}` : ""}${left.length ? ` · อีก ${left.length} รายการรอเลือกในกล่อง` : ""}`, 3500); wz.geoFit = true; }
     renderWizard(); drawGeo(true);
   }
   // สื่อที่เลือกอยู่ (อัปใหม่ หรือ วิดีโอเดิมในบัญชีโฆษณา)
@@ -3069,6 +3090,7 @@
       loadZipTh(); mountMap(); drawGeoRes(); reachTick();
       box.querySelectorAll("[data-gmode]").forEach((el) => el.onclick = () => { wz.geoMode = el.dataset.gmode; renderWizard(); });
       on("geoQ", "oninput", (e) => { wz.gq = e.target.value; geoSearch(wz.gq); });
+      on("geoQ", "onkeydown", (e) => { if (e.key === "Enter" && geoListOf(e.target.value)) { e.preventDefault(); bulkQuick(e.target.value); } });
       box.querySelectorAll("[data-gact]").forEach((el) => el.onclick = () => {
         const a = el.dataset.gact;
         if (a === "pin") { wz.pinArm = !wz.pinArm; renderWizard(); if (wz.pinArm) { $("geoSlot")?.scrollIntoView({ behavior: "smooth", block: "center" }); toast("แตะบนแผนที่ตรงตำแหน่งที่ต้องการ", 3000); } }
