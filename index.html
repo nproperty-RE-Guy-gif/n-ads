@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1057">
+<meta name="nads-ver" content="20261126-1101">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -687,6 +687,12 @@
   .fzi{font-weight:700;font-size:calc(19px * var(--fz));line-height:1;letter-spacing:-.5px}
   .fzi small{font-size:.7em;vertical-align:.35em}
   .updbar{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:60;border:0;border-radius:99px;background:var(--solid);color:#fff;font:inherit;font-weight:600;padding:10px 18px;box-shadow:0 8px 22px rgba(0,0,0,.3);cursor:pointer;max-width:calc(100vw - 24px)}
+  /* กลุ่มเป้าหมาย: จอกว้างย้ายไปแผงขวา (แบบ Facebook) ยกเว้นตอนเปิดแชต AI ที่ซ่อนแผงขวา */
+  .reach .lv{font-weight:700;font-size:calc(14.5px * var(--fz));margin:2px 0 8px}
+  .reach .lv.ok{color:var(--green)} .reach .lv.n,.reach .lv.w{color:var(--amber)}
+  .reach.side{margin:0 0 12px;border-color:var(--pri-l2)}
+  .reach.side .num{margin:0 0 4px}
+  @media (min-width:1640px){ #reachBox{display:none} body.ai-open #reachBox{display:block} }
 </style>
 </head>
 <body>
@@ -1697,15 +1703,19 @@
       finally { if (wz.reachKey === key) { wz.reachBusy = false; paintReach(); } }
     }, 700);
   }
-  function paintReach() { const el = $("reachBox"); if (el) el.innerHTML = reachHtml(); }
-  function reachHtml() {
-    const hd = '<div class="hd">👥 ขนาดกลุ่มคนโดยประมาณ</div>', r = wz.reach;
-    if (!r) return wz.reachBusy ? `<div class="reach">${hd}<div class="sm">กำลังถาม Facebook…</div></div>` : "";
-    if (r.err) return `<div class="reach">${hd}<div class="sm">ยังประมาณไม่ได้: ${esc(r.err)}</div></div>`;
-    if (!r.upper) return `<div class="reach">${hd}<div class="sm">Facebook ยังไม่มีตัวเลขสำหรับกลุ่มนี้</div></div>`;
+  function paintReach() { const el = $("reachBox"); if (el) el.innerHTML = reachHtml(); if (wz.step === 5) updSum(); }
+  function reachHtml(side = false) {
+    // side = แผงขวาแบบ Facebook (จอกว้าง) · ไม่ใช่ side = กล่องในฟอร์ม (มือถือ/จอเล็ก)
+    const hd = side ? '<div class="hd">👥 กลุ่มเป้าหมาย</div>' : '<div class="hd">👥 ขนาดกลุ่มคนโดยประมาณ</div>', r = wz.reach, cl = side ? "reach side" : "reach";
+    if (!r) return wz.reachBusy ? `<div class="${cl}">${hd}<div class="sm">กำลังถาม Facebook…</div></div>`
+      : side ? `<div class="${cl}">${hd}<div class="sm">เลือกพื้นที่และอายุ แล้วขนาดกลุ่มคนจะขึ้นตรงนี้</div></div>` : "";
+    if (r.err) return `<div class="${cl}">${hd}<div class="sm">ยังประมาณไม่ได้: ${esc(r.err)}</div></div>`;
+    if (!r.upper) return `<div class="${cl}">${hd}<div class="sm">Facebook ยังไม่มีตัวเลขสำหรับกลุ่มนี้</div></div>`;
     const mid = (r.lower + r.upper) / 2, pos = Math.max(3, Math.min(97, ((Math.log10(mid) - 3) / 4) * 100));
-    return `<div class="reach${wz.reachBusy ? " busy" : ""}">${hd}<div class="num">${int(r.lower)} – ${int(r.upper)} คน</div>
+    const lv = pos < 40 ? ["n", "กลุ่มค่อนข้างแคบ"] : pos > 85 ? ["w", "กลุ่มกว้างมาก"] : ["ok", "กลุ่มกว้างกำลังดี"];
+    return `<div class="${cl}${wz.reachBusy ? " busy" : ""}">${hd}${side ? `<div class="lv ${lv[0]}">${lv[1]}</div>` : ""}
       <div class="gauge"><i style="left:${pos}%"></i></div><div class="gl"><span>แคบ</span><span>กว้าง</span></div>
+      ${side ? '<div class="sm" style="margin-top:8px">ขนาดกลุ่มเป้าหมายโดยประมาณ</div>' : ""}<div class="num">${int(r.lower)} – ${int(r.upper)} คน</div>
       ${r.upper < 10000 ? '<div class="note warn" style="margin:8px 0 0">กลุ่มค่อนข้างเล็ก แอดอาจแพงและผลมาช้า ลองขยายพื้นที่หรือช่วงอายุ หรือเอาความสนใจออก</div>' : ""}
       <div class="sm">ตัวเลขประมาณจาก Facebook ตามพื้นที่ อายุ และความสนใจที่เลือก อาจต่างจากจริง</div></div>`;
   }
@@ -2029,7 +2039,7 @@
     if (wz.goal === "traffic") { try { host = new URL(wz.link.trim()).hostname; } catch { host = "ลิงก์ปลายทาง"; } }
     const vid = !thumb && u?.kind === "video" && u.preview;
     const pic = thumb ? `<img src="${esc(thumb)}" alt="">` : vid ? `<video src="${esc(u.preview)}" muted playsinline preload="metadata"></video>` : '<span class="ph">รูป/วิดีโอจะแสดงตรงนี้</span>';
-    return `<h3>สรุปแอดนี้</h3>${nx}${rows}${est}
+    return `<h3>สรุปแอดนี้</h3>${nx}${wz.step === 5 ? reachHtml(true) : ""}${rows}${est}
       <div class="fbp" aria-label="ตัวอย่างแอดคร่าว ๆ"><div class="fbh"><span class="pav">${pg?.picture ? `<img src="${esc(pg.picture)}" alt="">` : esc((pg?.name || "N").slice(0, 1))}</span><div><b>${esc(pg?.name || "ชื่อเพจ")}</b><small>ได้รับการสนับสนุน</small></div></div>
       <div class="fbt">${text ? esc(text) : '<span class="ph">ข้อความโฆษณาจะแสดงตรงนี้</span>'}</div>
       <div class="fbm">${pic}</div>
