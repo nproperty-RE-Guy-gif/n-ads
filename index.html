@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1445">
+<meta name="nads-ver" content="20261126-1500">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -758,6 +758,9 @@
   .tr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;line-height:1.6}
   .tr>b{display:block;margin-bottom:2px} .tr .btn{margin-top:8px} .tr ul{margin:6px 0 0;padding-left:20px}
   .tlearn .sub{font-weight:700;margin:10px 0 2px}
+  /* ลากไฟล์มาวาง */
+  body.dragging .drop{border-color:var(--pri);background:var(--pri-l)}
+  body.dragging::after{content:"📥 ปล่อยไฟล์ตรงไหนก็ได้ เพื่ออัปรูป/วิดีโอ";position:fixed;inset:14px;z-index:90;pointer-events:none;display:grid;place-items:center;border:3px dashed var(--pri);border-radius:22px;background:color-mix(in srgb,var(--bg) 78%,transparent);color:var(--pri-d);font-weight:700;font-size:calc(22px * var(--fz));text-align:center;padding:20px}
 </style>
 </head>
 <body>
@@ -2171,6 +2174,24 @@
     return { uploading: `กำลังอัปโหลด… ${u.pct || 0}%${u.big ? ` (ไฟล์ ${(u.size / 1048576).toFixed(0)} MB อาจใช้เวลาหลายนาที เปิดหน้านี้ค้างไว้)` : ""}`, sending: "กำลังส่งให้ Facebook…", processing: `Facebook กำลังประมวลผลวิดีโอ… ${u.pct ? u.pct + "%" : ""} (อาจใช้เวลาสักครู่ เปิดหน้านี้ค้างไว้)`,
       ready: "✓ พร้อมใช้", error: u.msg || "ผิดพลาด" }[u.phase] || "";
   }
+  // ---------- ลากไฟล์มาวาง: ปล่อยตรงไหนก็ได้ในหน้ายิงแอด → ไปขั้นรูป/วิดีโอ แล้วอัปเลย ----------
+  let dragN = 0;
+  const hasFiles = (e) => [...(e.dataTransfer?.types || [])].includes("Files");
+  const dragOff = () => { dragN = 0; document.body.classList.remove("dragging"); };
+  document.addEventListener("dragenter", (e) => { if (!hasFiles(e)) return; dragN++; if (st.tab === "new" && st.data) document.body.classList.add("dragging"); });
+  document.addEventListener("dragleave", (e) => { if (hasFiles(e) && --dragN <= 0) dragOff(); });
+  document.addEventListener("dragover", (e) => { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = st.tab === "new" && st.data ? "copy" : "none"; });
+  document.addEventListener("drop", (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault(); dragOff(); // กันเบราว์เซอร์เปิดไฟล์แทนหน้าแอป (ข้อมูลที่กรอกจะหาย)
+    if (st.tab !== "new" || !st.data) return toast("ลากไฟล์มาวางได้ในหน้า ยิงแอด", 2500);
+    const files = [...(e.dataTransfer.files || [])]; if (!files.length) return;
+    if (wz.step !== 2) wz.step = 2;
+    if (wz.src !== "upload") wz.src = "upload";
+    wz.err = ""; renderWizard(); window.scrollTo(0, 0);
+    wzPickFile(files[0]);
+    if (files.length > 1) toast("ใช้ไฟล์แรกไฟล์เดียว · อยากลองหลายแบบ กด ＋ เพิ่มแบบ B ในขั้นข้อความ", 3500);
+  });
   async function wzPickFile(file) {
     const ext = String(file.name || "").split(".").pop().toLowerCase();
     const mime = MIME_BY_EXT[ext] && (!file.type || file.type === "application/octet-stream") ? MIME_BY_EXT[ext] : file.type;
@@ -2290,7 +2311,7 @@
     if (wz.src === "upload") {
       const max = wz.info?.max_upload_mb || 50;
       const u = wz.up;
-      if (!u) return b + `<label class="drop"><input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png"><b>＋ เลือกไฟล์</b>
+      if (!u) return b + `<label class="drop"><input type="file" id="wzFile" accept="video/mp4,video/quicktime,video/x-m4v,image/jpeg,image/png"><b>＋ เลือกไฟล์ หรือลากไฟล์มาวาง</b>
         <span>วิดีโอ MP4/MOV ไม่เกิน ${(wz.info?.max_video_mb || 4096) / 1024} GB · รูป JPG/PNG ไม่เกิน ${max} MB</span><span>แนะนำแนวตั้ง 9:16 หรือ 4:5</span></label>
         <div class="wz-hint" style="margin-top:8px">💡 ยังไม่มีวิดีโอ? กด <b>ถัดไป</b> กรอกข้อความ งบ พื้นที่ไปก่อน แล้วค่อยกลับมาใส่</div>`;
       b += `<div class="prev">${u.kind === "video" ? `<video src="${esc(u.preview)}" controls playsinline muted></video>` : `<img src="${esc(u.preview)}" alt="">`}
