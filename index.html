@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1153">
+<meta name="nads-ver" content="20261126-1345">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2334,17 +2334,24 @@
     const pts = c.pts.split(/\n|·/).map((x) => x.trim().replace(/^[-•✅*]\s*/, "")).filter(Boolean).slice(0, 5);
     const cta = CAP_CTA[wz.goal] || CAP_CTA.chat, deal = c.deal || "ขาย", what = `${deal}${t}`;
     const first = [what, l, pr].filter(Boolean).join(" ");
+    const near = l ? `แถว${l.split(/\s+/)[0]}` : "", rent = deal === "ให้เช่า";
+    const hook = /ที่ดิน|ที่นา|ที่สวน/.test(t) ? (rent ? `กำลังหาที่ดินเช่า${near}ไว้ทำกิจการอยู่ไหมครับ?` : `อยากมีที่ดินสักแปลง${near} ไว้สร้างบ้านหรือเก็บไว้ลงทุนไหมครับ?`)
+      : /บ้าน|ทาวน์|เฮ้าส์|โฮม/.test(t) ? (rent ? `กำลังหาบ้านเช่า${near}อยู่ใช่ไหมครับ?` : `อยากมีบ้านเป็นของตัวเอง${near}ไหมครับ?`)
+      : /คอนโด|ห้อง|หอ|อพาร์ต/.test(t) ? `กำลังหาห้อง${near}อยู่ใช่ไหมครับ?`
+      : /อาคาร|ตึก|พาณิชย์|โกดัง|โรงงาน/.test(t) ? `มองหาทำเล${near}ไว้ทำร้านหรือทำธุรกิจอยู่ไหมครับ?`
+      : `กำลังมองหา${t}${near}อยู่ใช่ไหมครับ?`;
+    const story = { chat: "💬 ทักแชตมาได้เลยครับ เดี๋ยวส่งรายละเอียดกับพิกัดให้", lead: "📝 ฝากเบอร์ไว้ เดี๋ยวโทรเล่ารายละเอียดให้ฟังครับ", traffic: "👉 กดดูรูปและรายละเอียดเพิ่มได้เลยครับ" }[wz.goal] || cta;
     const caps = [
+      { k: "แบบเล่าเรื่องสั้น (ชวนอ่าน)", t: [hook, [`${deal}${t}`, l].filter(Boolean).join(" ") + (pr ? ` ${pr}` : "") + (s ? ` · ${s}` : ""), pts.length ? `✨ ${pts.slice(0, 2).join(" · ")}` : "", story].filter(Boolean).join("\n") },
       { k: "แบบรายการ (อ่านง่าย)", t: [`🏡 ${[what, l].filter(Boolean).join(" ")}`, pr && `💰 ${pr}`, s && `📐 ${s}`, ...pts.map((x) => `✅ ${x}`), cta].filter(Boolean).join("\n") },
-      { k: "แบบเล่า (ชวนคุย)", t: [first, s, pts.length ? `ใครกำลังมองหา${t}${l ? ` แถว${l.split(/\s+/)[0]}` : ""} ทรัพย์นี้มีจุดเด่นคือ` : "", ...pts.map((x) => `• ${x}`), cta].filter(Boolean).join("\n") },
       { k: "แบบสั้น (2 บรรทัด)", t: [[first, s, pts[0]].filter(Boolean).join(" · "), cta].join("\n") },
     ];
     const heads = [...new Set([pr, [t, l.split(/\s+/)[0]].filter(Boolean).join(" "), wz.goal === "chat" ? "ทักนัดดูทรัพย์ได้เลย" : ""].filter(Boolean).map((h) => h.slice(0, 60)))];
-    return { caps, heads };
+    return { caps, heads, noPrice: !p0 };
   }
   function capHelper() {
     const c = capOf(), f = (k, lab, ph) => `<label class="cf"><span>${lab}</span><input class="inp" data-cap="${k}" maxlength="80" placeholder="${ph}" value="${esc(c[k])}"></label>`;
-    const out = c.out ? `<div class="capr">${c.out.caps.map((x, i) => `<div class="capc"><div class="capk">${esc(x.k)}</div><pre>${esc(x.t)}</pre><button class="btn sm" data-capuse="${i}">ใช้แคปชั่นนี้</button></div>`).join("")}
+    const out = c.out ? `<div class="capr">${c.out.noPrice ? '<div class="note warn" style="margin:0">ยังไม่ได้กรอกราคา แคปชั่นแอดควรมีราคาใน 2 บรรทัดแรก ใส่ราคาแล้วกดคิดใหม่ได้</div>' : ""}${c.out.caps.map((x, i) => `<div class="capc"><div class="capk">${esc(x.k)}</div><pre>${esc(x.t)}</pre><button class="btn sm" data-capuse="${i}">ใช้แคปชั่นนี้</button></div>`).join("")}
       ${c.out.heads.length ? `<div class="caphd"><span>หัวข้อที่เข้ากัน แตะเพื่อใช้:</span>${c.out.heads.map((h, i) => `<button class="chip2" data-headuse="${i}">${esc(h)}</button>`).join("")}</div>` : ""}</div>` : "";
     return drop("cap", "💡 คิดแคปชั่นไม่ออก? กรอกข้อมูลทรัพย์ แล้วให้ช่วยคิด", `
       <div class="chips">${CAP_DEALS.map((d) => `<button class="chip2 ${c.deal === d ? "sel" : ""}" data-capdeal="${d}">${d}</button>`).join("")}</div>
@@ -2353,10 +2360,18 @@
       <div class="cbtn"><button class="btn sm" id="capGo">✨ คิดแคปชั่นให้ 3 แบบ</button><button class="btn ghost sm" id="capAi">🤖 ให้ AI คิดแบบอื่น</button></div>
       <div class="upnote">ใช้เฉพาะข้อมูลที่กรอก ไม่เติมข้อมูลทรัพย์ให้เอง · ช่องที่ว่างจะไม่ใส่ · เลือกแล้วแก้ต่อในช่องแคปชั่นได้</div>${out}`, "caph", !wz.message.trim());
   }
+  const CAP_GUIDE = `[หลักเขียนแคปชั่นแอดของ N propertyNetwork — ทำตามทุกครั้งที่เขียนแคปชั่น]
+1) เล่าเรื่องแบบสั้น 4–6 บรรทัด ไม่เกินราว 350 ตัวอักษร บรรทัดละประโยคสั้น ภาษาพูด อ่านแล้วเห็นภาพ
+2) โครง: ฮุก (คำถามหรือสถานการณ์ที่คนหาทรัพย์แบบนี้เจอ ต้องมีประเภททรัพย์+ทำเลในบรรทัดแรก) → ตัวทรัพย์ (ราคา+ขนาดภายใน 2 บรรทัดแรก) → จุดเด่น 1–2 ข้อที่ผู้ใช้ให้มา เล่าว่าชีวิตจะสะดวกยังไง → ชวนทัก 1 ประโยคว่าทักแล้วได้อะไร (เช่น ส่งพิกัด/รูปเพิ่ม/นัดดู)
+3) ห้ามแต่งข้อเท็จจริง: ราคา ขนาด ระยะทาง ถนน น้ำไฟ เอกสารสิทธิ์ ผังเมือง ผลตอบแทน และคำอย่าง "เดินทางสะดวก" "ทำเลทอง" ถ้าผู้ใช้ไม่ได้บอก ข้อมูลที่ขาดให้เว้น [ราคา] [ขนาด]
+4) ฮุกเป็นคำถาม/สถานการณ์ทั่วไปได้ แต่ห้ามอ้างเป็นข้อเท็จจริงของทรัพย์
+5) ห้ามคำโอ้อวดที่พิสูจน์ไม่ได้ (ขายไวที่สุด ถูกที่สุด ถูกกว่าราคาประเมิน คุ้มที่สุดในย่าน) ไม่ใส่แฮชแท็ก อีโมจิไม่เกิน 3 ตัว ไม่ใส่เบอร์โทรถ้าเป้าหมายคือทักแชต
+6) ให้ 3 แบบที่ต่างกันที่มุมเล่า (เช่น คนอยากสร้างบ้าน / คนอยากลงทุน / คนดูความคุ้ม) แต่ละแบบมีหัวข้อสั้นไม่เกิน 30 ตัวอักษร
+7) ตอบสั้นตามรูปแบบ: แบบที่ 1 (มุม…) / หัวข้อ: … / แคปชั่น: … ถ้ามีคำที่ผมเติมเองต้องบอกท้ายคำตอบ`;
+  const isCapQ = (q) => /แคปชั่น|แคปชัน|caption/i.test(q);
   function capAiPrompt() {
     const c = capOf(), v = (x) => String(x || "").trim();
-    return `ช่วยคิดแคปชั่นแอด (เป้าหมาย: ${GOAL_INFO[wz.goal].t}) ให้ 3 แบบ บรรทัดแรกต้องมีประเภททรัพย์+ทำเล+ราคา ใช้เฉพาะข้อมูลด้านล่าง ห้ามแต่งข้อมูลทรัพย์เพิ่ม และเสนอหัวข้อสั้น ๆ (ตัวหนาใต้รูป) 3 แบบ
-ข้อมูลทรัพย์:
+    return `ช่วยคิดแคปชั่นแอดแบบเล่าเรื่องสั้น ๆ 3 มุม พร้อมหัวข้อ (เป้าหมาย: ${GOAL_INFO[wz.goal].t}) จากข้อมูลทรัพย์นี้:
 ประเภท: ${c.deal}${v(c.type)}
 ทำเล: ${v(c.loc)}
 ราคา: ${v(c.price)}
@@ -2911,7 +2926,8 @@
     const mine = { role: "user", content: q };
     AI.msgs.push(mine); $("aiInp").value = ""; AI.busy = true; aiRender();
     try {
-      const r = await api("/api/ai/chat", { body: { question: q, messages: hist, draft: AI.draft ? wzDraft() : "" } });
+      const draft = [isCapQ(q) ? CAP_GUIDE : "", AI.draft ? wzDraft() : ""].filter(Boolean).join("\n\n");
+      const r = await api("/api/ai/chat", { body: { question: q, messages: hist, draft } });
       AI.msgs.push({ role: "assistant", content: r.reply });
       if (AI.status && r.usage) AI.status.usage = r.usage;
     } catch (e) { mine.err = true; AI.msgs.push({ role: "assistant", content: "⚠️ " + e.message, err: true }); }
