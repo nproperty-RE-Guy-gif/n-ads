@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1409">
+<meta name="nads-ver" content="20261126-1430">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -749,6 +749,8 @@
   .hm-foot .tg{background:var(--pri)}
   .hm-leg{margin:0 0 6px;padding-left:22px} .hm-leg li{margin:3px 0}
   .caph1{font-size:calc(14px * var(--fz));margin:0 0 6px;padding:4px 8px;border-radius:8px;background:var(--pri-l);display:inline-block}
+  /* ช่องแคปชั่น: สูงขึ้น และยืดตามความยาวข้อความ (สูงสุด 70% ของจอ) */
+  #wzMsg{min-height:calc(240px * var(--fz));max-height:70vh;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -2656,7 +2658,9 @@
     on("wzLink", "onchange", () => renderWizard());
     on("wzForm", "onchange", (e) => { wz.form_id = e.target.value; refreshNext(); });
     on("wzName", "oninput", (e) => { wz.name = e.target.value; refreshNext(); });
-    on("wzMsg", "oninput", (e) => { wz.message = e.target.value; refreshNext(); const h = $("hmCap"); if (h) h.textContent = wz.message.split("\n").map((x) => x.trim()).find(Boolean) || "แคปชั่นอยู่ตรงนี้"; });
+    const growMsg = () => { const t = $("wzMsg"); if (!t) return; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight + 4, Math.round(innerHeight * 0.7)) + "px"; };
+    growMsg();
+    on("wzMsg", "oninput", (e) => { growMsg(); wz.message = e.target.value; refreshNext(); const h = $("hmCap"); if (h) h.textContent = wz.message.split("\n").map((x) => x.trim()).find(Boolean) || "แคปชั่นอยู่ตรงนี้"; });
     on("wzHead", "oninput", (e) => { wz.headline = e.target.value; const h = $("hmHead"); if (h) h.textContent = wz.headline.trim() || "ราคาจบ 1.89 ล้าน"; updSum(); });
     box.querySelectorAll("[data-cap]").forEach((el) => el.oninput = () => { capOf()[el.dataset.cap] = el.value; });
     box.querySelectorAll("[data-capdeal]").forEach((el) => el.onclick = () => { capOf().deal = el.dataset.capdeal; renderWizard(); });
