@@ -623,6 +623,66 @@
     .fbh .pav{width:44px;height:44px} .fbh b{font-size:15.5px} .fbh small{font-size:13px}
     .fbt{font-size:15.5px} .fbf b{font-size:15.5px} .fbf .cta{font-size:15px;padding:9px 16px} .fbn{font-size:13.5px}
   }
+
+  /* ===== จอกว้าง: ตัวหนังสือหน้ายิงแอดใหญ่ขึ้น (คูณด้วย --tz) ===== */
+  @media (min-width:1640px){
+    :root{--tz:1.15;--snW:calc(228px * var(--tz));--snG:calc(var(--snW) + 24px);
+      --wzF:clamp(728px,calc((100vw - var(--side) - var(--snG) - 92px) * .56),1200px);
+      --wzS:clamp(320px,calc(100vw - var(--side) - var(--wzF) - var(--snG) - 128px),820px);
+      --wzX:calc(var(--side) + var(--snG) + 60px + var(--wzF))}
+    #tab-new{padding-left:var(--snG);max-width:calc(var(--snG) + var(--wzF));font-size:calc(16px * var(--tz))}
+    .wz-bar .in{margin-left:var(--snG)}
+    .wz-bar .btn{font-size:calc(17px * var(--tz));padding:calc(15px * var(--tz))}
+    .snav{width:var(--snW)}
+    #tab-new .snav::before{font-size:calc(12px * var(--tz))}
+    #tab-new .sn{font-size:calc(14px * var(--tz))}
+    #tab-new .sn b{width:calc(22px * var(--tz));height:calc(22px * var(--tz));flex-basis:calc(22px * var(--tz));font-size:calc(12px * var(--tz))}
+    #tab-new .wz-lbl{font-size:calc(14px * var(--tz))}
+    #tab-new .gtog{font-size:calc(13px * var(--tz))}
+    #tab-new .gtog svg{width:calc(20px * var(--tz));height:calc(20px * var(--tz))}
+    #tab-new .ai-pill{font-size:calc(14px * var(--tz))}
+    #tab-new .ai-pill .aiav{width:calc(28px * var(--tz));height:calc(28px * var(--tz))}
+    #tab-new .wz-q{font-size:calc(22px * var(--tz))}
+    #tab-new .wz-hint{font-size:calc(14px * var(--tz))}
+    #tab-new label.f{font-size:calc(15px * var(--tz))}
+    #tab-new .inp{font-size:calc(17px * var(--tz))}
+    #tab-new .coach{font-size:calc(15px * var(--tz))}
+    #tab-new .coach .av{width:calc(40px * var(--tz));height:calc(40px * var(--tz))}
+    #tab-new .coach b.h{font-size:calc(16px * var(--tz))}
+    #tab-new .coach .cx,#tab-new .coach pre.tpl,#tab-new .coach .gb>div,#tab-new .coach details.fg{font-size:calc(14px * var(--tz))}
+    #tab-new .opt b{font-size:calc(17px * var(--tz))}
+    #tab-new .opt span{font-size:calc(15px * var(--tz))}
+    #tab-new .opt em{font-size:calc(12px * var(--tz))}
+    #tab-new .opt .ic,#tab-new .opt img.av{width:calc(48px * var(--tz));height:calc(48px * var(--tz))}
+    #tab-new .opt .ic{font-size:calc(24px * var(--tz))}
+    #tab-new .post .tx{font-size:calc(15px * var(--tz))}
+    #tab-new .post .dt{font-size:calc(13px * var(--tz))}
+    #tab-new .post img,#tab-new .post .noimg{width:calc(84px * var(--tz));height:calc(84px * var(--tz))}
+    #tab-new .chip2{font-size:calc(17px * var(--tz))}
+    #tab-new .note{font-size:calc(14px * var(--tz))}
+    #tab-new .note.est .sm,#tab-new .reach .sm,#tab-new .rec small,#tab-new label.tgl small{font-size:calc(12.5px * var(--tz))}
+    #tab-new .reach .hd{font-size:calc(14px * var(--tz))}
+    #tab-new .reach .num{font-size:calc(20px * var(--tz))}
+    #tab-new .reach .gl,#tab-new .ires small,#tab-new .vbadge{font-size:calc(12px * var(--tz))}
+    #tab-new .opp .t b{font-size:calc(15px * var(--tz))} #tab-new .opp .t span{font-size:calc(13px * var(--tz))}
+    #tab-new .rec,#tab-new label.tgl{font-size:calc(14px * var(--tz))}
+    #tab-new .sum div{font-size:calc(15px * var(--tz))}
+    #tab-new .needs>b,#tab-new .needs button{font-size:calc(14px * var(--tz))}
+    #tab-new .needs button span{font-size:calc(12px * var(--tz))}
+    #tab-new .upnote{font-size:calc(13.5px * var(--tz))}
+    #tab-new .upmini,#tab-new .uptx,#tab-new .ck,#tab-new .ghd,#tab-new .tag,#tab-new .grow select{font-size:calc(14px * var(--tz))}
+    #tab-new .grow small{font-size:calc(13px * var(--tz))}
+    #tab-new .btn{font-size:calc(16px * var(--tz))}
+    #tab-new .btn.sm{font-size:calc(15px * var(--tz))}
+    #tab-new .sec{font-size:calc(18px * var(--tz))}
+    #tab-new .total .k{font-size:calc(14px * var(--tz))} #tab-new .total .v{font-size:calc(34px * var(--tz))}
+    #tab-new .drop b{font-size:calc(18px * var(--tz))}
+    #tab-new .cv span{font-size:calc(11px * var(--tz))}
+    #tab-new .done h3{font-size:calc(24px * var(--tz))}
+    #tab-new .gslot{height:calc(280px * var(--tz))}
+    #tab-new .seg button,#tab-new details.adv summary,#tab-new .ires button{font-size:calc(15px * var(--tz))}
+  }
+  @media (min-width:2000px){ :root{--tz:1.28} }
 </style>
 </head>
 <body>
