@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1523">
+<meta name="nads-ver" content="20261126-1550">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -177,6 +177,15 @@
   .grow select{width:auto;padding:6px 8px;font-size:calc(14px * var(--fz));border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
   .grow button{border:0;background:none;color:var(--mute);font-size:calc(22px * var(--fz));line-height:1;cursor:pointer;padding:2px 4px}
   .glink{display:flex;gap:8px;margin-top:8px}.glink .inp{flex:1}
+  .gbulk{background:var(--card);border-radius:14px;padding:12px;margin-top:10px;box-shadow:var(--shadow);border-top:4px solid var(--pri)}.gbulk.exc{border-top-color:var(--red)}
+  .gbh{font-weight:700;font-size:calc(16px * var(--fz))}.gbh small{display:block;font-weight:500;color:var(--mute);font-size:calc(13px * var(--fz))}
+  .gbopt{display:flex;gap:8px;margin:8px 0}.gbopt label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:calc(13px * var(--fz));color:var(--mute)}
+  .gbopt select,.gbr select{width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font-size:calc(14px * var(--fz))}
+  .gbulk textarea{width:100%;min-height:calc(120px * var(--fz));resize:vertical;margin-bottom:6px}
+  .gbulk #gbGo,.gbulk #gbAdd{width:100%;margin-top:8px}
+  .gbres{margin-top:8px}.gbr{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;margin-top:6px;background:var(--card2);border-left:4px solid var(--line)}
+  .gbr.ok{border-left-color:#16A34A}.gbr.pick{border-left-color:#F59E0B}.gbr.no{border-left-color:var(--red)}
+  .gbq{flex:0 0 34%;font-weight:600;word-break:break-word}.gbr select{flex:1;min-width:0}.gbr small{flex:1;color:var(--red);font-size:calc(13px * var(--fz))}
   .gtog svg{width:20px;height:20px;vertical-align:-5px;margin-right:4px}
   .bot{position:fixed;right:max(12px,calc(50% - 268px));bottom:calc(84px + 76px + env(safe-area-inset-bottom));z-index:6;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
   .bot>*{pointer-events:auto}
@@ -1522,20 +1531,31 @@
     wz.geoInc = [{ kind: "pin", lat, lng, radius_km: 25, label: wz.info?.center_name || "ตัวเมือง" }]; wz.geoExc = []; wz.geoInit = true; wz.geoFit = true;
   }
   const geoList = (m) => (m === "exc" ? wz.geoExc : wz.geoInc);
-  const geoIcon = (g) => ({ pin: "📍", region: "🗺️", city: "🏙️", country: "🇹🇭" })[g.kind];
-  const geoName = (g) => g.kind === "pin" ? `${g.label} · ${g.radius_km} กม.` : g.kind === "city" && g.radius_km ? `${g.name} +${g.radius_km} กม.` : g.name;
+  const geoIcon = (g) => ({ pin: "📍", region: "🗺️", city: "🏙️", zip: "📮", country: "🇹🇭" })[g.kind];
+  const geoName = (g) => g.kind === "pin" ? `${g.label} · ${g.radius_km} กม.` : g.kind === "zip" ? `ไปรษณีย์ ${g.name}` : g.kind === "city" && g.radius_km ? `${g.name} +${g.radius_km} กม.` : g.name;
+  // จังหวัดของ Meta (รหัส:ชื่อ) ใช้ในช่อง "อยู่ในจังหวัด" ของการเพิ่มทีละหลายรายการ
+  const PROV = "3548:แม่ฮ่องสอน|3549:เชียงใหม่|3550:เชียงราย|3551:น่าน|3552:ลำพูน|3553:ลำปาง|3554:แพร่|3555:ตาก|3556:สุโขทัย|3557:อุตรดิตถ์|3558:กำแพงเพชร|3559:พิษณุโลก|3560:พิจิตร|3561:เพชรบูรณ์|3562:อุทัยธานี|3563:นครสวรรค์|3564:หนองคาย|3565:เลย|3566:สกลนคร|3568:ขอนแก่น|3569:กาฬสินธุ์|3570:มหาสารคาม|3571:ร้อยเอ็ด|3572:ชัยภูมิ|3573:นครราชสีมา|3574:บุรีรัมย์|3575:สุรินทร์|3576:ศรีสะเกษ|3577:นราธิวาส|3578:ชัยนาท|3579:สิงห์บุรี|3580:ลพบุรี|3581:อ่างทอง|3582:พระนครศรีอยุธยา|3583:สระบุรี|3584:นนทบุรี|3585:ปทุมธานี|3586:กรุงเทพมหานคร|3587:พะเยา|3588:สมุทรปราการ|3589:นครนายก|3590:ฉะเชิงเทรา|3592:ชลบุรี|3593:ระยอง|3594:จันทบุรี|3595:ตราด|3596:กาญจนบุรี|3597:สุพรรณบุรี|3598:ราชบุรี|3599:นครปฐม|3600:สมุทรสงคราม|3601:สมุทรสาคร|3602:เพชรบุรี|3603:ประจวบคีรีขันธ์|3604:ชุมพร|3605:ระนอง|3606:สุราษฎร์ธานี|3607:พังงา|3608:ภูเก็ต|3609:กระบี่|3610:นครศรีธรรมราช|3611:ตรัง|3612:พัทลุง|3613:สตูล|3614:สงขลา|3615:ปัตตานี|3617:ยโสธร|3618:อุบลราชธานี|3619:อุดรธานี|3620:มุกดาหาร|4084:นครพนม|4085:ปราจีนบุรี|4086:อำนาจเจริญ|4087:หนองบัวลำภู|4088:สระแก้ว|4089:บึงกาฬ|4995:ยะลา".split("|").map((x) => x.split(":")).sort((a, b) => a[1].localeCompare(b[1], "th"));
   const geoOk = () => wz.geoInc.length > 0 && [...wz.geoInc, ...wz.geoExc].every((g) => g.kind !== "pin" || inTH(g.lat, g.lng));
   const areaSum = () => wz.geoInc.map(geoName).join(", ") || "ยังไม่ได้เลือก";
-  function geoAdd(item, mode = wz.geoMode) {
+  // ใส่พื้นที่ลงรายการ (ยังไม่วาดหน้าใหม่) · คืนข้อความถ้าใส่ไม่ได้
+  function geoTry(item, mode = wz.geoMode) {
     const list = geoList(mode);
-    if (list.length >= MAX_GEO) return toast(`เพิ่มได้ไม่เกิน ${MAX_GEO} พื้นที่`);
-    if (item.kind === "country" && mode === "exc") return toast("ตัดทั้งประเทศไม่ได้");
-    if (item.kind === "city" && item.region_id && list.some((g) => g.kind === "region" && g.key === item.region_id)) return toast(`${item.name} อยู่ในจังหวัดที่เลือกไว้แล้ว`, 3500);
-    if (item.kind === "region" && list.some((g) => g.kind === "city" && g.region_id === item.key)) return toast("มีอำเภอในจังหวัดนี้อยู่แล้ว ลบอำเภอนั้นก่อน", 3500);
-    if (item.kind !== "pin" && list.some((g) => g.kind === item.kind && g.key === item.key)) return toast("มีพื้นที่นี้แล้ว");
+    if (list.length >= MAX_GEO) return `เพิ่มได้ไม่เกิน ${MAX_GEO} พื้นที่`;
+    if (item.kind === "country" && mode === "exc") return "ตัดทั้งประเทศไม่ได้";
+    if ((item.kind === "city" || item.kind === "zip") && item.region_id && list.some((g) => g.kind === "region" && g.key === item.region_id)) return `${geoName(item)} อยู่ในจังหวัดที่เลือกไว้แล้ว`;
+    if (item.kind === "region" && list.some((g) => (g.kind === "city" || g.kind === "zip") && g.region_id === item.key)) return `มีอำเภอ/รหัสไปรษณีย์ใน${item.name}อยู่แล้ว ลบออกก่อน`;
+    if (item.kind !== "pin" && list.some((g) => g.kind === item.kind && g.key === item.key)) return `มี ${geoName(item)} แล้ว`;
     if (mode === "inc") { if (item.kind === "country") list.length = 0; else { const i = list.findIndex((g) => g.kind === "country"); if (i >= 0) list.splice(i, 1); } }
-    list.push(item); wz.pinArm = false; wz.gq = ""; wz.gres = []; renderWizard(); drawGeo(true);
+    list.push(item);
+    return "";
   }
+  function geoAdd(item, mode = wz.geoMode) {
+    const err = geoTry(item, mode);
+    if (err) return toast(err, 3500);
+    wz.pinArm = false; wz.gq = ""; wz.gres = []; renderWizard(); drawGeo(true);
+  }
+  const geoFromRes = (it) => ({ kind: it.kind, key: it.key, name: it.name, ...(it.region ? { region: it.region } : {}), ...(it.region_id ? { region_id: it.region_id } : {}) });
+  const gresTxt = (it) => it.kind === "region" ? "จังหวัด" : it.kind === "zip" ? "รหัสไปรษณีย์" + (it.region ? " · " + it.region : "") : "อำเภอ/เมือง" + (it.region ? " · " + it.region : "");
   function addPin(lat, lng, label) {
     if (!inTH(lat, lng)) return toast("ตำแหน่งนี้อยู่นอกประเทศไทย");
     const n = [...wz.geoInc, ...wz.geoExc].filter((g) => g.kind === "pin").length + 1;
@@ -1598,23 +1618,87 @@
     clearTimeout(geoTimer);
     if (term.trim().length < 2) { wz.gres = []; drawGeoRes(); return; }
     geoTimer = setTimeout(async () => {
-      try { wz.gres = (await api("/api/geo/search?q=" + encodeURIComponent(term.trim()))).items; } catch (e) { wz.gres = []; toast(e.message, 4000); }
+      const t = term.trim(), types = /^\d+$/.test(t) ? "zip" : "region,city"; // ตัวเลข = รหัสไปรษณีย์
+      try { wz.gres = (await api("/api/geo/search?types=" + types + "&q=" + encodeURIComponent(t))).items; } catch (e) { wz.gres = []; toast(e.message, 4000); }
       drawGeoRes();
     }, 400);
   }
   function drawGeoRes() {
     const el = $("geoRes"); if (!el) return;
-    el.innerHTML = (wz.gres || []).map((it, i) => `<button data-gres="${i}">${it.kind === "region" ? "🗺️" : "🏙️"} ${esc(it.name)}<small>${it.kind === "region" ? "จังหวัด" : "อำเภอ/เมือง" + (it.region ? " · " + esc(it.region) : "")} · แตะเพื่อ${wz.geoMode === "exc" ? "ไม่รวม" : "เพิ่ม"}</small></button>`).join("");
-    el.querySelectorAll("[data-gres]").forEach((b) => b.onclick = () => { const it = wz.gres[Number(b.dataset.gres)]; geoAdd({ kind: it.kind, key: it.key, name: it.name, ...(it.region_id ? { region_id: it.region_id } : {}) }); });
+    el.innerHTML = (wz.gres || []).map((it, i) => `<button data-gres="${i}">${geoIcon(it)} ${esc(it.name)}<small>${esc(gresTxt(it))} · แตะเพื่อ${wz.geoMode === "exc" ? "ไม่รวม" : "เพิ่ม"}</small></button>`).join("");
+    el.querySelectorAll("[data-gres]").forEach((b) => b.onclick = () => geoAdd(geoFromRes(wz.gres[Number(b.dataset.gres)])));
   }
   function geoRows(m) {
     return geoList(m).map((g, i) => {
       const id = `${m}:${i}`;
       const sel = g.kind === "pin" ? `<select data-grad="${id}" aria-label="รัศมี">${[...new Set([...PIN_RADII, g.radius_km])].sort((a, b) => a - b).map((r) => `<option value="${r}" ${r === g.radius_km ? "selected" : ""}>${r} กม.</option>`).join("")}</select>`
         : g.kind === "city" ? `<select data-grad="${id}" aria-label="รัศมีรอบเมือง"><option value="">ทั้งเขต</option>${CITY_RADII.map((r) => `<option value="${r}" ${r === g.radius_km ? "selected" : ""}>+${r} กม.</option>`).join("")}</select>` : "";
-      const sub = g.kind === "pin" ? `${g.lat.toFixed(4)}, ${g.lng.toFixed(4)}${inTH(g.lat, g.lng) ? "" : " · นอกประเทศไทย!"}` : g.kind === "region" ? "ทั้งจังหวัด" : g.kind === "city" ? "อำเภอ/เมือง" : "ทั้งประเทศ";
+      const sub = g.kind === "pin" ? `${g.lat.toFixed(4)}, ${g.lng.toFixed(4)}${inTH(g.lat, g.lng) ? "" : " · นอกประเทศไทย!"}` : g.kind === "region" ? "ทั้งจังหวัด" : g.kind === "city" ? "อำเภอ/เมือง" + (g.region ? " · " + g.region : "") : g.kind === "zip" ? "รหัสไปรษณีย์" + (g.region ? " · " + g.region : "") : "ทั้งประเทศ";
       return `<div class="grow ${m}"><span>${geoIcon(g)}</span><div class="gt"><b>${esc(g.kind === "pin" ? g.label : g.name)}</b><small>${esc(sub)}</small></div>${sel}<button data-gdel="${id}" aria-label="ลบ">×</button></div>`;
     }).join("");
+  }
+  // ---------- เพิ่มตำแหน่งทีละหลายรายการ (แบบ Facebook) ----------
+  // ค้นทุกบรรทัด → ระบบเลือกให้เฉพาะชื่อที่ตรงตัวเดียว ที่เหลือให้คนเลือกเอง → กดเพิ่มทีเดียว
+  const BULK_T = [["auto", "อัตโนมัติ"], ["region", "จังหวัด"], ["city", "อำเภอ/เมือง"], ["zip", "รหัสไปรษณีย์"]];
+  function bulkHtml() {
+    const b = wz.bulk, exc = wz.geoMode === "exc";
+    const rows = b ? b.rows.map((r, i) => `<div class="gbr ${b.sel[i] >= 0 ? "ok" : r.items.length ? "pick" : "no"}"><div class="gbq">${esc(r.q)}</div>${r.items.length
+      ? `<select data-gbsel="${i}" aria-label="เลือกพื้นที่ของ ${esc(r.q)}"><option value="-1">— ${r.pick >= 0 ? "ไม่เพิ่ม" : "เลือกพื้นที่ที่ใช่"} —</option>${r.items.map((it, j) => `<option value="${j}" ${j === b.sel[i] ? "selected" : ""}>${geoIcon(it)} ${esc(it.name)}${it.kind !== "region" && it.region ? " · " + esc(it.region) : ""}</option>`).join("")}</select>`
+      : `<small>${esc(r.error || "ไม่พบ — ลองชื่ออื่น ชื่ออังกฤษ หรือรหัสไปรษณีย์")}</small>`}</div>`).join("") : "";
+    const n = b ? b.sel.filter((x) => x >= 0).length : 0;
+    return `<div class="gbulk ${exc ? "exc" : ""}">
+      <div class="gbh">📋 เพิ่มทีละหลายรายการ <small>จะใส่ในช่อง ${exc ? "⛔ ไม่รวม" : "✅ รวม"}</small></div>
+      <div class="gbopt"><label>ประเภท<select id="gbType">${BULK_T.map(([v, t]) => `<option value="${v}" ${v === (wz.bulkType || "auto") ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+        <label>อยู่ในจังหวัด<select id="gbProv"><option value="">ไม่ระบุ</option>${PROV.map(([k, t]) => `<option value="${k}" ${k === wz.bulkProv ? "selected" : ""}>${t}</option>`).join("")}</select></label></div>
+      <textarea class="inp" id="gbText" rows="5" placeholder="1 บรรทัด = 1 พื้นที่ (หรือคั่นด้วย ,)&#10;เช่น&#10;กำแพงเพชร&#10;พิษณุโลก&#10;62000&#10;อ.คลองขลุง">${esc(wz.bulkTxt || "")}</textarea>
+      ${drop("gbHow", "ใช้ยังไง?", `<ul><li><b>อัตโนมัติ</b>: ชื่อจังหวัด = ทั้งจังหวัด · ตัวเลข 5 หลัก = รหัสไปรษณีย์ · ขึ้นต้น อ./อำเภอ = อำเภอ</li><li>ใส่ <b>อยู่ในจังหวัด</b> เมื่อวางรายชื่ออำเภอ/รหัสไปรษณีย์ ระบบจะตัดชื่อซ้ำจังหวัดอื่นออก (เช่น "กำแพงเพชร" มีที่สงขลาด้วย)</li><li>ระบบเลือกให้เฉพาะชื่อที่ตรงเป๊ะ ที่เหลือ<b>เลือกเอง</b>จากรายการ แล้วกดเพิ่ม</li><li>รวมทั้งหมดได้ไม่เกิน ${MAX_GEO} พื้นที่</li></ul>`)}
+      <button class="btn ghost sm" id="gbGo" ${wz.bulkBusy ? "disabled" : ""}>${wz.bulkBusy ? "กำลังค้นหา…" : "🔎 ค้นหาทั้งหมด"}</button>
+      ${b ? `<div class="gbres">${rows}</div><button class="btn sm" id="gbAdd" ${n ? "" : "disabled"}>➕ เพิ่ม ${n} พื้นที่ที่เลือก</button>` : ""}
+      ${wz.bulkMsg ? `<div class="note ${wz.bulkMsg.warn ? "warn" : ""}" style="margin-top:8px">${esc(wz.bulkMsg.t)}</div>` : ""}
+    </div>`;
+  }
+  // ชื่อซ้ำในจังหวัดเดียวกัน เช่น "คลองขลุง" กับ "อำเภอคลองขลุง" → เลือกตัวที่เป็นอำเภอ (ครอบคลุมกว่า) · ข้ามจังหวัด = ให้คนเลือก
+  const gNorm = (x) => String(x || "").normalize("NFC").toLowerCase().replace(/\(.*?\)/g, "").trim()
+    .replace(/^(จังหวัด|จ\.|กิ่งอำเภอ|อำเภอ|อ\.|เขต|แขวง|ตำบล|ต\.|เทศบาลนคร|เทศบาลเมือง|เทศบาลตำบล|ทน\.|ทม\.|ทต\.)\s*/, "").replace(/[\s.]+/g, "");
+  function bulkRefine(r) {
+    if (r.pick >= 0 || r.kind !== "city" || !r.items.length) return r.pick;
+    const n = gNorm(r.q), alt = n.replace(/^เมือง/, "");
+    const hit = (w) => r.items.map((x, i) => (x.kind === "city" && gNorm(x.name) === w ? i : -1)).filter((i) => i >= 0);
+    let same = hit(n); if (!same.length && alt !== n) same = hit(alt);
+    if (same.length === 1) return same[0];
+    const amp = same.filter((i) => /^(อำเภอ|เขต)/.test(r.items[i].name.trim()));
+    return same.length > 1 && new Set(same.map((i) => r.items[i].region_id)).size === 1 && amp.length === 1 ? amp[0] : -1;
+  }
+  async function bulkRun() {
+    const txt = ($("gbText")?.value ?? wz.bulkTxt ?? "").trim();
+    wz.bulkTxt = txt; wz.bulkMsg = null;
+    if (!txt) return toast("พิมพ์หรือวางรายชื่อพื้นที่ก่อน", 3000);
+    wz.bulkBusy = true; renderWizard();
+    try {
+      const d = await api("/api/geo/bulk", { body: { lines: txt, type: wz.bulkType || "auto", prov: wz.bulkProv || "" } });
+      d.rows.forEach((r) => { r.pick = bulkRefine(r); });
+      wz.bulk = { rows: d.rows, sel: d.rows.map((r) => r.pick) };
+      const need = d.rows.filter((r) => r.pick < 0).length;
+      if (need) wz.bulkMsg = { warn: true, t: `เจอแน่ชัด ${d.rows.length - need} · อีก ${need} รายการต้องเลือกเองหรือไม่พบ (ดูแถวสีส้ม/แดง)` };
+    } catch (e) { toast(e.message, 4500); }
+    wz.bulkBusy = false; renderWizard();
+  }
+  function bulkAdd() {
+    const b = wz.bulk; if (!b) return;
+    const added = [], skip = [], left = []; let dup = 0;
+    b.rows.forEach((r, i) => {
+      const j = b.sel[i];
+      if (j < 0) { left.push(r.q); return; }
+      const it = geoFromRes(r.items[j]);
+      if (geoList(wz.geoMode).some((g) => g.kind === it.kind && g.key === it.key)) { dup++; return; } // มีอยู่แล้ว = ไม่ต้องทำอะไร
+      const err = geoTry(it);
+      if (err) { skip.push(err); left.push(r.q); } else added.push(r.q);
+    });
+    wz.bulk = null; wz.bulkTxt = left.join("\n");
+    wz.bulkMsg = { warn: !!(skip.length || left.length), t: `เพิ่มแล้ว ${added.length} พื้นที่${dup ? ` · มีอยู่แล้ว ${dup}` : ""}${skip.length ? ` · ข้าม ${skip.length}: ${skip.slice(0, 3).join(" / ")}` : ""}${left.length ? ` · เหลือในช่องด้านบน ${left.length} รายการ ให้แก้แล้วค้นใหม่` : ""}` };
+    if (!left.length) wz.bulkOpen = false;
+    if (added.length) { toast(`เพิ่ม ${added.length} พื้นที่แล้ว`, 2500); wz.geoFit = true; }
+    renderWizard(); drawGeo(true);
   }
   // สื่อที่เลือกอยู่ (อัปใหม่ หรือ วิดีโอเดิมในบัญชีโฆษณา)
   const upOf = (c) => c.src === "library" ? c.libUp : c.src === "upload" ? c.up : null;
@@ -1881,7 +1965,7 @@
       pins.filter((g) => g.radius_km <= 3).forEach((g) => out.push({ lvl: "warn", t: `${g.label}: รัศมี ${g.radius_km} กม. เล็กมาก คนเห็นน้อย ราคาต่อผลอาจแพงขึ้น` }));
       if (wz.geoInc.some((g) => g.kind === "country")) out.push({ lvl: "tip", t: "ทั่วประเทศ: เหมาะกับทรัพย์ที่คนต่างถิ่นซื้อ งบจะกระจายกว้าง" });
       if (wz.geoInc.length === 1 && pins.length === 1 && pins[0].label === center && pins[0].radius_km <= 10) out.push({ lvl: "tip", t: "รัศมีเล็กแต่วัดจากตัวเมือง — ถ้าทรัพย์อยู่นอกเมือง กด 'ปักหมุด' ที่ทรัพย์" });
-      if (pins.length && wz.geoInc.some((g) => g.kind === "region" || g.kind === "city")) out.push({ lvl: "tip", t: "มีทั้งหมุดและจังหวัด/อำเภอ — ถ้าหมุดอยู่ในพื้นที่ที่เลือกแล้ว จะซ้อนกัน Facebook อาจไม่รับ" });
+      if (pins.length && wz.geoInc.some((g) => g.kind === "region" || g.kind === "city" || g.kind === "zip")) out.push({ lvl: "tip", t: "มีทั้งหมุดและจังหวัด/อำเภอ — ถ้าหมุดอยู่ในพื้นที่ที่เลือกแล้ว จะซ้อนกัน Facebook อาจไม่รับ" });
       if (wz.geoInc.filter((g) => g.kind === "city" && g.radius_km).length > 1) out.push({ lvl: "tip", t: "ใส่รัศมีรอบอำเภอหลายแห่ง Facebook อาจไม่รับ — ถ้ายิงไม่ผ่าน ให้เลือก 'ทั้งเขต'" });
       if (wz.ageMax - wz.ageMin < 10) out.push({ lvl: "warn", t: `ช่วงอายุแคบ (${ageText()}) กลุ่มคนจะเล็ก` });
       if (wz.interests.length && wz.geoInc.length && wz.geoInc.every((g) => g.kind === "pin" && g.radius_km <= 5)) out.push({ lvl: "warn", t: "รัศมีเล็ก + เลือกความสนใจ กลุ่มอาจแคบเกินไป ลองเอาความสนใจออก" });
@@ -2595,8 +2679,9 @@
       <div id="reachBox">${reachHtml()}</div>
       <div class="sec">📍 ตำแหน่ง</div>
       <div class="seg gmode"><button data-gmode="inc" class="${exc ? "" : "on"}">✅ รวม</button><button data-gmode="exc" class="${exc ? "on" : ""}">⛔ ไม่รวม</button></div>
-      <input class="inp" id="geoQ" autocomplete="off" placeholder="${exc ? "ค้นหาพื้นที่ที่จะไม่แสดง" : "ค้นหาจังหวัด / อำเภอ เช่น กำแพงเพชร"}" value="${esc(wz.gq)}"><div class="ires" id="geoRes"></div>
-      <div class="chips" style="margin-top:8px"><button class="chip2 ${wz.pinArm ? "sel" : ""}" data-gact="pin">📍 ${wz.pinArm ? "แตะบนแผนที่ได้เลย" : "ปักหมุด"}</button><button class="chip2" data-gact="me">◎ ตำแหน่งฉัน</button>${exc ? "" : '<button class="chip2" data-gact="th">🇹🇭 ทั้งประเทศ</button>'}</div>
+      <input class="inp" id="geoQ" autocomplete="off" placeholder="${exc ? "ค้นหาพื้นที่ที่จะไม่แสดง" : "ค้นหาจังหวัด / อำเภอ / รหัสไปรษณีย์ เช่น กำแพงเพชร, 62000"}" value="${esc(wz.gq)}"><div class="ires" id="geoRes"></div>
+      <div class="chips" style="margin-top:8px"><button class="chip2 ${wz.pinArm ? "sel" : ""}" data-gact="pin">📍 ${wz.pinArm ? "แตะบนแผนที่ได้เลย" : "ปักหมุด"}</button><button class="chip2" data-gact="me">◎ ตำแหน่งฉัน</button>${exc ? "" : '<button class="chip2" data-gact="th">🇹🇭 ทั้งประเทศ</button>'}<button class="chip2 ${wz.bulkOpen ? "sel" : ""}" data-gact="bulk">📋 เพิ่มทีละหลายรายการ</button></div>
+      ${wz.bulkOpen ? bulkHtml() : ""}
       <div class="gslot ${wz.pinArm ? "arm" : ""}" id="geoSlot"></div>
       <div class="glink"><input class="inp" id="geoLink" placeholder="หรือวางพิกัด/ลิงก์ Google Maps (ลิงก์ย่อก็ได้)"><button class="btn ghost sm" id="geoLinkAdd">เพิ่มหมุด</button></div>
       <div class="ghd">✅ แสดงให้คนใน</div>${geoRows("inc") || '<div class="note warn">ยังไม่ได้เลือกพื้นที่</div>'}
@@ -2917,6 +3002,7 @@
         const a = el.dataset.gact;
         if (a === "pin") { wz.pinArm = !wz.pinArm; renderWizard(); if (wz.pinArm) { $("geoSlot")?.scrollIntoView({ behavior: "smooth", block: "center" }); toast("แตะบนแผนที่ตรงตำแหน่งที่ต้องการ", 3000); } }
         else if (a === "th") geoAdd({ kind: "country", key: "TH", name: "ประเทศไทย" }, "inc");
+        else if (a === "bulk") { wz.bulkOpen = !wz.bulkOpen; wz.bulkMsg = null; renderWizard(); if (wz.bulkOpen) $("gbText")?.focus(); }
         else if (a === "me") {
           if (!navigator.geolocation) return toast("มือถือนี้ใช้ตำแหน่งไม่ได้");
           toast("กำลังหาตำแหน่ง…");
@@ -2948,6 +3034,16 @@
         finally { const b2 = $("geoLinkAdd"); if (b2) { b2.disabled = false; b2.textContent = "เพิ่มหมุด"; } }
       };
       on("geoLinkAdd", "onclick", addFromLink);
+      on("gbText", "oninput", (e) => { wz.bulkTxt = e.target.value; });
+      on("gbType", "onchange", (e) => { wz.bulkType = e.target.value; });
+      on("gbProv", "onchange", (e) => { wz.bulkProv = e.target.value; });
+      on("gbGo", "onclick", bulkRun);
+      on("gbAdd", "onclick", bulkAdd);
+      box.querySelectorAll("[data-gbsel]").forEach((el) => el.onchange = () => {
+        wz.bulk.sel[Number(el.dataset.gbsel)] = Number(el.value);
+        const row = el.closest(".gbr"); row.className = "gbr " + (Number(el.value) >= 0 ? "ok" : "pick");
+        const n = wz.bulk.sel.filter((x) => x >= 0).length, btn = $("gbAdd"); if (btn) { btn.disabled = !n; btn.textContent = `➕ เพิ่ม ${n} พื้นที่ที่เลือก`; }
+      });
       on("geoLink", "onkeydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addFromLink(); } });
       box.querySelectorAll("[data-gdel]").forEach((el) => el.onclick = () => { const [m, i] = el.dataset.gdel.split(":"); geoList(m).splice(Number(i), 1); renderWizard(); drawGeo(false); });
       box.querySelectorAll("[data-grad]").forEach((el) => el.onchange = () => {
@@ -3245,7 +3341,20 @@
     if (path === "/api/media/videos") return Promise.resolve({ videos: [{ id: "9100", title: "ทัวร์ที่ดินหน้าโรบินสัน (ตัวอย่าง)", created_time: new Date().toISOString(), picture: null, length: 170 }] });
     if (path.startsWith("/api/media/thumbs")) return Promise.resolve({ thumbs: [] });
     if (path.startsWith("/api/page-info")) return Promise.resolve({ instagram: { id: "1", username: "n.property.network" } });
-    if (path.startsWith("/api/geo/search")) return Promise.resolve({ items: [{ kind: "region", key: "2681", name: "จังหวัดกำแพงเพชร (ตัวอย่าง)", region: "", region_id: "" }, { kind: "city", key: "1675383", name: "อำเภอเมืองกำแพงเพชร (ตัวอย่าง)", region: "จังหวัดกำแพงเพชร", region_id: "2681" }] });
+    if (path.startsWith("/api/geo/search")) return Promise.resolve({ items: /types=zip/.test(path)
+      ? [{ kind: "zip", key: "TH:62000", name: "62000", region: "จังหวัดกำแพงเพชร", region_id: "3558", city: "ตัวอย่าง" }, { kind: "zip", key: "TH:62120", name: "62120", region: "จังหวัดกำแพงเพชร", region_id: "3558", city: "ตัวอย่าง" }]
+      : [{ kind: "region", key: "3558", name: "จังหวัดกำแพงเพชร", region: "", region_id: "" }, { kind: "city", key: "2269919", name: "เทศบาลเมืองกำแพงเพชร (ตัวอย่าง)", region: "จังหวัดกำแพงเพชร", region_id: "3558" }] });
+    if (path === "/api/geo/bulk") { // ตัวอย่าง: จังหวัด/รหัสไปรษณีย์ตรงตัว เลือกให้ · อำเภอให้เลือกเอง
+      const lines = [...new Set(String(opts.body?.lines || "").split(/[\n,;]+/).map((x) => x.trim()).filter(Boolean))].slice(0, 30);
+      return Promise.resolve({ rows: lines.map((q, i) => {
+        const pv = PROV.find(([, t]) => q.replace(/^(จังหวัด|จ\.)\s*/, "") === t);
+        if (/^\d{5}$/.test(q)) return { q, kind: "zip", pick: 0, items: [{ kind: "zip", key: "TH:" + q, name: q, region: "จังหวัดกำแพงเพชร", region_id: "3558" }] };
+        if (pv) return { q, kind: "region", pick: 0, items: [{ kind: "region", key: pv[0], name: "จังหวัด" + pv[1], region: "", region_id: "" }] };
+        if (/ไม่มี/.test(q)) return { q, kind: "city", pick: -1, items: [] };
+        const nm = q.replace(/^(อำเภอ|อ\.)\s*/, "");
+        return { q, kind: "city", pick: -1, items: [{ kind: "city", key: "d1" + i, name: nm + " (ตัวอย่าง)", region: "จังหวัดกำแพงเพชร", region_id: "3558" }, { kind: "city", key: "d2" + i, name: nm + " (ตัวอย่าง)", region: "จังหวัดสงขลา", region_id: "3614" }] };
+      }) });
+    }
     if (path.startsWith("/api/targeting/search")) return Promise.resolve({ items: [{ id: "6003014261718", name: "อสังหาริมทรัพย์", size_min: 1e6, size_max: 2e6, path: "ความสนใจ › ธุรกิจ" }, { id: "6003020834693", name: "การซื้อบ้าน", size_min: 3e5, size_max: 5e5, path: "ความสนใจ › บ้านและสวน" }] });
     if (path === "/api/preview") return Promise.resolve({ previews: [], advertiser_ok: true });
     if (path === "/api/advertiser") return Promise.resolve({ ok: true });
