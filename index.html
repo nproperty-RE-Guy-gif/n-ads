@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1430">
+<meta name="nads-ver" content="20261126-1445">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -751,6 +751,13 @@
   .caph1{font-size:calc(14px * var(--fz));margin:0 0 6px;padding:4px 8px;border-radius:8px;background:var(--pri-l);display:inline-block}
   /* ช่องแคปชั่น: สูงขึ้น และยืดตามความยาวข้อความ (สูงสุด 70% ของจอ) */
   #wzMsg{min-height:calc(240px * var(--fz));max-height:70vh;overflow-y:auto}
+  /* กลุ่มเป้าหมาย: คำอธิบาย + AI แนะนำ */
+  .tgt{margin:10px 0 14px;padding:12px 14px;border:1px dashed var(--pri-l2);border-radius:14px;background:var(--pri-l)}
+  .tgt-h{font-weight:700;color:var(--pri-d);margin-bottom:6px}
+  .tgtr{display:grid;gap:10px;margin-top:10px}
+  .tr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;line-height:1.6}
+  .tr>b{display:block;margin-bottom:2px} .tr .btn{margin-top:8px} .tr ul{margin:6px 0 0;padding-left:20px}
+  .tlearn .sub{font-weight:700;margin:10px 0 2px}
 </style>
 </head>
 <body>
@@ -1725,7 +1732,7 @@
     const body = { page_id: wz.page, goal: wz.goal, source: A.src === "post" ? "post" : "upload", name: wz.name.trim(), welcome: wz.welcome.trim(), faq: faqList(),
       message: boost ? "" : A.message.trim(), headline: boost ? "" : A.headline.trim(),
       daily_thb: wz.daily, days: wz.days, radius_km: 0, age_min: wz.ageMin, age_max: wz.ageMax,
-      gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: platformsBody(), multi_ads: !!wz.multiAds };
+      gender: wz.gender, interests: wz.interests, excludes: [], platforms: platformsBody(), multi_ads: !!wz.multiAds };
     body.geo = geoBody();
     const cov = (c) => { const x = coverOf(c); return x ? (x.kind === "thumb" ? { kind: "thumb", url: x.url } : { kind: "image", image_hash: x.image_hash }) : null; };
     if (A.src === "post") body.post_id = A.post.id; else body.media = upOf(A).media;
@@ -1747,7 +1754,7 @@
   }
   // ---------- ขนาดกลุ่มคนโดยประมาณ (ถาม Facebook) ----------
   let reachT = 0;
-  const reachBody = () => ({ page_id: wz.page, goal: wz.goal, geo: geoBody(), age_min: wz.ageMin, age_max: wz.ageMax, gender: wz.gender, interests: wz.interests, excludes: wz.excludes, platforms: platformsBody() });
+  const reachBody = () => ({ page_id: wz.page, goal: wz.goal, geo: geoBody(), age_min: wz.ageMin, age_max: wz.ageMax, gender: wz.gender, interests: wz.interests, excludes: [], platforms: platformsBody() });
   function reachTick() {
     if (wz.step !== 5) return;
     if (!wz.page || !geoOk() || !placeOk() || wz.ageMin > wz.ageMax) { wz.reach = null; wz.reachKey = ""; wz.reachBusy = false; return paintReach(); }
@@ -2485,14 +2492,85 @@
       ${wz.startMode === "later" ? `<input class="inp" id="wzStart" type="datetime-local" min="${localNow()}" value="${esc(wz.startAt)}">
         ${!startOk() ? '<div class="note warn">เลือกวันเวลาที่ยังไม่ผ่านไป</div>' : `<div class="note info">แอดจะเริ่มวิ่ง ${esc(thDateTime(startIso()))} (หลัง Facebook ตรวจผ่าน)${why("review", `แอดใหม่ทุกตัวต้องผ่านการตรวจของ Facebook ก่อนว่าไม่ผิดกฎโฆษณา ส่วนใหญ่ตรวจเสร็จภายใน 24 ชั่วโมง แต่บางครั้งนานกว่านั้น ถ้าตรวจเสร็จก่อนเวลาที่ตั้ง แอดจะรอแล้วเริ่มตามเวลา ถ้าตรวจเสร็จหลังเวลาที่ตั้ง แอดจะเริ่มตอนตรวจผ่าน ${SRC('Meta "เกี่ยวกับการตรวจสอบโฆษณา"')}`)}</div>`}` : ""}`;
   }
+  // ---------- กลุ่มเป้าหมาย: คำอธิบาย + ให้ AI แนะนำจากแคปชั่นและผลแอดเก่า ----------
+  const TGT_RULES = `[หลักแนะนำกลุ่มเป้าหมายแอดอสังหาฯ ของ N propertyNetwork]
+1) ใช้เฉพาะแคปชั่น/ข้อมูลที่ให้มา และข้อมูลบัญชีด้านบน ห้ามเดาตัวเลขผลลัพธ์
+2) ข้อมูลบัญชีมีแค่ผลของแอดเก่า (ชื่อแอด ใช้เงิน ได้ผลกี่ครั้ง ต้นทุนต่อผล) ไม่มีการตั้งพื้นที่/อายุของแอดเก่า ห้ามอ้างว่าแอดเก่าตั้งกลุ่มแบบไหน ถ้าข้อมูลไม่พอให้บอกตรง ๆ
+3) พื้นที่สำคัญสุดสำหรับอสังหาฯ เริ่มจากรอบทรัพย์ บอกรัศมีเป็นตัวเลขจากชุดนี้เท่านั้น: 5, 10, 15, 20, 25, 30, 40, 50 กม. ถ้าควรใช้ทั้งจังหวัด/หลายจังหวัดให้ radius_km เป็น null และบอกใน geo
+4) อายุในไทยเลือกได้ 20–65 (65 = 65 ขึ้นไป)
+5) แอปนี้ตั้งให้ Facebook ส่งแอดเฉพาะคนที่ตรงความสนใจที่เลือกจริง (ไม่ขยายเอง) ใส่ความสนใจแล้วกลุ่มเล็กลง ถ้ากลุ่มเล็กอยู่แล้วหรือพื้นที่แคบ แนะนำไม่ใส่ ความสนใจแนะนำได้ไม่เกิน 3 คำค้นภาษาไทยแบบทั่วไป
+6) ภาษาง่าย สั้น สำหรับคนไม่เคยยิงแอด`;
+  async function tgtAiRun() {
+    const pg = pageOf(), r = wz.reach, cap = (wz.message.trim() || pickCr().post?.message || "").slice(0, 900);
+    const q = `ช่วยแนะนำกลุ่มเป้าหมายของแอดนี้ (เป้าหมาย: ${GOAL_INFO[wz.goal].t}) จากแคปชั่นและผลแอดเก่าในบัญชี
+เพจ: ${pg?.name || "-"}
+แคปชั่น: ${cap || "(ยังไม่มีแคปชั่น)"}
+หัวข้อ: ${wz.headline.trim() || "-"}
+ตั้งไว้ตอนนี้: พื้นที่ ${areaSum()} · อายุ ${ageText()} · ${wz.gender === "all" ? "ทุกเพศ" : wz.gender === "male" ? "ชาย" : "หญิง"} · ความสนใจ ${wz.interests.map((x) => x.name).join(", ") || "ไม่ใส่"}${r?.upper ? ` · ขนาดกลุ่มตอนนี้ราว ${int(r.lower)}–${int(r.upper)} บัญชี` : ""}
+ตอบเป็น JSON อย่างเดียว ไม่มีข้อความอื่น:
+{"who":"ใครน่าจะซื้อ/เช่าทรัพย์นี้ 1–2 ประโยค","geo":"พื้นที่ที่แนะนำและเหตุผลสั้น ๆ","radius_km":15,"age_min":25,"age_max":55,"age_why":"เหตุผลอายุ","interests":[{"q":"คำค้น","why":"เหตุผล"}],"no_interest_why":"ถ้าแนะนำไม่ใส่ความสนใจ บอกเหตุผล (ไม่งั้นเว้นว่าง)","past":"ข้อสังเกตจากผลแอดเก่าในบัญชี หรือบอกว่าข้อมูลไม่พอ","avoid":"สิ่งที่ไม่ควรตั้ง","check":"หลังยิง 3–7 วันให้ดูอะไร แล้วปรับยังไง"}`;
+    const res = await api("/api/ai/chat", { body: { question: q, messages: [], draft: TGT_RULES } });
+    if (AI.status && res.usage) AI.status.usage = res.usage;
+    const txt = String(res.reply || "").replace(/```(json)?/g, ""), a = txt.indexOf("{"), b = txt.lastIndexOf("}");
+    let j = null; try { j = JSON.parse(txt.slice(a, b + 1)); } catch {}
+    if (!j) return { raw: txt.trim().slice(0, 2500) };
+    const S = (x, n = 400) => String(x ?? "").trim().slice(0, n), N = (x) => (Number.isFinite(Number(x)) && x !== null && x !== "" ? Math.round(Number(x)) : null);
+    return { who: S(j.who), geo: S(j.geo), radius: N(j.radius_km), amin: N(j.age_min), amax: N(j.age_max), ageWhy: S(j.age_why),
+      ints: (Array.isArray(j.interests) ? j.interests : []).slice(0, 3).map((x) => ({ q: S(x?.q, 40), why: S(x?.why, 160) })).filter((x) => x.q),
+      noInt: S(j.no_interest_why), past: S(j.past), avoid: S(j.avoid), check: S(j.check) };
+  }
+  function tgtBox() {
+    const t = wz.tgt || {}, o = t.out, [amin, amax] = wz.info?.age_limits || [20, 65];
+    const pins = wz.geoInc.filter((g) => g.kind === "pin");
+    const rad = o?.radius ? PIN_RADII.reduce((p, c) => (Math.abs(c - o.radius) < Math.abs(p - o.radius) ? c : p), PIN_RADII[0]) : null;
+    const a0 = o?.amin ? Math.min(Math.max(o.amin, amin), amax) : null, a1 = o?.amax ? Math.min(Math.max(o.amax, a0 || amin), amax) : null;
+    const res = !o ? "" : o.raw ? `<div class="capc"><div class="capk">คำแนะนำจาก AI</div><pre>${esc(o.raw)}</pre></div>` : `<div class="tgtr">
+      ${t.note ? `<div class="note info" style="margin:0">${esc(t.note)}</div>` : ""}
+      ${o.who ? `<div class="tr"><b>👤 ใครน่าจะสนใจ</b><div>${esc(o.who)}</div></div>` : ""}
+      ${o.geo ? `<div class="tr"><b>📍 พื้นที่</b><div>${esc(o.geo)}</div>${rad ? (pins.length ? `<button class="btn ghost sm" data-tgt="rad">ใช้รัศมี ${rad} กม. กับหมุด${pins.length > 1 ? `ทั้ง ${pins.length} จุด` : ""}</button>` : `<div class="upnote">ปักหมุดที่ทรัพย์ก่อน แล้วตั้งรัศมี ${rad} กม.</div>`) : ""}</div>` : ""}
+      ${a0 && a1 ? `<div class="tr"><b>🎂 อายุ ${a0}–${a1}${a1 >= amax ? "+" : ""} ปี</b><div>${esc(o.ageWhy)}</div><button class="btn ghost sm" data-tgt="age">ใช้ช่วงอายุนี้</button></div>` : ""}
+      <div class="tr"><b>💡 ความสนใจ</b>${o.ints.length ? `<div>แตะคำค้น แล้วเลือกจากรายการของ Facebook ที่ขึ้นมาในช่อง "ความสนใจ" ด้านล่าง</div><div class="chips">${o.ints.map((x, i) => `<button class="chip2" data-tgti="${i}" title="${esc(x.why)}">🔍 ${esc(x.q)}</button>`).join("")}</div><ul>${o.ints.map((x) => `<li><b>${esc(x.q)}</b> ${esc(x.why)}</li>`).join("")}</ul>` : `<div>${esc(o.noInt || "ไม่ต้องใส่ความสนใจ")}</div>`}</div>
+      ${o.past ? `<div class="tr"><b>📊 จากผลแอดเก่า</b><div>${esc(o.past)}</div></div>` : ""}
+      ${o.avoid ? `<div class="tr"><b>⛔ ไม่ควรทำ</b><div>${esc(o.avoid)}</div></div>` : ""}
+      ${o.check ? `<div class="tr"><b>🔁 หลังยิง 3–7 วัน</b><div>${esc(o.check)}</div></div>` : ""}
+      <div class="upnote">คำแนะนำจาก AI ใช้เป็นจุดเริ่ม ตัดสินใจเองได้ทุกข้อ · แอปยังไม่ได้เก็บว่าแอดเก่าตั้งพื้นที่/อายุไว้แบบไหน AI จึงเห็นแค่ผลของแอดเก่า</div></div>`;
+    return `<div class="tgt">
+      <div class="tgt-h">🎯 ไม่แน่ใจว่าควรให้ใครเห็น?</div>
+      <div class="cbtn"><button class="btn sm" id="tgtGo" ${t.busy ? "disabled" : ""}>${t.busy ? "⏳ AI กำลังดู…" : o ? "🔄 ให้ AI แนะนำใหม่" : "✨ ให้ AI แนะนำกลุ่มเป้าหมาย"}</button></div>
+      <div class="upnote">AI อ่านแคปชั่นกับผลแอดเก่าในบัญชี แล้วแนะนำพื้นที่ อายุ ความสนใจ พร้อมเหตุผล · กดใช้ทีละข้อเอง · ใช้โควตา AI 1 ครั้ง</div>
+      ${res}
+      ${drop("tgtlearn", "📘 กลุ่มเป้าหมายคืออะไร สำคัญยังไง เลือกยังไงให้ตรง", `
+        <b>กลุ่มเป้าหมาย = บอก Facebook ว่าจะให้แอดขึ้นกับใคร</b> ตั้งได้ 4 อย่าง: พื้นที่ · อายุ · เพศ · ความสนใจ
+        <div class="sub">ทำไมสำคัญ</div><ul>
+          <li>งบมีจำกัด ถ้าแอดไปขึ้นกับคนที่ไม่มีทางซื้อ = เสียเงินฟรี และได้คนทักที่ไม่ตรง</li>
+          <li><b>แคบเกิน</b>: คนเดิมเห็นซ้ำ ต้นทุนต่อทักแพง ผลมาช้า</li>
+          <li><b>กว้างเกินหรือผิดพื้นที่</b>: คนทักจากไกลที่ไม่ได้ตั้งใจซื้อ เสียเวลาตอบ</li></ul>
+        <div class="sub">เลือกตามลำดับนี้</div><ol>
+          <li><b>พื้นที่ (สำคัญที่สุด)</b> ทรัพย์ย้ายไม่ได้ เริ่มจากคนรอบทรัพย์ก่อน เช่น ปักหมุดที่ทรัพย์ แล้วตั้งรัศมี</li>
+          <li><b>อายุ</b> ช่วงที่มีกำลังซื้อหรือกำลังจะมีบ้าน</li>
+          <li><b>ความสนใจ</b> ไม่ใส่ก็ได้ แอปนี้ตั้งให้ Facebook ส่งเฉพาะคนที่ตรงความสนใจจริง ใส่แล้วกลุ่มจะเล็กลง ใช้เมื่อกลุ่มยังใหญ่มาก</li>
+          <li><b>เพศ</b> ปกติเลือกทุกเพศ</li></ol>
+        <div class="sub">ตัวอย่างจุดเริ่ม (แนวทางของแอป ไม่ใช่ตัวเลขจาก Facebook)</div><ul>
+          <li><b>บ้าน/ทาวน์โฮมในเมือง</b> → หมุดที่ทรัพย์ 10–20 กม. · 25–55 ปี · ไม่ใส่ความสนใจ</li>
+          <li><b>ที่ดินเปล่า/ที่ดินลงทุน</b> → รัศมีกว้างขึ้นหรือทั้งจังหวัด · 30–60 ปี · ถ้าคนต่างถิ่นมักซื้อ เพิ่มจังหวัดที่คนในพื้นที่ไปทำงาน</li>
+          <li><b>ห้องเช่า/หอพักใกล้มหาลัยหรือโรงงาน</b> → หมุดที่ทรัพย์ 5–10 กม. · 20–35 ปี</li>
+          <li><b>อาคารพาณิชย์/ทำเลค้าขาย</b> → ทั้งอำเภอหรือจังหวัด · 28–55 ปี</li></ul>
+        <div class="sub">เช็กหลังยิง 3–7 วัน</div><ul>
+          <li>คนทักอยู่ไกลหรือไม่ได้จะซื้อ → ลดรัศมี หรือขยับอายุขั้นต่ำขึ้น</li>
+          <li>ต้นทุนต่อทักแพง และกลุ่มเล็ก → ขยายพื้นที่ หรือเอาความสนใจออก</li>
+          <li>ได้ผลดีแล้ว → อย่าเพิ่งแก้ แก้บ่อย Facebook ต้องเรียนรู้ใหม่</li></ul>
+        ${SRC('Meta "เกี่ยวกับการกำหนดกลุ่มเป้าหมายแบบละเอียด" (About detailed targeting)')}`, "xpl tlearn", true)}
+    </div>`;
+  }
   function stepAudience() {
     const [amin, amax] = wz.info?.age_limits || [20, 65];
     if (wz.ageMin < amin) wz.ageMin = amin;
     if (wz.ageMax < wz.ageMin) wz.ageMax = wz.ageMin;
-    geoInit();
+    geoInit(); wz.excludes = []; // Meta ยกเลิก "ไม่รวมคนที่สนใจ…" ตั้งแต่ 31 มี.ค. 2025 (ใส่แล้วสร้างแอดไม่ผ่าน)
     const opts = (sel) => Array.from({ length: amax - amin + 1 }, (_, i) => amin + i).map((a) => `<option value="${a}" ${a === sel ? "selected" : ""}>${a === amax ? a + "+" : a} ปี</option>`).join("");
     const exc = wz.geoMode === "exc";
     let b = `<div class="wz-q">ให้ใครเห็น?</div>
+      ${tgtBox()}
       <div id="reachBox">${reachHtml()}</div>
       <div class="sec">📍 ตำแหน่ง</div>
       <div class="seg gmode"><button data-gmode="inc" class="${exc ? "" : "on"}">✅ รวม</button><button data-gmode="exc" class="${exc ? "on" : ""}">⛔ ไม่รวม</button></div>
@@ -2511,15 +2589,11 @@
       <div>${wz.interests.map((x, i) => `<span class="tag">${esc(x.name)}<button data-rmi="${i}" aria-label="ลบ">×</button></span>`).join("")}</div>
       <input class="inp" id="wzIq" autocomplete="off" placeholder="พิมพ์ค้นหา เช่น อสังหาริมทรัพย์ บ้าน ที่ดิน" value="${esc(wz.iq)}"><div class="ires" id="wzIres"></div>
       <div class="note info">${wz.interests.length ? "Facebook จะส่งให้คนที่สนใจอย่างใดอย่างหนึ่งในนี้" : "ไม่ใส่ = ส่งให้ทุกคนในพื้นที่และช่วงอายุ ถ้าใส่ กลุ่มจะแคบลง"}
-        ${why("int", `<b>ความสนใจ = เรื่องที่ Facebook เดาว่าคนนั้นชอบ</b> (ดูจากเพจที่กดถูกใจ โพสต์ที่ดู สิ่งที่ค้นหา)<ul>
+        ${why("int", `<b>ความสนใจ = เรื่องที่ Facebook เดาว่าคนนั้นชอบ</b> (ดูจากแอดที่เคยกด เพจและโพสต์ที่มีส่วนร่วม กลุ่มที่เข้าร่วม)<ul>
           <li>ไม่ใส่เลย: แอดไปหาทุกคนในพื้นที่และช่วงอายุที่เลือก แล้ว Facebook เลือกคนที่น่าจะสนใจเอง</li>
           <li>ใส่ 1 อย่าง: เหลือแค่คนที่ Facebook คิดว่าสนใจเรื่องนั้น กลุ่มเล็กลง</li>
           <li>ใส่หลายอย่าง: คนที่สนใจ<b>อย่างใดอย่างหนึ่ง</b>ก็เห็นแอดได้ ไม่ต้องสนใจครบทุกอย่าง ใส่เพิ่ม = กลุ่มใหญ่ขึ้น</li></ul>
           ไม่แน่ใจ ไม่ต้องใส่ก็ได้ แล้วดูจำนวนคนทักก่อน`)}</div>
-      <details class="adv" ${wz.excludes.length ? "open" : ""}><summary>ตั้งค่าขั้นสูง: ไม่แสดงให้คนบางกลุ่ม</summary>
-        <label class="f" for="wzXq">ไม่แสดงให้คนที่สนใจ…</label>
-        <div>${wz.excludes.map((x, i) => `<span class="tag">${esc(x.name)}<button data-rmx="${i}" aria-label="ลบ">×</button></span>`).join("")}</div>
-        <input class="inp" id="wzXq" autocomplete="off" placeholder="พิมพ์ค้นหา" value="${esc(wz.xq)}"><div class="ires" id="wzXres"></div></details>
       <div class="sec">📍 แสดงแอดที่ไหน</div>
       ${autoPlace() ? `<div class="note info">แอด "${GOAL_INFO[wz.goal].t}": Meta ให้เลือกตำแหน่งแสดงอัตโนมัติเท่านั้นแล้ว แอดจะขึ้นทั้ง Facebook, Instagram และ Messenger ตามที่ได้ผลดี${why("plc", `<b>ตำแหน่งแสดงแอด = จุดที่แอดไปโผล่</b> เช่น หน้าฟีด Facebook, สตอรี่, Reels, Instagram, กล่องข้อความ Messenger<br>แบบอัตโนมัติ Facebook จะเอาแอดไปลงจุดที่ได้ผลคุ้มที่สุดเอง เราไม่ต้องเลือก และเลือกเองไม่ได้สำหรับแอดเป้าหมายนี้`)}</div>` : `<div class="chips"><button class="chip2 ${wz.placeMode === "auto" ? "sel" : ""}" data-place="auto">อัตโนมัติ (แนะนำ)</button><button class="chip2 ${wz.placeMode === "manual" ? "sel" : ""}" data-place="manual">เลือกเอง</button></div>
       ${wz.placeMode === "manual" ? `<div class="chips">${Object.entries(PLAT_TH).map(([k, t]) => `<button class="chip2 ${wz.platforms.includes(k) ? "sel" : ""}" data-plat="${k}">${wz.platforms.includes(k) ? "✓ " : ""}${t}</button>`).join("")}</div>
@@ -2724,6 +2798,27 @@
     on("wzStart", "onchange", (e) => { wz.startAt = e.target.value; renderWizard(); });
     box.querySelectorAll("[data-gender]").forEach((el) => el.onclick = () => { wz.gender = el.dataset.gender; renderWizard(); });
     on("wzIq", "oninput", (e) => { wz.iq = e.target.value; searchInterests("i", wz.iq); });
+    on("tgtGo", "onclick", async () => {
+      const t = wz.tgt || (wz.tgt = {});
+      if (t.busy) return;
+      if (!wz.message.trim() && !pickCr().post?.message) return toast("เขียนแคปชั่นก่อน (ขั้น ข้อความ) AI จะได้รู้ว่าทรัพย์คืออะไร", 3500);
+      t.busy = true; renderWizard();
+      try { t.out = await tgtAiRun(); t.note = st.demo ? "โหมดตัวอย่าง: นี่คือคำตอบตัวอย่าง ไม่ใช่ AI จริง" : ""; }
+      catch (e) { t.out = null; toast("AI ใช้ไม่ได้ตอนนี้: " + e.message, 4000); }
+      t.busy = false; renderWizard();
+      setTimeout(() => document.querySelector(".tgtr, .tgt .capc")?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
+    });
+    box.querySelectorAll("[data-tgt]").forEach((el) => el.onclick = () => {
+      const o = wz.tgt?.out; if (!o) return;
+      const [amin, amax] = wz.info?.age_limits || [20, 65];
+      if (el.dataset.tgt === "age" && o.amin && o.amax) { wz.ageMin = Math.min(Math.max(o.amin, amin), amax); wz.ageMax = Math.min(Math.max(o.amax, wz.ageMin), amax); toast(`ตั้งอายุ ${ageText()} แล้ว`, 1800); }
+      if (el.dataset.tgt === "rad" && o.radius) { const rad = PIN_RADII.reduce((p, c) => (Math.abs(c - o.radius) < Math.abs(p - o.radius) ? c : p), PIN_RADII[0]); wz.geoInc.forEach((g) => { if (g.kind === "pin") g.radius_km = rad; }); wz.geoFit = true; toast(`ตั้งรัศมี ${rad} กม. แล้ว`, 1800); }
+      renderWizard();
+    });
+    box.querySelectorAll("[data-tgti]").forEach((el) => el.onclick = () => {
+      const x = wz.tgt?.out?.ints?.[Number(el.dataset.tgti)]; const inp = $("wzIq"); if (!x || !inp) return;
+      inp.value = x.q; inp.dispatchEvent(new Event("input")); inp.scrollIntoView({ behavior: "smooth", block: "center" }); inp.focus();
+    });
     on("wzXq", "oninput", (e) => { wz.xq = e.target.value; searchInterests("x", wz.xq); });
     drawResults("i"); drawResults("x");
     box.querySelectorAll("[data-rmi]").forEach((el) => el.onclick = () => { wz.interests.splice(Number(el.dataset.rmi), 1); renderWizard(); });
@@ -3043,6 +3138,13 @@
 
   function demoApi(path, opts) {
     if (path === "/api/ai/status") return Promise.resolve({ enabled: true, model: "ตัวอย่าง", usage: { today: AI.msgs.filter((m) => m.role === "user").length, month: 0, daily: 60, monthly: 2500 } });
+    if (path === "/api/ai/chat" && String(opts?.body?.question || "").includes('"age_why"')) return new Promise((ok) => setTimeout(() => ok({ reply: JSON.stringify({
+      who: "คนทำงานในตัวเมืองกำแพงเพชรที่อยากมีบ้านหลังแรก และพ่อแม่ที่อยากได้บ้านใกล้โรงเรียนลูก (ตัวอย่าง)",
+      geo: "ปักหมุดที่ทรัพย์ รัศมี 15 กม. ครอบคลุมตัวเมืองและนครชุม", radius_km: 15,
+      age_min: 27, age_max: 55, age_why: "ช่วงที่ทำงานมั่นคงพอจะกู้ซื้อบ้าน",
+      interests: [{ q: "อสังหาริมทรัพย์", why: "คนที่ติดตามเรื่องซื้อขายบ้าน" }], no_interest_why: "",
+      past: "แอดทักแชตในบัญชีเฉลี่ย ฿107 ต่อทัก แต่ไม่รู้ว่าแอดเก่าตั้งพื้นที่ไว้แบบไหน", avoid: "อย่าใส่รัศมีต่ำกว่า 5 กม. พร้อมความสนใจหลายอย่าง กลุ่มจะเล็กเกิน",
+      check: "ดูว่าคนทักอยู่ที่ไหน ถ้าไกลเกินไปให้ลดรัศมีเหลือ 10 กม." }) }), 900));
     if (path === "/api/ai/chat" && String(opts?.body?.question || "").includes('"caps"')) return new Promise((ok) => setTimeout(() => ok({ reply: JSON.stringify({
       caps: [
         { angle: "คนอยากสร้างบ้าน (ตัวอย่าง)", headline: "ที่ดินหลังบิ๊กซีมินิ เหลือ 3 แปลง", caption: "อยากมีที่ดินสักแปลงใกล้มอราชภัฏ ไว้สร้างบ้านของตัวเองไหมครับ?\nแปลงนี้อยู่หลังบิ๊กซีมินิ ห่างมอราชภัฏแค่ 1 กม.\nทั้งหมด 4 แปลง จองไปแล้ว 1 เหลือ 3 แปลงสุดท้าย\n💬 ทักแชตมา เดี๋ยวส่งพิกัดกับขนาดแต่ละแปลงให้ครับ\nสนใจโทร 088-899-4287" },
