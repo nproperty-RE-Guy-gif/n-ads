@@ -8,7 +8,7 @@
 <title>N Ads Alert</title>
 <script>try{if(localStorage.getItem("nads_theme")!=="light")document.documentElement.dataset.theme="dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script>try{var z=localStorage.getItem("nads_fz");if(z==="1.12"||z==="1.25")document.documentElement.style.setProperty("--fzU",z)}catch(e){}</script>
-<meta name="nads-ver" content="20261126-1500">
+<meta name="nads-ver" content="20261126-1523">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2598,7 +2598,7 @@
       <input class="inp" id="geoQ" autocomplete="off" placeholder="${exc ? "ค้นหาพื้นที่ที่จะไม่แสดง" : "ค้นหาจังหวัด / อำเภอ เช่น กำแพงเพชร"}" value="${esc(wz.gq)}"><div class="ires" id="geoRes"></div>
       <div class="chips" style="margin-top:8px"><button class="chip2 ${wz.pinArm ? "sel" : ""}" data-gact="pin">📍 ${wz.pinArm ? "แตะบนแผนที่ได้เลย" : "ปักหมุด"}</button><button class="chip2" data-gact="me">◎ ตำแหน่งฉัน</button>${exc ? "" : '<button class="chip2" data-gact="th">🇹🇭 ทั้งประเทศ</button>'}</div>
       <div class="gslot ${wz.pinArm ? "arm" : ""}" id="geoSlot"></div>
-      <div class="glink"><input class="inp" id="geoLink" placeholder="หรือวางพิกัด/ลิงก์ Google Maps"><button class="btn ghost sm" id="geoLinkAdd">เพิ่มหมุด</button></div>
+      <div class="glink"><input class="inp" id="geoLink" placeholder="หรือวางพิกัด/ลิงก์ Google Maps (ลิงก์ย่อก็ได้)"><button class="btn ghost sm" id="geoLinkAdd">เพิ่มหมุด</button></div>
       <div class="ghd">✅ แสดงให้คนใน</div>${geoRows("inc") || '<div class="note warn">ยังไม่ได้เลือกพื้นที่</div>'}
       ${wz.geoExc.length ? `<div class="ghd exc">⛔ ไม่แสดงให้คนใน</div>${geoRows("exc")}` : ""}
       <div class="wz-hint" style="margin-top:8px">ลากหมุดบนแผนที่เพื่อขยับได้ · วงกลม = รัศมีที่แอดจะแสดง</div>
@@ -2924,11 +2924,31 @@
             () => toast("เปิดตำแหน่งไม่ได้ — อนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์ก่อน", 4000), { enableHighAccuracy: true, timeout: 15000 });
         }
       });
-      on("geoLinkAdd", "onclick", () => {
-        const p = parsePin($("geoLink").value);
-        if (!p) return toast("อ่านพิกัดไม่ได้ — ลิงก์ย่อ maps.app.goo.gl ใช้ไม่ได้ ให้กดค้างที่หมุดใน Google Maps แล้วคัดลอกตัวเลขพิกัด", 5000);
-        addPin(p.lat, p.lng, "หมุดจากลิงก์");
-      });
+      const addFromLink = async () => {
+        const v = $("geoLink").value.trim();
+        if (!v) return toast("วางพิกัด เช่น 16.4730, 99.5230 หรือลิงก์ Google Maps ก่อน", 3000);
+        const p = parsePin(v);
+        if (p) return addPin(p.lat, p.lng, "หมุดจากลิงก์");
+        // ลิงก์ย่อ / ลิงก์สถานที่ของ Google Maps → ให้เซิร์ฟเวอร์ตามลิงก์แล้วอ่านพิกัด
+        const m = v.match(/(https?:\/\/)?(maps\.app\.goo\.gl|goo\.gl|(www\.|maps\.)?google\.(com|co\.th))\/\S+/i);
+        if (!m) return toast("อ่านพิกัดไม่ได้ — วางตัวเลขพิกัด เช่น 16.4730, 99.5230 หรือลิงก์ Google Maps", 4500);
+        if (st.demo) return toast("โหมดตัวอย่างอ่านลิงก์ไม่ได้ ลองวางตัวเลขพิกัดแทน", 3500);
+        const b = $("geoLinkAdd"); if (b) { b.disabled = true; b.textContent = "กำลังอ่านลิงก์…"; }
+        try {
+          const u = /^https?:/i.test(m[0]) ? m[0] : "https://" + m[0];
+          const r = await fetch(st.api.replace(/\/n-ads\/?$/, "/n-ads-geo") + "?u=" + encodeURIComponent(u), { headers: { authorization: "Bearer " + st.tok } });
+          const d = await r.json().catch(() => ({ error: "ระบบตอบกลับผิดรูปแบบ" }));
+          if (!r.ok) throw new Error(d.error || "ผิดพลาด " + r.status);
+          const q = parsePin(`${d.lat}, ${d.lng}`);
+          if (!q) throw new Error("ตำแหน่งนี้อยู่นอกประเทศไทย");
+          addPin(q.lat, q.lng, (d.name || "หมุดจากลิงก์").slice(0, 40));
+          if ($("geoLink")) $("geoLink").value = "";
+          toast(`เพิ่มหมุด${d.name ? ` "${d.name}"` : ""} แล้ว`, 2500);
+        } catch (e) { toast(`อ่านลิงก์นี้ไม่ได้ (${e.message}) — ลองกดค้างที่หมุดใน Google Maps แล้วคัดลอกตัวเลขพิกัดมาวางแทน`, 6000); }
+        finally { const b2 = $("geoLinkAdd"); if (b2) { b2.disabled = false; b2.textContent = "เพิ่มหมุด"; } }
+      };
+      on("geoLinkAdd", "onclick", addFromLink);
+      on("geoLink", "onkeydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addFromLink(); } });
       box.querySelectorAll("[data-gdel]").forEach((el) => el.onclick = () => { const [m, i] = el.dataset.gdel.split(":"); geoList(m).splice(Number(i), 1); renderWizard(); drawGeo(false); });
       box.querySelectorAll("[data-grad]").forEach((el) => el.onchange = () => {
         const [m, i] = el.dataset.grad.split(":"), g = geoList(m)[Number(i)];
